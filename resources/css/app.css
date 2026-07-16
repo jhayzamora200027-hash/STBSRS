@@ -25,4 +25,5 @@ width: 100%;
 
 body {
   font-family: var(--font-sans);
+  background: url('/images/cover/STBIP%20cover%20white.png') center/cover no-repeat fixed;
 }
