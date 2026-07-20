@@ -9,6 +9,11 @@
     border-radius: 15px;
     background-color: #ecf7ff;
 }
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
 </style>
 <div class="container py-5">
     <div class="row">
@@ -45,7 +50,7 @@
 
                             <h6 class="fw-bold text-center">Track Progress</h6>
 
-                            <p class="text-muted small text-center"  style="font-size: 0.8rem;"">
+                            <p class="text-muted small text-center"  style="font-size: 0.8rem;">
                                 Monitor the status and updates of your ticket in real-time.
                             </p>
                         </div>
@@ -69,7 +74,7 @@
                     <div class="card h-100 shadow-sm">
                         <div class="card-body d-flex flex-column align-items-center">
                             <div class="rounded-circle d-flex justify-content-center align-items-center mb-3" style="background-color:rgb(235, 233, 255); padding:10px; height:85px;">
-                            <img src = "{{asset('images/icons/shield.png')}}" width="60" height="5" >
+                            <img src = "{{asset('images/icons/shield.png')}}" width="60" height="60" >
                             </div>
                             <h6 class="fw-bold text-center">Secured Features</h6>
 
@@ -234,7 +239,7 @@
             <div class="modal-content">
                 <div class="row g-0">
                     {{-- Column Left --}}
-                    <div class="col-auto p-5" style="width:350px; background-color:#ecf4fe;">
+                    <div class="col-12 col-lg-5 p-5" style="background-color:#ecf4fe;">
                         <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}" class="img-fluid">
 
                         <h5 class="mt-5">Welcome Back!</h5>
@@ -242,11 +247,14 @@
                         <p class="text-muted" style="font-size:0.7rem;">
                             Sign in to your account to continue to the STB Service Request System.
                         </p>
-                    <img src="{{asset("images/attachments/loginpic.png")}}" class="img-fluid" style="width:auto; height:200px;">
+                            <img
+                            src="{{ asset('images/attachments/loginpic.png') }}"
+                            class="img-fluid d-block mx-auto"
+                            style="max-width: 250px !important;">                
                     </div>
 
                     {{-- Collumn right --}}
-                    <div class="col-auto justify-content-center g-0" style="width:430px;"> 
+                    <div class="col-12 col-lg-7"> 
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="loginModalLabel">
                                         Login
@@ -257,7 +265,8 @@
                                 </div>
 
                                 <div class="modal-body">
-                                    <form>
+                                    <form method="POST" action="{{ route('login')}}">
+                                        @csrf
                                         <div class="mb-3">
                                             <label class="form-label">Email Address</label>
 
