@@ -23,8 +23,8 @@
             <div class="bg-white rounded-circle d-flex">
                 <img src="{{ asset('images/logo/social technology bureau innovating solution logo.png') }}" width="45" alt="STBSRS logo">
             </div>
-            <div class="ms-3">
-                <h5 style="color:azure;">
+            <div class="ms-3 ">
+                <h5 style="color:azure;" class="mb-0">
                     STB Service Request
                 </h5>
 
@@ -40,7 +40,7 @@
                 <span class="navbar-toggler-icon"></span>
         </button>
             <div class="ms-auto d-flex align-items-center justify-content-end">
-                <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#loginModal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16" aria-hidden="true">
                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 100-6 3 3 0 000 6z"/>
                     </svg>
@@ -57,5 +57,6 @@
 <!-- Bootstrap JS bundle fallback -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+@stack('modals')
 </body>
 </html>
