@@ -3,29 +3,34 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Database\Seeders\RegionSeeder;
+use Database\Seeders\ProvinceSeeder;
+use Database\Seeders\CitySeeder;
+use Database\Seeders\ProgramSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::updateOrCreate(
+            ['email' => 'jpzamora@dswd.gov.ph'],
+            [
+                'name' => 'Jay-ar P. Zamora',
+                'first_name' => 'Jay-ar',
+                'middle_name' => 'Patricio',
+                'last_name' => 'Zamora',
+                'usergroup' => 'sysadmin',
+                'password' => Hash::make('123456'),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Jay-ar P. Zamora',
-            'email' => 'jpzamora@dswd.gov.ph.com',
-            'first_name' => 'Jay-ar',
-            'middle_name' => 'Patricio',
-            'last_name' => 'Zamora',
-            'usergroup' => 'sysadmin',
-            'password' => Hash::make('123456')
+        $this->call([
+            RegionSeeder::class,
+            ProvinceSeeder::class,
+            CitySeeder::class,
+            ProgramSeeder::class
         ]);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -18,11 +18,25 @@ class AuthController extends Controller
     if(Auth::attempt($credentials)){
         $Request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return response()->json([
+            'success' => true,
+            'redirect' => route('dashboard')
+        ]);
+
     }
 
-    return back()-> withErrors([
-        'email' => 'Invalid email or password.',
-    ])->onlyInput('email');
+    return response()->json([
+        'success' => false,
+        'message' => 'Invalid email or password'
+    ],401);
 }
+
+    public function logout(Request $request){
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
+    }
 }
