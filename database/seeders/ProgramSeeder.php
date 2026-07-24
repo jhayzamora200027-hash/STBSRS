@@ -36,7 +36,6 @@ class ProgramSeeder extends Seeder
             'Team Balikatan Rescue in Emergency (TEAMBRE)',
             'Women Friendly Space (WFS)',
             'Yakap Bayan Program for RPWUDs',
-            'Others',
         ];
 
         foreach ($programs as $index => $program) {

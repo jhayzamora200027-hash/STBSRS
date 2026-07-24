@@ -94,6 +94,44 @@
     border-color:#062c52;
     background-color:#ddecff;
 }
+
+.upload-box{
+    border:2px dashed #9ec5fe;
+    border-radius:10px;
+    background:#f8fbff;
+    padding:35px;
+    text-align:center;
+    cursor:pointer;
+    transition:0.3;
+    display:block;
+}
+
+.upload-box:hover{
+    horder-color:#0d6efd;
+    background:#eef6ff;
+}
+
+.upload-box.dragover{
+    background:#ddecff;
+    border-color:#0d6efd;
+}
+.vertical-divider{
+    border-left: 1px solid #dee2e6;
+    height: 150px;
+}
+.vertical-divider-act{
+    border-left: 1px solid #dee2e6;
+    height: 250;
+}
+.act-card{
+    cursor:pointer;
+    transition:0.3 ease;
+    display:block;
+}
+.act-card:hover{
+    border-color:#0d6efd;
+    background: #f4eeff;
+}
 </style>
 
 
@@ -197,7 +235,7 @@
 
                                                     <div class="col-md-4 border-end d-flex align-items-center py-3">
                                                         <div class="rounded-circle d-flex justify-content-center align-items-center"
-                                                            style="background:#cfe0ff; width:50px; height:50px; flex-shrink:0;">
+                                                            style="background:#e0cfff; width:50px; height:50px; flex-shrink:0;">
                                                             <img src="{{ asset('images/icons/clock.png') }}" width="30">
                                                         </div>
 
@@ -569,7 +607,7 @@
                                                 class="progress-bar"
                                                 id="progressBar"
                                                 role="progressbar"
-                                                style="width:50%; background-color:#3b82F6"
+                                                style="width:50%; background-color:#3b41f6"
                                                 aria-valuenow="50"
                                                 aria-volummin="0"
                                                 aria-voluemax="100"
@@ -652,13 +690,14 @@
                             </div>
                     {{-- Step 3 Body--}}
                             <div id="step3" class="d-none">
+                            {{-- TA Completed Program --}}
                                 <div id="tacpBody" class="d-none">
                                     <div class="mb-3 mt-3">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="p-2">
                                                     <div class="d-flex align-items-start p-2">
-                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex--shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
                                                                 <i class="bi bi-file-earmark fs-5 text-primary"></i>
                                                         </div>
                                                         <div>
@@ -673,31 +712,328 @@
                                                     </div>
                                                 </div>
                                                 <textarea 
-                                                        id="reasonRequest" 
+                                                        id="reasonRequestTACP" 
                                                         name="reason_request" 
                                                         class="form-control" 
                                                         rows="5" 
                                                         placeholder="Input purpose of your request..."
-                                                        style="height:30px;"
-                                                        ></textarea>
+                                                        style="height:30px;"></textarea>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2">
+                                                    <div class="d-flex align-item-center p-2">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                <i class="bi bi-activity fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">
+                                                                Program <span style="color:red">*</span>
+                                                            </h6>
+                                                            <span class="text-muted">
+                                                                Select a program you want for this request
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    <select class="form-select" id="programSelectTACP">
+                                                        <option value="">Select a program</option>
+                                                        @foreach($programs as $program)
+                                                        <option value="{{$program->id}}">{{$program->program}}</option>
+                                                        @endforeach
+                                                        <option value="others">Others</option>
+                                                    </select>
+                                                    
+                                            </div>
+                                             {{-- Uploading --}}
+
+                                             <div class="col-md-6">
+                                                <div class="mt-3">
+                                                        <h6 class="me-1">
+                                                            Supporting Document (Optional)
+                                                        </h6>
+
+                                                    <div class="card p-4">
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                <i class="bi bi-file-earmark-arrow-up fs-1 text-primary"></i>
+                                                                <div style="padding-left:20px;">
+                                                                    <h5 class="mb-0 text-primary">Upload File</h4>
+                                                                    <small class="text-muted"> PDF, JPG, PNG (Max. 10MB)</small>
+                                                                </div>
+                                                            </div>
+                                                        
+                                                            
+                                                                    <label class="upload-box" for="supportFile">
+                                                                        <div class="mt-2">
+                                                                            Drag & Drop your file here
+                                                                        </div>
+                                                                        <small class="text-muted">or click to browse</small>
+                                                                    </label>
+
+                                                         <input type="file" id="supportFileTACP" class="d-none" accept=".pdf,.jpg,.png">
+
+                                                         <div id="fileName" class="mt-3 text-success fw-semibold d-none"></div>
+                                                    </div>
+                                                </div>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <div id="otherProgramFieldTACP" class="mt-3 d-none">
+                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
+                                                        <input type="text" class="form-control" id="otherProgramInputTACP" name="other_program" required>
+                                                </div>
+                                             </div>
                                         </div>
                                     </div>                                
                                 </div>
+                            {{-- TA Program Development --}}
                                 <div id="tapdBody" class="d-none">
-                                    tapdBody
+                                    <div class="mb-3 mt-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="p-2">
+                                                    <div class="d-flex align-items-start p-2">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
+                                                                <i class="bi bi-file-earmark fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">
+                                                                Purpose of request <span style="color:red;">*</span>
+                                                            </h6>
+                                                            <span class="text-muted">
+                                                                Briefly describe the purpose of your request
+                                                            </span>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <textarea 
+                                                        id="reasonRequestTAPD" 
+                                                        name="reason_request" 
+                                                        class="form-control" 
+                                                        rows="5" 
+                                                        placeholder="Input purpose of your request..."
+                                                        style="height:30px;"></textarea>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2">
+                                                    <div class="d-flex align-item-center p-2">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                <i class="bi bi-activity fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">
+                                                                Program <span style="color:rgb(72, 0, 255)">*</span>
+                                                            </h6>
+                                                            <span class="text-muted">
+                                                                Select a program you want for this request
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    <select class="form-select" id="programSelectTAPD">
+                                                        <option value="">Select a program</option>
+                                                        @foreach($programs as $program)
+                                                        <option value="{{$program->id}}">{{$program->program}}</option>
+                                                        @endforeach
+                                                        <option value="others">Others</option>
+                                                    </select>
+                                                    
+                                            </div>
+                                             {{-- Uploading --}}
+
+                                             <div class="col-md-6">
+                                                <div class="mt-3">
+                                                        <h6 class="me-1">
+                                                            Supporting Document (Optional)
+                                                        </h6>
+
+                                                    <div class="card p-4">
+                                                            <div class="d-flex align-items-center mb-3">
+                                                                <i class="bi bi-file-earmark-arrow-up fs-1 text-primary"></i>
+                                                                <div style="padding-left:20px;">
+                                                                    <h5 class="mb-0 text-primary">Upload File</h4>
+                                                                    <small class="text-muted"> PDF, JPG, PNG (Max. 10MB)</small>
+                                                                </div>
+                                                            </div>
+                                                        
+                                                            
+                                                                    <label class="upload-box" for="supportFile">
+                                                                        <div class="mt-2">
+                                                                            Drag & Drop your file here
+                                                                        </div>
+                                                                        <small class="text-muted">or click to browse</small>
+                                                                    </label>
+
+                                                         <input type="file" id="supportFileTAPD" class="d-none" accept=".pdf,.jpg,.png">
+
+                                                         <div id="fileName" class="mt-3 text-success fw-semibold d-none"></div>
+                                                    </div>
+                                                </div>
+                                             </div>
+                                             <div class="col-md-6">
+                                                <div id="otherProgramFieldTAPD" class="mt-3 d-none">
+                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
+                                                        <input type="text" class="form-control" id="otherProgramInputTAPD" name="other_program" required>
+                                                </div>
+                                             </div>
+                                        </div>
+                                    </div>                                
                                 </div>
+                        {{-- Resource Person --}}
                                 <div id="rpBody" class="d-none">
-                                    rpBody
+                                    <div class="mb-3 mt-3">
+                                        <div class="row">
+                                            <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                                        <div class="p-2">
+                                                            <div class="d-flex align-items-start p-2">
+                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
+                                                                        <i class="bi bi-file-earmark fs-5 text-primary"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="me-1">
+                                                                        Purpose of request <span style="color:red;">*</span>
+                                                                    </h6>
+                                                                    <small class="text-muted">
+                                                                        Briefly describe the purpose of your request
+                                                                    </small>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <textarea 
+                                                                id="reasonRequestRP" 
+                                                                name="reason_request" 
+                                                                class="form-control" 
+                                                                rows="5" 
+                                                                placeholder="Input purpose of your request..."
+                                                                style="height:30px;"></textarea>
+                                                </div>
+                                                <div class="vertical-divider" style="width: 1px;"></div>
+                                                <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                                        <div class="p-2">
+                                                            <div class="d-flex align-item-center p-2">
+                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                        <i class="bi bi-activity fs-5 text-primary"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="me-1">
+                                                                        Program <span style="color:red">*</span>
+                                                                    </h6>
+                                                                    <small class="text-muted">
+                                                                        Select a program you want for this request
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                            <select class="form-select" id="programSelectRP">
+                                                                <option value="">Select a program</option>
+                                                                @foreach($programs as $program)
+                                                                <option value="{{$program->id}}">{{$program->program}}</option>
+                                                                @endforeach
+                                                                <option value="others">Others</option>
+                                                            </select>
+                                                    <div id="otherProgramFieldRP" class="mt-3 d-none">
+                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
+                                                        <input type="text" class="form-control" id="otherProgramInputRP" name="other_program" required>
+                                                    </div>
+                                                </div>
+                                                <div class="vertical-divider" style="width: 1px;"></div>
+                                                <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                                       <div class="mb-3">
+                                                            <div class="d-flex align-items-center p-2">
+                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                    <i class="bi bi-geo-alt-fill"> </i>
+                                                                </div>
+                                                                <div>
+                                                                    
+                                                                    <h6 class="me-1">
+                                                                        Venue<span class="text-danger">*</span>
+                                                                    </h6>
+
+                                                                    <small class="text-muted">
+                                                                        Select the venue or location of the activity.
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="input-group mt-3">
+                                                                <span class="input-group-text bg-white border-end-0">
+                                                                    <i class="bi bi-geo-alt-fill text-secondary"></i>
+                                                                </span>
+
+                                                                <input type="text" class="form-control border-start-0" id="venue" name="name" placeholder="Input venue or location">
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <div class="flex-grow-1 border-top mt-4"> </div>
+                                                    <div class="row p-3">
+                                                        <div class= "col-md-8">
+                                                            <div class="d-flex align-items-center p-2">
+                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                    <i class="bi bi-people-fill"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6>
+                                                                        Type of Activity <span style="color:red;">*</span>
+                                                                    </h6>
+                                                                    <small class="text-muted">
+                                                                        Select the format or delivery method of activity
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex align-items-start p-2">
+                                                                <div class="card m-2 act-card" id="facetoface">
+                                                                    <div class="card-body">
+                                                                        <div class="p-3">
+                                                                            <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:30px; height:30px;">
+                                                                                <i class="bi bi-people"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                            <h6 class="mb-0">Face to Face</h6>
+                                                                            <p class="text-muted" style="font-size: 0.7rem;">In-person activity with attendees at the same location</p>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card m-2 act-card" id="virtual">
+                                                                    <div class="card-body">
+                                                                        <div class="p-3">
+                                                                            <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#daffee; width:30px; height:30px;">
+                                                                                <i class="bi bi-display"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                            <h6 class="mb-0">Virtual</h6>
+                                                                            <p class="text-muted" style="font-size: 0.7rem;">Activity conducted online through digital platforms</p>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card m-2 act-card" id="blended">
+                                                                    <div class="card-body">
+                                                                        <div class="p-3">
+                                                                            <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#ece5ff; width:30px; height:30px;">
+                                                                                <i class="bi bi-arrow-left-right"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                            <h6 class="mb-0">Blended</h6>
+                                                                            <p class="text-muted" style="font-size: 0.7rem;">Combination of in-person and online parcitipation</p>
+                                                                        
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                          </div>
+                                                        <div class="vertical-divider-act" style="width:1px;"></div>
+                                                    </div>
+                                    </div>
                                 </div>
+                                
                                 <div id="kpBody" class="d-none">
                                     kpBody
                                 </div>
-
+                                <div class="flex-grow-1 border-top mt-4"> </div>
                                 <div class="d-flex justify-content-between align-items-center mt-4">
                                     <button type="button" id="back" class="btn btn-outline-secondary wizard-btn">
                                         <i class="bi bi-arrow-left"></i>
-                                    </button>   
+                                    </button> 
+
+  
                                         <div class="d-flex gap-2">
                                                 <button type="button" class="btn btn-outline-secondary wizard-btn" data-bs-dismiss="modal"  style="width:100px; border-radius:10px;">Cancel</button>
                                                 <button type="button" id="submitBtn" class="d-submit-button" class="btn btn-primary wizard-bt" style="width:200px; border-radius:10px;" >Submit</i></button>
@@ -713,9 +1049,18 @@
 </div>
 </div>
     <script>
-
+        let step2Unlocked = false;
+        const serviceCards = ['tacp', 'tapd','rp', 'kp'];   
         const toggle = document.getElementById('togglePassword');
         const password = document.getElementById('password');
+        const input1 = document.getElementById('supportFileTACP');
+        const input2 = document.getElementById('supportFileTAPD');
+        const uploadBox = document.querySelector('.upload-box');
+        const filename = document.getElementById('fileName');
+        const textarea = document.getElementById('reasonRequestTAPD');
+
+        console.log("Length:", textarea.value.length);
+        console.log("Value:", JSON.stringify(textarea.value));
 
     toggle.addEventListener('click', function () {
         if(password.type === 'password'){
@@ -803,8 +1148,7 @@
 
         // Request details bodies transition
         document.addEventListener('DOMContentLoaded', function () {
-            let step2Unlocked = false;
-            const serviceCards = ['tacp', 'tapd','rp', 'kp'];   
+            
             
             //Next Button
             document.getElementById('nextBtn').addEventListener('click', function () { 
@@ -892,7 +1236,7 @@
             })
 
             // Service Cards body
-    serviceCards.forEach(service => {
+        serviceCards.forEach(service => {
 
         document.getElementById(service).addEventListener('click', function () {
 
@@ -912,6 +1256,8 @@
 
         });
 
+
+
     });
 
     document.getElementById('back').addEventListener('click', function(){
@@ -923,6 +1269,130 @@
             document.getElementById('step3').classList.add('d-none');
     })
 });
+
+document.getElementById('programSelectTACP').addEventListener('change', function(){
+    const otherFieldTACP = document.getElementById('otherProgramFieldTACP');
+    const ProgramInputFieldTACP = document.getElementById('otherProgramInputTACP');
+
+    if(this.value==='others'){
+        otherFieldTACP.classList.remove('d-none');
+        ProgramInputFieldTACP.setAttribute('required', '');
+    } else {
+        otherField.classList.add('d-none');
+        ProgramInputFieldTACP.value = '';
+        ProgramInputFieldTACP.removeAttribute('required');
+    }
+});
+
+document.getElementById('programSelectTAPD').addEventListener('change', function(){
+    const otherFieldTAPD = document.getElementById('otherProgramFieldTAPD');
+    const ProgramInputFieldTAPD = document.getElementById('otherProgramInputTAPD');
+
+    if(this.value==='others'){
+        otherFieldTAPD.classList.remove('d-none');
+        ProgramInputFieldTAPD.setAttribute('required', '');
+    } else {
+        otherFieldTAPD.classList.add('d-none');
+        ProgramInputFieldTAPD.value = '';
+        ProgramInputFieldTAPD.removeAttribute('required');
+    }
+});
+
+document.getElementById('programSelectRP').addEventListener('change', function(){
+    const otherFieldRP = document.getElementById('otherProgramFieldRP');
+    const ProgramInputFieldRP = document.getElementById('otherProgramFieldRP');
+
+    if(this.value==='others'){
+        otherFieldRP.classList.remove('d-none');
+        ProgramInputFieldRP.setAttribute('required', '');
+    } else {
+        otherFieldRP.classList.add('d-none');
+        ProgramInputFieldRP.removeAttribute('required');
+        ProgramInputFieldRP.value = '';                                                                                                                                                                                                     
+
+    }
+})
+
+console.log(input1);
+input1.addEventListener('change', function(){
+    if(this.files.length){
+        fileName.classList.remove('d-none');
+        fileName.innerHTML = 
+        `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+    }
+});
+
+
+input2.addEventListener('change', function(){
+    if(this.files.length){
+        fileName.classList.remove('d-none');
+        fileName.innerHTML = 
+        `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+    }
+});
+console.log("JS Loaded");
+uploadBox.addEventListener('dragleave', function(e){
+    e.preventDefault();
+    this.classList.add('dragover')
+});
+
+uploadBox.addEventListener('drop', function(e){
+    this.classList.remove('dragover');
+});
+
+uploadBox.addEventListener('drop', function(e){
+    e.preventDefault();
+
+    this.classList.remove('dragover');
+
+    input.files = e.dataTransfer.files;
+
+    input.dispatchEvent(new Event('change'));
+});
+// document.addEventListener('DOMContentLoaded', function(){
+    
+    console.log(document.getElementById('facetoface'));
+    const cardBodyChangeftf = document.getElementById('facetoface');
+    const cardBodyChangev = document.getElementById('virtual');
+    const cardBodyChangeb = document.getElementById('blended');
+
+    
+document.getElementById('facetoface').addEventListener('click', function(){
+    console.log("clicked");
+
+    cardBodyChangeftf.style.backgroundColor = "#eef6ff";
+    cardBodyChangeftf.style.borderColor = "#0d6efd";
+    cardBodyChangev.style.backgroundColor = "#fff";
+    cardBodyChangev.style.borderColor = "black";
+    cardBodyChangeb.style.backgroundColor = "#fff";
+    cardBodyChangeb.style.borderColor = "black";
+});
+
+document.getElementById('virtual').addEventListener('click', function(){
+    console.log("clicked");
+
+    cardBodyChangev.style.backgroundColor = "#ebffec";
+    cardBodyChangev.style.borderColor = "#4d06d1";
+    cardBodyChangeftf.style.backgroundColor = "#fff";
+    cardBodyChangeftf.style.borderColor = "black";
+    cardBodyChangeb.style.backgroundColor = "#fff";
+    cardBodyChangeb.style.borderColor = "black";
+});
+
+document.getElementById('blended').addEventListener('click', function(){
+    console.log("clicked");
+
+    cardBodyChangeb.style.backgroundColor = "#f5f0ff";
+    cardBodyChangeb.style.borderColor = "#6c01a1";
+    cardBodyChangeftf.style.backgroundColor = "#fff";
+    cardBodyChangeftf.style.borderColor = "black";
+    cardBodyChangev.style.backgroundColor = "#fff";
+    cardBodyChangev.style.borderColor = "black";
+});
+
+// });
+
+
         
     
 </script>

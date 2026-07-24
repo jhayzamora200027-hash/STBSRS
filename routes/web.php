@@ -4,19 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\LandingpageController;
 use App\Models\Region;
 
-Route::get('/', function () {
-    if(Auth::check()){
-        return redirect()->route('dashboard');
-    }
-
-    $regions = Region::orderBy('name')->get();
-
-    return view('landingpage.home', compact('regions'));
-
-       
-})->name('home');
+Route::get('/',[LandingpageController::class, 'index'])->name('home');
 
 
 Route::middleware('auth')->group(function () {
