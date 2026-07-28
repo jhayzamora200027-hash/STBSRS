@@ -12,7 +12,7 @@
 }
 
 .cover {
-background-image: url('/images/cover/STBIP%20cover%20white.png'); /* or URL without spaces if renamed */
+background-image: url('/public/images/cover/STBIP%20cover%20white.png'); /* or URL without spaces if renamed */
 background-size: cover;
 background-position: center;
 min-height: 100vh;
@@ -25,7 +25,7 @@ width: 100%;
 
 body {
   font-family: var(--font-sans);
-  background: url('/images/cover/STBIP%20cover%20white.png') center/cover no-repeat fixed;
+  background: url('/public/images/cover/STBIP%20cover%20white.png') center/cover no-repeat fixed;
   font-family: 'Poppins', sans-serif;
 
 }

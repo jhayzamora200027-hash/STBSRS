@@ -65,7 +65,7 @@
 </nav>
 <style>
     body{
-    font-family: 'Poppins', sans-serif !imporant;
+    font-family: 'Poppins', sans-serif !important;
     }
     .d-submit-button{
         background-color: #062c52;
@@ -98,7 +98,7 @@
 
 <!-- Bootstrap JS bundle fallback -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @stack('modals')
 </body>
 </html>

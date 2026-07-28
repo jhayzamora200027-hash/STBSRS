@@ -95,20 +95,42 @@
     background-color:#ddecff;
 }
 
+.upload-card{
+    border-radius:12px;
+}
+
 .upload-box{
-    border:2px dashed #9ec5fe;
-    border-radius:10px;
-    background:#f8fbff;
-    padding:35px;
-    text-align:center;
-    cursor:pointer;
-    transition:0.3;
-    display:block;
+    border: 2px dashed #9ec5fe;
+    border-radius: 10px;
+    background: #f8fbff;
+
+    height: 110px;          
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    cursor: pointer;
 }
 
 .upload-box:hover{
-    horder-color:#0d6efd;
-    background:#eef6ff;
+    background:#f8fbff;
+    border-color:#0d6efd;
+}
+
+.upload-box div{
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.upload-box small{
+    margin-top: 4px;
+    font-size: .85rem;
 }
 
 .upload-box.dragover{
@@ -123,14 +145,73 @@
     border-left: 1px solid #dee2e6;
     height: 250;
 }
-.act-card{
-    cursor:pointer;
-    transition:0.3 ease;
-    display:block;
+.act-card-ftf,
+.act-card-vt,
+.act-card-blended{
+    flex: 1;
+    cursor: pointer;
+    transition: .3s ease;
 }
-.act-card:hover{
-    border-color:#0d6efd;
+
+.act-card-ftf .card-body,
+.act-card-vt .card-body,
+.act-card-blended .card-body{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    min-height: 220px;
+}
+
+.act-card-ftf:hover {
+    border-color: #0d6efd;
     background: #f4eeff;
+}
+
+.act-card-vt:hover {
+    border-color: #198754;
+    background: #eafaf1;
+}
+
+.act-card-blended:hover {
+    border-color: #6c01a1;
+    background: #f5f0ff;
+}
+
+.kp-card{
+    display:block;
+    cursor:pointer;
+}
+
+.kp-content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+.kp-title{
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.kp-check{
+    font-size: 1.4rem;
+    flex-shrink: 0; 
+}
+
+.kp-input:checked + .kp-content{
+    border:2px solid #0d6efd;
+    background:#eef5ff;
+}
+
+.kp-input:checked + .kp-content .kp-check{
+    color:#0d6efd;
+}
+
+.kp-content:hover{
+    border-color:#0d6efd;
 }
 </style>
 
@@ -443,6 +524,22 @@
     </div>
     {{-- MODAL NEW REQUEST --}}
     <div class="modal fade" id="createTicketModal" tabindex="-1" arialabelledby="createTicketLabel" aria-hideen="true">
+        <form method="POST" id="ticketForm" action="{{route('tickets.store')}}" enctype="multipart/form-data" novalidate>
+        @csrf
+        @if(session('success'))
+            <div class="alert alert-success m-3">{{ session('success') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger m-3">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <input type="hidden" name="ticket_category" id="ticket_category">
+        <input type="hidden" name="type_of_activity" id="type_of_activity">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content border-0 shadow">
 
@@ -465,6 +562,155 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content otp-modal border-0">
+
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <small class="text-uppercase otp-label">Secure Sign-In</small>
+                    <h2 class="otp-title mb-0">Two-step verification</h2>
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Information Card -->
+                <div class="otp-info-card">
+
+                    <div class="otp-icon">
+                        2FA
+                    </div>
+
+                    <div class="ms-3">
+                        <p class="mb-0 text-muted">
+                            Verification code has been sent to
+                            <strong id="otpEmailMasked"></strong>.
+                            Confirm the request first, complete the verification to proceed with your request.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- OTP Card -->
+                <div class="otp-code-card">
+
+                    <h2 class="text-center text-primary mb-4">
+                        Verification Code
+                    </h2>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+
+                    </div>
+
+                    <p class="text-center text-muted mb-0">
+                        Enter the 6-digit code you received by email.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-0 d-block">
+
+                <button class="btn btn-primary w-100 mb-3 otp-btn"
+                        id="verifyOtpBtn">
+                    Verify
+                </button>
+
+                <button class="btn btn-outline-secondary w-100 otp-btn"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <style>
+    .otp-modal{
+        border-radius:18px;
+    }
+
+    .otp-label{
+        color:#0b3ea9;
+        font-weight:600;
+        letter-spacing:.5px;
+    }
+
+    .otp-title{
+        color:#0b3ea9;
+        font-weight:500;
+    }
+
+    .otp-info-card{
+        display:flex;
+        align-items:center;
+        border:2px solid #8d4dff;
+        border-radius:10px;
+        padding:18px;
+        margin-top:15px;
+    }
+
+    .otp-icon{
+        width:64px;
+        height:64px;
+        border-radius:14px;
+        background:#4c7ff7;
+        color:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:24px;
+        font-weight:700;
+        flex-shrink:0;
+    }
+
+    .otp-code-card{
+        margin-top:25px;
+        border:1px solid #ddd;
+        border-radius:18px;
+        padding:25px;
+    }
+
+    .otp-input{
+        width:60px;
+        height:60px;
+        text-align:center;
+        font-size:24px;
+        font-weight:600;
+        border-radius:14px;
+    }
+
+    .otp-btn{
+        height:52px;
+        border-radius:14px;
+        font-size:24px;
+    }
+
+    .btn-primary.otp-btn{
+        background:#123c90;
+        border:none;
+    }
+
+    .btn-outline-secondary.otp-btn{
+        border:1px solid #ddd;
+    }
+    </style>
 
                 {{-- Body --}}
                 
@@ -532,23 +778,23 @@
                                             <div class="row">
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">First name <i style="color:red">*</i></label>
-                                                    <input id="first_name" type="text" class="form-control" placeholder="Input your first name..." required>
+                                                    <input id="first_name" name="requestor_first_name" type="text" class="form-control" placeholder="Input your first name..." required>
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Middle name</label>
-                                                    <input id="middle_name"type="text" class="form-control" placeholder="Input your middle name...">
+                                                    <input id="middle_name" name="requestor_middle_name" type="text" class="form-control" placeholder="Input your middle name...">
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Last name <i style="color:red">*</i></label>
-                                                    <input id="last_name" type="text" class="form-control" placeholder="Input your last name..." required>
+                                                    <input id="last_name" name="requestor_last_name" type="text" class="form-control" placeholder="Input your last name..." required>
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Extension name</label>
-                                                    <input id="extension_name"type="text" class="form-control" placeholder="eg. Jr III">
+                                                    <input id="extension_name" name="requestor_extension_name" type="text" class="form-control" placeholder="eg. Jr III">
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Sex <i style="color:red">*</i></label>
-                                                    <select id="sex" type="text" class="form-select" required>
+                                                    <select id="sex" name="requestor_sex" type="text" class="form-select" required>
                                                         <option value="">Select your sex</option>
                                                         <option value="male">Male</option>
                                                         <option value="female">Female</option>
@@ -557,11 +803,13 @@
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Email Address <i style="color:red">*</i></label>
-                                                    <input id="email" type="email" class="form-control" placeholder="Input your email..." required>
+                                                    <div class="input-group">
+                                                        <input id="email" name="requestor_email" type="email" class="form-control" placeholder="Input your email..." required>
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Region <i style="color:red">*</i></label>
-                                                    <select id="region" name="region_code" class="form-select" required>
+                                                    <select id="region" name="requestor_region" class="form-select" required>
                                                             <option value="">Select your Region</option>
 
                                                             @foreach($regions as $region)
@@ -573,13 +821,13 @@
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Province <i style="color:red">*</i></label>
-                                                    <select id="province" type="text" class="form-select"  required>
+                                                    <select id="province" name="requestor_province" type="text" class="form-select"  required>
                                                         <option value="">Select Province</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">City/Municipality <i style="color:red">*</i></label>
-                                                    <select id="city" class="form-select" name="city_code" required>
+                                                    <select id="city" class="form-select" name="requestor_city" required>
                                                         <option value="">Select City</option>
                                                     </select>
                                                 </div>
@@ -712,12 +960,12 @@
                                                     </div>
                                                 </div>
                                                 <textarea 
-                                                        id="reasonRequestTACP" 
-                                                        name="reason_request" 
-                                                        class="form-control" 
-                                                        rows="5" 
-                                                        placeholder="Input purpose of your request..."
-                                                        style="height:30px;"></textarea>
+                                                    id="reasonRequestTACP" 
+                                                    name="purpose_of_request" 
+                                                    class="form-control" 
+                                                    rows="5" 
+                                                    placeholder="Input purpose of your request..."
+                                                    style="height:30px;"></textarea>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="p-2">
@@ -735,7 +983,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                    <select class="form-select" id="programSelectTACP">
+                                                    <select class="form-select" id="programSelectTACP" name="program">
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
                                                         <option value="{{$program->id}}">{{$program->program}}</option>
@@ -762,23 +1010,23 @@
                                                             </div>
                                                         
                                                             
-                                                                    <label class="upload-box" for="supportFile">
+                                                                    <label class="upload-box" for="supportFileTACP">
                                                                         <div class="mt-2">
                                                                             Drag & Drop your file here
                                                                         </div>
                                                                         <small class="text-muted">or click to browse</small>
                                                                     </label>
 
-                                                         <input type="file" id="supportFileTACP" class="d-none" accept=".pdf,.jpg,.png">
+                                                         <input type="file" id="supportFileTACP" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
 
-                                                         <div id="fileName" class="mt-3 text-success fw-semibold d-none"></div>
+                                                         <div class="file-name mt-3 text-success fw-semibold d-none"></div>
                                                     </div>
                                                 </div>
                                              </div>
                                              <div class="col-md-6">
                                                 <div id="otherProgramFieldTACP" class="mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="otherProgramInputTACP" name="other_program" required>
+                                                        <input type="text" class="form-control" id="otherProgramInputTACP" name="program_others">
                                                 </div>
                                              </div>
                                         </div>
@@ -806,12 +1054,12 @@
                                                     </div>
                                                 </div>
                                                 <textarea 
-                                                        id="reasonRequestTAPD" 
-                                                        name="reason_request" 
-                                                        class="form-control" 
-                                                        rows="5" 
-                                                        placeholder="Input purpose of your request..."
-                                                        style="height:30px;"></textarea>
+                                                    id="reasonRequestTAPD" 
+                                                    name="purpose_of_request" 
+                                                    class="form-control" 
+                                                    rows="5" 
+                                                    placeholder="Input purpose of your request..."
+                                                    style="height:30px;"></textarea>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="p-2">
@@ -829,7 +1077,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                    <select class="form-select" id="programSelectTAPD">
+                                                    <select class="form-select" id="programSelectTAPD" name="program">
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
                                                         <option value="{{$program->id}}">{{$program->program}}</option>
@@ -856,23 +1104,23 @@
                                                             </div>
                                                         
                                                             
-                                                                    <label class="upload-box" for="supportFile">
+                                                                    <label class="upload-box" for="supportFileTAPD">
                                                                         <div class="mt-2">
                                                                             Drag & Drop your file here
                                                                         </div>
                                                                         <small class="text-muted">or click to browse</small>
                                                                     </label>
 
-                                                         <input type="file" id="supportFileTAPD" class="d-none" accept=".pdf,.jpg,.png">
+                                                         <input type="file" id="supportFileTAPD" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
 
-                                                         <div id="fileName" class="mt-3 text-success fw-semibold d-none"></div>
+                                                         <div class="file-name mt-3 text-success fw-semibold d-none"></div>
                                                     </div>
                                                 </div>
                                              </div>
                                              <div class="col-md-6">
                                                 <div id="otherProgramFieldTAPD" class="mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="otherProgramInputTAPD" name="other_program" required>
+                                                        <input type="text" class="form-control" id="otherProgramInputTAPD" name="program_others">
                                                 </div>
                                              </div>
                                         </div>
@@ -900,12 +1148,12 @@
                                                             </div>
                                                         </div>
                                                         <textarea 
-                                                                id="reasonRequestRP" 
-                                                                name="reason_request" 
-                                                                class="form-control" 
-                                                                rows="5" 
-                                                                placeholder="Input purpose of your request..."
-                                                                style="height:30px;"></textarea>
+                                                            id="reasonRequestRP" 
+                                                            name="purpose_of_request" 
+                                                            class="form-control" 
+                                                            rows="5" 
+                                                            placeholder="Input purpose of your request..."
+                                                            style="height:30px;"></textarea>
                                                 </div>
                                                 <div class="vertical-divider" style="width: 1px;"></div>
                                                 <div class="col-md" style="flex: 0 0 31%; max width:31px;">
@@ -924,7 +1172,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                            <select class="form-select" id="programSelectRP">
+                                                            <select class="form-select" id="programSelectRP" name="program">
                                                                 <option value="">Select a program</option>
                                                                 @foreach($programs as $program)
                                                                 <option value="{{$program->id}}">{{$program->program}}</option>
@@ -933,7 +1181,7 @@
                                                             </select>
                                                     <div id="otherProgramFieldRP" class="mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="otherProgramInputRP" name="other_program" required>
+                                                        <input type="text" class="form-control" id="otherProgramInputRP" name="program_others">
                                                     </div>
                                                 </div>
                                                 <div class="vertical-divider" style="width: 1px;"></div>
@@ -959,15 +1207,15 @@
                                                                     <i class="bi bi-geo-alt-fill text-secondary"></i>
                                                                 </span>
 
-                                                                <input type="text" class="form-control border-start-0" id="venue" name="name" placeholder="Input venue or location">
+                                                                <input type="text" class="form-control border-start-0" id="venue" name="venue" placeholder="Input venue or location">
                                                             </div>
                                                         </div>
                                                 </div>
                                         </div>
                                         <div class="flex-grow-1 border-top mt-4"> </div>
                                                     <div class="row p-3">
-                                                        <div class= "col-md-8">
-                                                            <div class="d-flex align-items-center p-2">
+                                                        <div class= "col-md-8 border-end d-flex flex-column">
+                                                            <div class="d-flex gap-3 p--2 flex-grow-1">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
                                                                     <i class="bi bi-people-fill"></i>
                                                                 </div>
@@ -981,7 +1229,7 @@
                                                                 </div>
                                                             </div>
                                                             <div class="d-flex align-items-start p-2">
-                                                                <div class="card m-2 act-card" id="facetoface">
+                                                                <div class="card m-2 act-card-ftf" id="facetoface">
                                                                     <div class="card-body">
                                                                         <div class="p-3">
                                                                             <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:30px; height:30px;">
@@ -993,7 +1241,7 @@
                                                                         
                                                                     </div>
                                                                 </div>
-                                                                <div class="card m-2 act-card" id="virtual">
+                                                                <div class="card m-2 act-card-vt" id="virtual">
                                                                     <div class="card-body">
                                                                         <div class="p-3">
                                                                             <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#daffee; width:30px; height:30px;">
@@ -1005,7 +1253,7 @@
                                                                         
                                                                     </div>
                                                                 </div>
-                                                                <div class="card m-2 act-card" id="blended">
+                                                                <div class="card m-2 act-card-blended" id="blended">
                                                                     <div class="card-body">
                                                                         <div class="p-3">
                                                                             <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#ece5ff; width:30px; height:30px;">
@@ -1019,13 +1267,297 @@
                                                                 </div>
                                                             </div>
                                                           </div>
-                                                        <div class="vertical-divider-act" style="width:1px;"></div>
+
+                                                        <div class='col-md-4 d-flex flex-column'>
+                                                            <div class="d-flex align-items-center ps-3"> 
+                                                                <div class="pt-3">
+                                                                    <div>
+                                                                        <h6 class="mb-0">
+                                                                            Date of Activity <span style="color:red">*</span>
+                                                                        </h6>
+                                                                        <small class="text-muted">
+                                                                            Select the date or date range of the activity
+                                                                        </small>    
+                                                                    </div>
+                                                                        <input type="date" class="form-control" id="dateOfActivity" name="date_of_activity">
+
+                                                                    <h6 class="mb-0 p-1 mt-3">
+                                                                        Supporting Document(Optional)
+                                                                    </h6>
+                                                                    <div class="card p-2 mt-2">
+                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                <i class="bi bi-file-earmark-arrow-up fs-2 text-primary"></i>
+                                                                                <div class="ps-3">
+                                                                                    <h6 class="mb-0 text-primary fw-bold">Upload File</h6>
+                                                                                    <small class="text-muted"> PDF, JPG, PNG (Max. 10MB)</small>
+                                                                                </div>
+                                                                            </div>
+                                                        
+                                                            
+                                                                    <label class="upload-box" for="supportFileRP">
+                                                                        <div class="mt-2">
+                                                                            Drag &amp; Drop your file here
+                                                                        </div>
+                                                                        <small class="text-muted">or click to browse</small>
+                                                                    </label>
+
+                                                                        <input type="file" id="supportFileRP" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
+
+                                                                        <div class="file-name mt-3 text-success fw-semibold d-none"></div>
+                                                                    </div>
+                                                                    
+                                                                </div>
+                                                            </div> 
+                                                        </div>
                                                     </div>
                                     </div>
                                 </div>
                                 
                                 <div id="kpBody" class="d-none">
-                                    kpBody
+                                    <div class="row p-2">
+                                        <div class="col-md-6"> 
+                                                <div class="d-flex align-items-start p-2">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
+                                                                <i class="bi bi-file-earmark fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">
+                                                                Purpose of request <span style="color:red;">*</span>
+                                                            </h6>
+                                                            <span class="text-muted">
+                                                                Briefly describe the purpose of your request
+                                                            </span>
+                                                        </div>
+                                                </div>
+                                                                <textarea 
+                                                                id="reasonRequestKP" 
+                                                                name="purpose_of_request" 
+                                                                class="form-control" 
+                                                                rows="5" 
+                                                                placeholder="Input purpose of your request..."
+                                                                style="height:30px;"></textarea>
+                                                                    <h6 class="mb-0 p-1 mt-3">
+                                                                        Supporting Document(Optional)
+                                                                    </h6>
+                                                                    <div class="card p-2 mt-2">
+                                                                            <div class="d-flex align-items-center mb-2">
+                                                                                <i class="bi bi-file-earmark-arrow-up fs-2 text-primary"></i>
+                                                                                <div class="ps-3">
+                                                                                    <h6 class="mb-0 text-primary fw-bold">Upload File</h6>
+                                                                                    <small class="text-muted"> PDF, JPG, PNG (Max. 10MB)</small>
+                                                                                </div>
+                                                                            </div>
+                                                        
+                                                            
+                                                                    <label class="upload-box" for="supportFileKP">
+                                                                        <div class="mt-2">
+                                                                            Drag &amp; Drop your file here
+                                                                        </div>
+                                                                        <small class="text-muted">or click to browse</small>
+                                                                    </label>
+
+                                                                        <input type="file" id="supportFileKP" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
+
+                                                                        <div class="file-name mt-3 text-success fw-semibold d-none"></div>
+                                                                    </div>
+                                        </div>
+                                        <div class="col-md-6"> 
+                                            <div class="p-2">
+                                                            <div class="d-flex align-item-center p-2">
+                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
+                                                                        <i class="bi bi-activity fs-5 text-primary"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="me-1">
+                                                                        Program <span style="color:red">*</span>
+                                                                    </h6>
+                                                                    <small class="text-muted">
+                                                                        Select a program you want for this request
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                <select class="form-select" id="programSelectKP" name="program">
+                                                                <option value="">Select a program</option>
+                                                                @foreach($programs as $program)
+                                                                <option value="{{$program->id}}">{{$program->program}}</option>
+                                                                @endforeach
+                                                                <option value="others">Others</option>
+                                                </select>
+                                                    <div id="otherProgramFieldKP" class="mt-3 d-none">
+                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
+                                                        <input type="text" class="form-control" id="otherProgramInputKP" name="program_others">
+                                                    </div> 
+                                                    
+                                                <div class="mb-0 mt-3">
+                                                                    <h6>
+                                                                        Type of knowledge product requesting: <span style="color:red">*</span>
+                                                                    </h6>
+                                                            </div>
+                                                <div class="row g-3">
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Program Manual"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-journal-bookmark fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Program Manual</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Handbook"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-journal-text fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Handbook</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Modules/Session Guides"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-compass fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Modules/Session Guides</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Project Briefer"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-bookmark fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Project Briefer</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Training Manual"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-card-text fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Training Manual</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="ST Compendium"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-file-earmark-richtext fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>ST Compendium</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="ST Portfolio"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-folder2-open fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>ST Portfolio</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                            <div class="col-md-6">
+                                                                                <label class="kp-card">
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        name="type_of_knowledge_product[]"
+                                                                                        value="Others"
+                                                                                        class="d-none kp-input">
+
+                                                                                    <div class="kp-content">
+                                                                                        <div class="d-flex align-items-center">
+                                                                                            <i class="bi bi-three-dots fs-4 text-primary me-3" ></i>
+
+                                                                                            <span>Others</span>
+                                                                                        </div>
+
+                                                                                        <i class="bi bi-square kp-check"></i>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                        <input
+                                                                            type="text"
+                                                                            class="form-control mt-3 d-none"
+                                                                            id="otherKnowledgeProduct"
+                                                                            name="type_of_knowledge_product_others"
+                                                                            placeholder="Please specify">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
                                 <div class="d-flex justify-content-between align-items-center mt-4">
@@ -1036,7 +1568,7 @@
   
                                         <div class="d-flex gap-2">
                                                 <button type="button" class="btn btn-outline-secondary wizard-btn" data-bs-dismiss="modal"  style="width:100px; border-radius:10px;">Cancel</button>
-                                                <button type="button" id="submitBtn" class="d-submit-button" class="btn btn-primary wizard-bt" style="width:200px; border-radius:10px;" >Submit</i></button>
+                                                <button type="submit" id="submitBtn" class="d-submit-button" class="btn btn-primary wizard-bt" style="width:200px; border-radius:10px;" >Submit</i></button>
                                         </div>
                                 </div>
                             </div>
@@ -1045,6 +1577,7 @@
                 
             </div>
         </div>
+        </form>
     </div>
 </div>
 </div>
@@ -1055,12 +1588,12 @@
         const password = document.getElementById('password');
         const input1 = document.getElementById('supportFileTACP');
         const input2 = document.getElementById('supportFileTAPD');
-        const uploadBox = document.querySelector('.upload-box');
-        const filename = document.getElementById('fileName');
+        const input3 = document.getElementById('supportFileRP');
+        const input4 = document.getElementById('supportFileKP');
+        const uploadBoxes = document.querySelectorAll('.upload-box');
         const textarea = document.getElementById('reasonRequestTAPD');
-
-        console.log("Length:", textarea.value.length);
-        console.log("Value:", JSON.stringify(textarea.value));
+        const checkboxes = document.querySelectorAll('.kp-input');
+        const otherInput = document.getElementById('otherKnowledgeProduct');
 
     toggle.addEventListener('click', function () {
         if(password.type === 'password'){
@@ -1123,31 +1656,51 @@
         }).catch(error => console.error(error));
     });
 
-    document.getElementById('province').addEventListener('change', function(){
-        let provinceCode = this.value;
+    document.getElementById('province').addEventListener('change', function () {
+    let provinceCode = this.value;
 
-        fetch('cities/' + provinceCode)
-        .then(response => response.json())
+    fetch('/cities/' + provinceCode)
+        .then(async response => {
+            if (!response.ok) {
+                const error = await response.text();
+                console.log(error);
+                throw new Error('Server returned ' + response.status);
+            }
+            return response.json();
+        })
         .then(data => {
             let city = document.getElementById('city');
 
-            city.innerHTML =
-            '<option value="">Select City</option>';
+            city.innerHTML = '<option value="">Select City</option>';
 
-
-            data.forEach(function(item){
-
-                city.innerHTML +=
-                `<option value="${item.city_code}">
-                ${item.name}
-                </option>`;
-
+            data.forEach(function(item) {
+                city.innerHTML += `
+                    <option value="${item.city_code}">
+                        ${item.name}
+                    </option>`;
             });
-        }).catch(error => console.error(error));
-    });
+        })
+        .catch(error => console.error(error));
+});
 
         // Request details bodies transition
         document.addEventListener('DOMContentLoaded', function () {
+                    // Remove purpose_of_request and program names initially; they'll be set when a service is selected
+                    const initialTa = ['reasonRequestTACP','reasonRequestTAPD','reasonRequestRP','reasonRequestKP'];
+                    initialTa.forEach(id => {
+                        const ta = document.getElementById(id);
+                        if(ta) ta.removeAttribute('name');
+                    });
+                    const initialSelects = ['programSelectTACP','programSelectTAPD','programSelectRP','programSelectKP'];
+                    initialSelects.forEach(id => {
+                        const sel = document.getElementById(id);
+                        if(sel) sel.removeAttribute('name');
+                    });
+                    const initialOtherInputs = ['otherProgramInputTACP','otherProgramInputTAPD','otherProgramInputRP','otherProgramInputKP'];
+                    initialOtherInputs.forEach(id => {
+                        const inp = document.getElementById(id);
+                        if(inp) inp.removeAttribute('name');
+                    });
             
             
             //Next Button
@@ -1161,7 +1714,14 @@
                 document.getElementById('province').value.trim() === '' ||
                 document.getElementById('city').value.trim() === ''
             ){
-                alert('Please complete required inputs.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please complete all required fields before proceeding.',
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK'
+                });
+
                 return;
             }
             step2Unlocked = true;
@@ -1209,7 +1769,26 @@
 
             //Card 2 Body
             document.getElementById('card2').addEventListener('click', function(){
+                if(
+                document.getElementById('first_name').value.trim() === '' ||
+                document.getElementById('last_name').value.trim() === '' ||
+                document.getElementById('email').value.trim() === '' ||
+                document.getElementById('sex').value.trim() === '' ||
+                document.getElementById('region').value.trim() === '' ||
+                document.getElementById('province').value.trim() === '' ||
+                document.getElementById('city').value.trim() === ''
+            ){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please complete all required fields before proceeding.',
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK'
+                });
 
+                return;
+            }
+            
                 if(step2Unlocked){
             //Step 1
             document.getElementById('step1').classList.add('d-none');
@@ -1230,7 +1809,15 @@
             document.getElementById('card2Label').style.color = "#062c52";
                 }
                 else {
-                    alert('Please complete your Personal Details first.');
+                    Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please complete all required fields before proceeding.',
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK'
+                });
+
+                return;
                 }
             
             })
@@ -1253,6 +1840,71 @@
 
                 // Show only the selected one
                 document.getElementById(service + 'Body').classList.remove('d-none');
+                // set hidden ticket_category input to the selected service
+                const svc = document.getElementById(service).dataset.service || '';
+                const ticketCatInput = document.getElementById('ticket_category');
+                if(ticketCatInput) ticketCatInput.value = svc;
+
+                // ensure only the active service textarea is submitted as `purpose_of_request`
+                const map = {
+                    tacp: 'reasonRequestTACP',
+                    tapd: 'reasonRequestTAPD',
+                    rp: 'reasonRequestRP',
+                    kp: 'reasonRequestKP'
+                };
+
+                Object.keys(map).forEach(key => {
+                    const ta = document.getElementById(map[key]);
+                    if (!ta) return;
+                    if (key === service) {
+                        ta.setAttribute('name', 'purpose_of_request');
+                        ta.setAttribute('required', '');
+                    } else {
+                        ta.removeAttribute('name');
+                        ta.removeAttribute('required');
+                    }
+                });
+
+                // ensure only the active service program select has name='program'
+                const progMap = {
+                    tacp: 'programSelectTACP',
+                    tapd: 'programSelectTAPD',
+                    rp: 'programSelectRP',
+                    kp: 'programSelectKP'
+                };
+                Object.keys(progMap).forEach(key => {
+                    const sel = document.getElementById(progMap[key]);
+                    if (!sel) return;
+                    if (key === service) {
+                        sel.setAttribute('name', 'program');
+                    } else {
+                        sel.removeAttribute('name');
+                    }
+                });
+
+                // set program_others name only for active other input
+                const otherMap = {
+                    tacp: 'otherProgramInputTACP',
+                    tapd: 'otherProgramInputTAPD',
+                    rp: 'otherProgramInputRP',
+                    kp: 'otherProgramInputKP'
+                };
+                Object.keys(otherMap).forEach(key => {
+                    const inp = document.getElementById(otherMap[key]);
+                    if (!inp) return;
+                    if (key === service) {
+                        inp.setAttribute('name', 'program_others');
+                    } else {
+                        inp.removeAttribute('name');
+                    }
+                });
+
+                // ensure purpose_of_request has content when moving to step3
+                const activePurpose = document.querySelector('textarea[name="purpose_of_request"]');
+                if (activePurpose) {
+                    // remove previous invalid style/message
+                    activePurpose.classList.remove('is-invalid');
+                }
 
         });
 
@@ -1278,7 +1930,7 @@ document.getElementById('programSelectTACP').addEventListener('change', function
         otherFieldTACP.classList.remove('d-none');
         ProgramInputFieldTACP.setAttribute('required', '');
     } else {
-        otherField.classList.add('d-none');
+        otherFieldTACP.classList.add('d-none');
         ProgramInputFieldTACP.value = '';
         ProgramInputFieldTACP.removeAttribute('required');
     }
@@ -1300,7 +1952,7 @@ document.getElementById('programSelectTAPD').addEventListener('change', function
 
 document.getElementById('programSelectRP').addEventListener('change', function(){
     const otherFieldRP = document.getElementById('otherProgramFieldRP');
-    const ProgramInputFieldRP = document.getElementById('otherProgramFieldRP');
+    const ProgramInputFieldRP = document.getElementById('otherProgramInputRP');
 
     if(this.value==='others'){
         otherFieldRP.classList.remove('d-none');
@@ -1311,83 +1963,424 @@ document.getElementById('programSelectRP').addEventListener('change', function()
         ProgramInputFieldRP.value = '';                                                                                                                                                                                                     
 
     }
-})
+});
 
-console.log(input1);
-input1.addEventListener('change', function(){
-    if(this.files.length){
-        fileName.classList.remove('d-none');
-        fileName.innerHTML = 
-        `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+document.getElementById('programSelectKP').addEventListener('change', function(){
+    const otherFieldKP = document.getElementById('otherProgramFieldKP');
+    const ProgramInputFieldKP = document.getElementById('otherProgramInputKP');
+
+    if(this.value==='others'){
+        otherFieldKP.classList.remove('d-none');
+        ProgramInputFieldKP.setAttribute('required', '');
+    } else {
+        otherFieldKP.classList.add('d-none');
+        ProgramInputFieldKP.removeAttribute('required');
+        ProgramInputFieldKP.value = '';                                                                                                                                                                                                 
+
     }
 });
 
-
-input2.addEventListener('change', function(){
-    if(this.files.length){
-        fileName.classList.remove('d-none');
-        fileName.innerHTML = 
-        `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+// OTP send & verify flow (used by Submit flow)
+async function startOtpFlow(email) {
+    if (!email) {
+        Swal.fire({ icon: 'warning', title: 'Email required', text: 'Please enter your email first.', confirmButtonColor: '#062c52' });
+        return;
     }
-});
-console.log("JS Loaded");
-uploadBox.addEventListener('dragleave', function(e){
-    e.preventDefault();
-    this.classList.add('dragover')
-});
 
-uploadBox.addEventListener('drop', function(e){
-    this.classList.remove('dragover');
-});
+    try {
+        const res = await fetch('{{ route('tickets.sendOtp') }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
 
-uploadBox.addEventListener('drop', function(e){
-    e.preventDefault();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
 
-    this.classList.remove('dragover');
+        // show custom OTP modal with 6-digit inputs
+        const otpModalEl = document.getElementById('otpModal');
+        const otpEmailMasked = document.getElementById('otpEmailMasked');
+        const otpInputs = otpModalEl.querySelectorAll('.otp-input');
+        otpEmailMasked.innerText = email.replace(/(.).*(.@)/, '$1***$2');
+        const bsOtpModal = new bootstrap.Modal(otpModalEl);
+        otpInputs.forEach(i => { i.value = ''; i.disabled = false; });
+        bsOtpModal.show();
 
-    input.files = e.dataTransfer.files;
+        setTimeout(() => otpInputs[0].focus(), 200);
 
-    input.dispatchEvent(new Event('change'));
-});
+        const gatherCode = () => Array.from(otpInputs).map(i => i.value.trim()).join('');
+
+        otpInputs.forEach((input, idx) => {
+            input.addEventListener('input', function (e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length === 1 && idx < otpInputs.length - 1) {
+                    otpInputs[idx + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !this.value && idx > 0) {
+                    otpInputs[idx - 1].focus();
+                }
+            });
+            input.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').trim().slice(0,6);
+                for (let i = 0; i < paste.length && i < otpInputs.length; i++) {
+                    otpInputs[i].value = paste[i];
+                }
+            });
+        });
+
+        const verifyBtn = document.getElementById('verifyOtpBtn');
+        const onVerify = async () => {
+            const otp = gatherCode();
+            if (!otp || otp.length < 6) {
+                Swal.fire({ icon: 'warning', title: 'Invalid code', text: 'Please enter the 6-digit code.', confirmButtonColor: '#062c52' });
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerText = 'Verifying...';
+
+            try {
+                const verifyRes = await fetch('{{ route('tickets.verifyOtp') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, otp })
+                });
+                const verifyData = await verifyRes.json();
+                if (!verifyRes.ok) throw new Error(verifyData.message || 'OTP verification failed');
+
+                Swal.fire({ icon: 'success', title: 'Verified', text: 'Your email has been verified.', confirmButtonColor: '#062c52' });
+                ticketForm.dataset.otpVerified = 'true';
+                try { ticketForm.dispatchEvent(new Event('otp:verified')); } catch (e) {}
+                bsOtpModal.hide();
+                verifyBtn.removeEventListener('click', onVerify);
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
+                verifyBtn.disabled = false;
+                verifyBtn.innerText = 'Verify';
+            }
+        };
+
+        verifyBtn.removeEventListener('click', onVerify);
+        verifyBtn.addEventListener('click', onVerify);
+
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
+    }
+}
+
+        // Show filename for the specific file input
+        [input1, input2, input3, input4].forEach(input => {
+            if (!input) return;
+            input.addEventListener('change', function () {
+                const card = this.closest('.card');
+                const fn = card ? card.querySelector('.file-name') : document.querySelector('.file-name');
+                if (this.files && this.files.length) {
+                    if (fn) {
+                        fn.classList.remove('d-none');
+                        fn.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+                    }
+                } else if (fn) {
+                    fn.classList.add('d-none');
+                    fn.innerHTML = '';
+                }
+            });
+        });
+
+        // Wire up each upload-box label to its corresponding input for drag/drop and click
+        uploadBoxes.forEach(label => {
+            const forId = label.getAttribute('for');
+            const input = forId ? document.getElementById(forId) : null;
+            if (!input) return;
+
+            label.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            label.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            label.addEventListener('drop', function (e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event('change'));
+            });
+            // clicking label will focus file input automatically via for="id"
+        });
 // document.addEventListener('DOMContentLoaded', function(){
     
-    console.log(document.getElementById('facetoface'));
     const cardBodyChangeftf = document.getElementById('facetoface');
     const cardBodyChangev = document.getElementById('virtual');
     const cardBodyChangeb = document.getElementById('blended');
 
     
 document.getElementById('facetoface').addEventListener('click', function(){
-    console.log("clicked");
 
     cardBodyChangeftf.style.backgroundColor = "#eef6ff";
     cardBodyChangeftf.style.borderColor = "#0d6efd";
     cardBodyChangev.style.backgroundColor = "#fff";
-    cardBodyChangev.style.borderColor = "black";
+    cardBodyChangev.style.borderColor = "#dee2e6";
     cardBodyChangeb.style.backgroundColor = "#fff";
-    cardBodyChangeb.style.borderColor = "black";
+    cardBodyChangeb.style.borderColor = "#dee2e6";
+    const typeInput = document.getElementById('type_of_activity');
+    if(typeInput) typeInput.value = 'Face to Face';
 });
 
 document.getElementById('virtual').addEventListener('click', function(){
-    console.log("clicked");
 
     cardBodyChangev.style.backgroundColor = "#ebffec";
     cardBodyChangev.style.borderColor = "#4d06d1";
     cardBodyChangeftf.style.backgroundColor = "#fff";
-    cardBodyChangeftf.style.borderColor = "black";
+    cardBodyChangeftf.style.borderColor = "#dee2e6";
     cardBodyChangeb.style.backgroundColor = "#fff";
-    cardBodyChangeb.style.borderColor = "black";
+    cardBodyChangeb.style.borderColor = "#dee2e6";
+    const typeInput = document.getElementById('type_of_activity');
+    if(typeInput) typeInput.value = 'Virtual';
 });
 
 document.getElementById('blended').addEventListener('click', function(){
-    console.log("clicked");
 
     cardBodyChangeb.style.backgroundColor = "#f5f0ff";
     cardBodyChangeb.style.borderColor = "#6c01a1";
     cardBodyChangeftf.style.backgroundColor = "#fff";
-    cardBodyChangeftf.style.borderColor = "black";
+    cardBodyChangeftf.style.borderColor = "#dee2e6";
     cardBodyChangev.style.backgroundColor = "#fff";
-    cardBodyChangev.style.borderColor = "black";
+    cardBodyChangev.style.borderColor = "#dee2e6";
+    const typeInput = document.getElementById('type_of_activity');
+    if(typeInput) typeInput.value = 'Blended';
+});
+
+// Client-side guard + AJAX submit so file uploads are reliably sent
+const ticketForm = document.getElementById('ticketForm');
+if (ticketForm) {
+    ticketForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const ticketCat = document.getElementById('ticket_category')?.value || '';
+        const first = document.getElementById('first_name')?.value.trim() || '';
+        const last = document.getElementById('last_name')?.value.trim() || '';
+        const email = document.getElementById('email')?.value.trim() || '';
+        const sex = document.getElementById('sex')?.value || '';
+        const region = document.getElementById('region')?.value || '';
+        const province = document.getElementById('province')?.value || '';
+        const city = document.getElementById('city')?.value || '';
+
+        const missing = [];
+        if (!first) missing.push('First name');
+        if (!last) missing.push('Last name');
+        if (!email) missing.push('Email');
+        if (!sex) missing.push('Sex');
+        if (!region) missing.push('Region');
+        if (!province) missing.push('Province');
+        if (!city) missing.push('City/Municipality');
+        if (!ticketCat) missing.push('Service selection');
+
+        const activeProgram = document.querySelector('select[name="program"]');
+        if (activeProgram && (!activeProgram.value || activeProgram.value === '')) {
+            missing.push('Program selection');
+        }
+
+        if (missing.length) {
+
+            Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please complete required fields: ' + missing.join(', '),
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK'
+                });
+            if (missing.some(m => ['First name','Last name','Email','Sex','Region','Province','City/Municipality'].includes(m))) {
+                document.getElementById('step1').classList.remove('d-none');
+                document.getElementById('step2').classList.add('d-none');
+                document.getElementById('step3').classList.add('d-none');
+            }
+            return false;
+        }
+
+        // Ensure the active service's purpose_of_request is filled
+        const purposeEl = ticketForm.querySelector('textarea[name="purpose_of_request"]');
+        if (purposeEl && purposeEl.value.trim() === '') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Missing Purpose',
+                text: 'Please enter Purpose of request for the selected service.',
+                confirmButtonColor: '#062c52'
+            });
+            purposeEl.classList.add('is-invalid');
+            purposeEl.focus();
+            return false;
+        }
+
+        // If OTP not yet verified, trigger OTP flow then submit after verification
+        const proceedAfterOtp = async () => {
+            // attach one-time listener to continue submission when OTP verified
+            const handler = async () => {
+                try {
+                    await doSubmit();
+                } catch (e) {
+                    // doSubmit handles errors
+                }
+            };
+            ticketForm.addEventListener('otp:verified', handler, { once: true });
+            // start OTP flow which will show modal and continue submission on verify
+            startOtpFlow(email);
+            return;
+        };
+
+        // If Knowledge Product (KP) service selected, require at least one product checkbox
+        if (ticketCat === 'knowledge') {
+            const selectedProducts = ticketForm.querySelectorAll('input[name="type_of_knowledge_product[]"]:checked');
+            if (!selectedProducts || selectedProducts.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select Knowledge Product',
+                    text: 'Please select at least one Type of knowledge product.',
+                    confirmButtonColor: '#062c52'
+                });
+                // Bring user back to KP step
+                document.getElementById('step1').classList.add('d-none');
+                document.getElementById('step2').classList.add('d-none');
+                document.getElementById('step3').classList.remove('d-none');
+                const firstKp = ticketForm.querySelector('input[name="type_of_knowledge_product[]"]');
+                if (firstKp) {
+                    const kpCard = firstKp.closest('.kp-card');
+                    if (kpCard) kpCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+                return false;
+            }
+
+            // If 'Others' is selected, require the specification field
+            const othersEl = ticketForm.querySelector('input[name="type_of_knowledge_product[]"][value="Others"]');
+            const otherSpec = document.getElementById('otherKnowledgeProduct');
+            if (othersEl && othersEl.checked && otherSpec && otherSpec.value.trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Specify Other Knowledge Product',
+                    text: 'You selected "Others" — please specify the knowledge product.',
+                    confirmButtonColor: '#062c52'
+                });
+                otherSpec.classList.add('is-invalid');
+                otherSpec.focus();
+                return false;
+            }
+        }
+
+        // Build FormData and ensure the selected file (if any) is included explicitly
+        const fd = new FormData(ticketForm);
+
+        // Find any file input that has files (priority to the visible/active one)
+        const fileInputs = Array.from(ticketForm.querySelectorAll('input[type="file"]'));
+        for (const fi of fileInputs) {
+            if (fi.files && fi.files.length) {
+                // append under 'attachment' name (overwrites any blank entries)
+                fd.set('attachment', fi.files[0], fi.files[0].name);
+                break;
+            }
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+
+        // helper to perform the actual submission
+        const doSubmit = async () => {
+            if (submitBtn) submitBtn.disabled = true;
+
+            const response = await fetch(ticketForm.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: fd,
+            credentials: 'same-origin'
+            }).then(async response => {
+                const text = await response.text();
+                let data = null;
+                try { data = text ? JSON.parse(text) : null; } catch(e) { data = null; }
+
+                if (response.ok) {
+                    const title = (data && data.title) ? data.title : 'Request submitted';
+                    const message = (data && data.message) ? data.message : 'Your ticket was submitted successfully.';
+                    await Swal.fire({
+                        icon: 'success',
+                        title: title,
+                        text: message,
+                        confirmButtonColor: '#062c52'
+                    });
+
+                    if (data && data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                    return;
+                }
+
+                const errMsg = (data && data.message) ? data.message : text || 'Unknown server error';
+                throw new Error(errMsg);
+            }).catch(err => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission failed',
+                    text: err.message || 'An error occurred while submitting your request.',
+                    confirmButtonColor: '#062c52'
+                });
+                if (submitBtn) submitBtn.disabled = false;
+            });
+        };
+
+        // If OTP not verified, trigger OTP flow then submit when verified
+        if (ticketForm.dataset.otpVerified !== 'true') {
+            proceedAfterOtp();
+            return;
+        }
+        // otherwise submit immediately
+        doSubmit();
+    });
+}
+
+
+
+checkboxes.forEach(checkbox => {
+
+    checkbox.addEventListener('change', function () {
+
+        const icon = this.closest('.kp-card').querySelector('.kp-check');
+
+        if (this.checked) {
+            icon.classList.remove('bi-square');
+            icon.classList.add('bi-check-square-fill');
+        } else {
+            icon.classList.remove('bi-check-square-fill');
+            icon.classList.add('bi-square');
+        }
+
+        // Show "Others" textbox if Others is checked
+        const othersChecked = document.querySelector(
+            '.kp-input[value="Others"]'
+        ).checked;
+
+        if (othersChecked) {
+            otherInput.classList.remove('d-none');
+            otherInput.required = true;
+        } else {
+            otherInput.classList.add('d-none');
+            otherInput.required = false;
+            otherInput.value = '';
+        }
+    });
+
 });
 
 // });
@@ -1398,3 +2391,17 @@ document.getElementById('blended').addEventListener('click', function(){
 </script>
 @endpush
 @endsection
+
+@if(session('success') || ($errors && $errors->any()))
+    <script>
+        (function(){
+            const success = {!! json_encode(session('success') ?? null) !!};
+            const errors = {!! json_encode($errors->any() ? $errors->all() : []) !!};
+            if(success){
+                alert(success);
+            } else if(errors && errors.length){
+                alert(errors.join('\n'));
+            }
+        })();
+    </script>
+@endif

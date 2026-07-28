@@ -1,14 +1,212 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use App\Models\Program;
+use App\Models\Ticket;
+use App\Models\TicketAttachment;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TicketController extends Controller
 {
-    public function index(){
-        $programs = Program::orderBy('program_name')->get();
+    public function store(Request $request)
+    {
+        Log::info('TicketController@store called', [
+            'hasFile' => $request->hasFile('attachment'),
+            'input_keys' => array_keys($request->all()),
+        ]);
+        Log::info('TicketController: allFiles keys', array_keys($request->allFiles()));
+        Log::info('TicketController: content-length', ['CONTENT_LENGTH' => $_SERVER['CONTENT_LENGTH'] ?? null]);
 
-        return view('landingpage.home', compact('programs'));
+        // Require that the requestor email has been verified via OTP in session
+        $otpVerified = Session::get('ticket_otp_verified', false);
+        $otpEmail = Session::get('ticket_otp_email', null);
+
+        if (!$otpVerified || $otpEmail !== $request->requestor_email) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => 'Email not verified via OTP. Please verify your email before submitting.'], 422);
+            }
+            return back()->withErrors('Email not verified via OTP. Please verify your email before submitting.');
+        }
+
+        $request->validate([
+            'requestor_first_name' => 'required',
+            'requestor_last_name' => 'required',
+            'requestor_email' => 'required|email',
+            'ticket_category' => 'required',
+            'purpose_of_request' => 'required',
+
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $ticket = Ticket::create([
+
+                'ticket_id' => 'STBSRS-' . now()->format('YmdHis'),
+
+                'requestor_first_name' => $request->requestor_first_name,
+                'requestor_middle_name' => $request->requestor_middle_name,
+                'requestor_last_name' => $request->requestor_last_name,
+                'requestor_extension_name' => $request->requestor_extension_name,
+
+                'requestor_sex' => $request->requestor_sex,
+                'requestor_email' => $request->requestor_email,
+
+                'requestor_region' => $request->requestor_region,
+                'requestor_province' => $request->requestor_province,
+                'requestor_city' => $request->requestor_city,
+
+                'ticket_category' => $request->ticket_category,
+
+                'purpose_of_request' => $request->purpose_of_request,
+
+                'program' => is_array($request->program)
+                    ? json_encode($request->program)
+                    : $request->program,
+
+                'program_others' => $request->program_others,
+
+                'type_of_knowledge_product' => is_array($request->type_of_knowledge_product)
+                    ? json_encode($request->type_of_knowledge_product)
+                    : $request->type_of_knowledge_product,
+
+                'type_of_knowledge_product_others'
+                    => $request->type_of_knowledge_product_others,
+
+                'venue' => $request->venue,
+
+                'type_of_activity' => $request->type_of_activity,
+
+                'date_of_activity' => $request->date_of_activity,
+            ]);
+
+
+
+            if ($request->hasFile('attachment')) {
+
+                Log::info('TicketController: attachment detected', [
+                    'hasFile' => $request->hasFile('attachment'),
+                    'files' => array_keys($request->allFiles()),
+                ]);
+
+                $file = $request->file('attachment');
+
+                Log::info('TicketController: uploaded file info', [
+                    'originalName' => $file->getClientOriginalName(),
+                    'mime' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+
+                $filename = time() . '_' . $file->getClientOriginalName();
+
+                $path = $file->storeAs('ticket_attachments', $filename, 'public');
+
+                Log::info('TicketController: stored file path', ['path' => $path]);
+
+                TicketAttachment::create([
+                    'ticket_id' => $ticket->id,
+                    'attachment' => $file->getClientOriginalName(),
+                    'attachment_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                ]);
+            }
+
+            DB::commit();
+
+            // clear OTP verification after successful submission
+            Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email']);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'title' => 'Request submitted',
+                    'message' => 'Your ticket was submitted successfully.',
+                    'redirect' => url('/')
+                ]);
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', 'Ticket submitted successfully.');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('TicketController store error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            return back()->withErrors($e->getMessage());
+        }
+    }
+
+    public function sendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $email = $request->email;
+
+        // Generate 6-digit OTP
+        $otp = random_int(100000, 999999);
+
+        $expires = Carbon::now()->addMinutes(10);
+
+        Session::put('ticket_otp', [
+            'email' => $email,
+            'otp' => (string)$otp,
+            'expires_at' => $expires->toDateTimeString()
+        ]);
+
+        // Send email with OTP
+        try {
+            Mail::raw("Your STBSRS OTP is: {$otp}. It expires in 10 minutes.", function ($m) use ($email) {
+                $m->to($email)->subject('STBSRS Verification Code');
+            });
+        } catch (\Exception $e) {
+            Log::error('Failed to send OTP email', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to send OTP.'], 500);
+        }
+
+        return response()->json(['message' => 'OTP sent to ' . $email]);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required'
+        ]);
+
+        $payload = Session::get('ticket_otp');
+        if (!$payload) {
+            return response()->json(['message' => 'No OTP found. Please request a new code.'], 422);
+        }
+
+        if ($payload['email'] !== $request->email) {
+            return response()->json(['message' => 'Email mismatch for OTP.'], 422);
+        }
+
+        if (Carbon::now()->gt(Carbon::parse($payload['expires_at']))) {
+            return response()->json(['message' => 'OTP expired. Please request a new code.'], 422);
+        }
+
+        if ((string)$payload['otp'] !== (string)$request->otp) {
+            return response()->json(['message' => 'Invalid OTP code.'], 422);
+        }
+
+        // mark verified
+        Session::put('ticket_otp_verified', true);
+        Session::put('ticket_otp_email', $request->email);
+
+        return response()->json(['message' => 'Email verified.']);
     }
 }

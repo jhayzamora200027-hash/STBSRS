@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LandingpageController;
 use App\Models\Region;
+use App\Http\Controllers\TicketController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
 
@@ -30,3 +31,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/regions',[LocationController::class, 'regions']);
 Route::get('/provinces/{regionCode}', [LocationController::class, 'provinces']);
 Route::get('/cities/{provinceCode}',[LocationController::class, 'cities']);
+
+Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+Route::post('/tickets/send-otp', [TicketController::class, 'sendOtp'])->name('tickets.sendOtp');
+Route::post('/tickets/verify-otp', [TicketController::class, 'verifyOtp'])->name('tickets.verifyOtp');
