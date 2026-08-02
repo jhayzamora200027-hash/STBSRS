@@ -1257,7 +1257,7 @@
                                                     <select class="form-select" id="programSelectTACP" name="program">
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
-                                                        <option value="{{$program->id}}">{{$program->program}}</option>
+                                                        <option value="{{$program->program_id}}">{{$program->program}}</option>
                                                         @endforeach
                                                         <option value="others">Others</option>
                                                     </select>
@@ -1351,7 +1351,7 @@
                                                     <select class="form-select" id="programSelectTAPD" name="program">
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
-                                                        <option value="{{$program->id}}">{{$program->program}}</option>
+                                                        <option value="{{$program->program_id}}">{{$program->program}}</option>
                                                         @endforeach
                                                         <option value="others">Others</option>
                                                     </select>
@@ -1446,7 +1446,7 @@
                                                             <select class="form-select" id="programSelectRP" name="program">
                                                                 <option value="">Select a program</option>
                                                                 @foreach($programs as $program)
-                                                                <option value="{{$program->id}}">{{$program->program}}</option>
+                                                                <option value="{{$program->program_id}}">{{$program->program}}</option>
                                                                 @endforeach
                                                                 <option value="others">Others</option>
                                                             </select>
@@ -1678,7 +1678,7 @@
                                                 <select class="form-select" id="programSelectKP" name="program">
                                                                 <option value="">Select a program</option>
                                                                 @foreach($programs as $program)
-                                                                <option value="{{$program->id}}">{{$program->program}}</option>
+                                                                <option value="{{$program->program_id}}">{{$program->program}}</option>
                                                                 @endforeach
                                                                 <option value="others">Others</option>
                                                 </select>

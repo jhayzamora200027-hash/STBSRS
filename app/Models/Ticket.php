@@ -37,4 +37,7 @@ class Ticket extends Model
     'date_of_activity',
     'date_of_activity_end'
 ];
+    public function programDetails(){
+        return $this->belongsTo(Program::class, 'program', 'program_id');
+    }
 }

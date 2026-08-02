@@ -3,111 +3,97 @@
 @section('title', 'Dashboard')
 
 @section('content')
+@php
+    use Illuminate\Support\Str;
+@endphp
 <style>
    .metric-card{
     background:#fff;
-    border-radius:20px;
-    padding:24px 20px;
-    min-height:190px;
-    max-height:200px;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:22px 18px;
+    cursor: pointer;
+    height:200px;
 
     display:flex;
     flex-direction:column;
+    align-items:center;
+
+    transition:.25s;
+}
+
+.metric-card:hover{
+    transform:translateY(-4px);
+    border-color:#d1d5db;
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.metric-title{
+    height:52px;                 /* Every title occupies same space */
+    display:flex;
     justify-content:center;
     align-items:center;
 
     text-align:center;
 
-    border:1px solid #edf2f7;
-    box-shadow:0 10px 30px rgba(15,23,42,.06);
-    transition:.3s;
-}
-
-.metric-card:hover{
-    cursor:pointer;
-    transform:translateY(-6px);
-    border-color:#062c52;
-    box-shadow:0 14px 35px rgba(15,23,42,.12);
-}
-
-.metric-header{
-    width:100%;
-    display:flex;
-    justify-content:center;
-    margin-bottom:12px;
-}
-
-.metric-title{
-    font-size:.9rem;
+    font-size:18px;
     font-weight:600;
-    color:#64748b;
-    line-height:1.4;
+    color:#34495e;
+
+    margin:0;
 }
 
-.metric-title{
-    font-size:1rem;
-    font-weight:600;
-    color:#49627d;
-    line-height:1.35;
-    min-height:54px;      /* keeps every card aligned */
-}
-
-.metric-icon{
-    width:60px;
-    height:60px;
-    border-radius:50%;
+.metric-value{
+    flex:1;                      /* Always center the number */
     display:flex;
     justify-content:center;
     align-items:center;
-    align-self:flex-start; /* icon stays on left */
-}
-
-.metric-icon i{
-    font-size:28px;
 }
 
 .metric-number{
-    font-size:3rem;
+    font-size:52px;
     font-weight:700;
-    color:#062c52;
+    color:#0b3b75;
     line-height:1;
-    margin:8px 0;
 }
 
 .metric-unit{
-
-    font-size:20px;
-
-    font-weight:500;
-
+    font-size:24px;
+    margin-left:8px;
     color:#64748b;
-
-    margin-left:6px;
-
 }
 
 .metric-footer{
-    font-size:.82rem;
-    color:#94a3b8;
-    margin-top:12px;
-}
-
-/* Hover footer */
-
-.metric-card:hover .metric-footer{
-
-    color:#062c52;
-
-}
-
-.metric-body{
-
-    min-height:150px;
-
+    height:42px;                 /* Equal footer height */
     display:flex;
+    justify-content:center;
+    align-items:center;
 
-    flex-direction:column;
+    text-align:center;
 
+    font-size:14px;
+    color:#94a3b8;
+
+    margin:0;
+}
+
+.pagination{
+    margin-bottom:0;
+}
+
+.page-link{
+    border-radius:8px;
+    margin:0 3px;
+}
+
+.page-item.active .page-link{
+    background:#062c52;
+    border-color:#062c52;
+}
+
+.empty-row td{
+    height:55px;
+    color:transparent;
 }
 
 /* ICON COLORS */
@@ -432,6 +418,323 @@
 
 }
 
+
+}
+
+.ticket-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.ticket-header h2{
+
+    font-weight:700;
+
+    margin:0;
+
+}
+
+.ticket-header p{
+
+    color:#64748b;
+
+    margin:0;
+
+}
+
+.ticket-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    margin-bottom:25px;
+
+}
+
+.search-box{
+
+    flex:1;
+
+    position:relative;
+
+}
+
+.search-box i{
+
+    position:absolute;
+
+    left:16px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#94a3b8;
+
+}
+
+.search-box input{
+
+    width:100%;
+
+    padding:12px 18px 12px 45px;
+
+    border:1px solid #dbe4ee;
+
+    border-radius:12px;
+
+    outline:none;
+
+}
+
+.filter-group{
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+.filter-group select{
+
+    width:180px;
+
+}
+
+.ticket-card{
+    background:#fff;
+    border:1px solid #e8eef5;
+    border-radius:18px;
+    padding:22px;
+
+    display:flex;
+    flex-direction:column;
+
+    height:430px; 
+}
+
+.ticket-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 30px rgba(15,23,42,.10);
+
+}
+
+.ticket-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:22px;
+
+}
+
+.ticket-top h5{
+
+    margin:0;
+
+    font-weight:700;
+
+    color:#062c52;
+
+}
+
+.ticket-top small{
+
+    color:#94a3b8;
+
+}
+
+.status{
+
+    padding:6px 14px;
+
+    border-radius:50px;
+
+    font-size:.82rem;
+
+    font-weight:600;
+
+}
+
+.status-progress{
+
+    background:#e9f3ff;
+
+    color:#0d6efd;
+
+}
+
+.ticket-body{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:22px;
+
+}
+
+.info label{
+
+    font-size:.75rem;
+
+    color:#94a3b8;
+
+    text-transform:uppercase;
+
+    margin-bottom:6px;
+
+}
+
+.info p{
+
+    margin:0;
+
+    font-weight:500;
+
+    color:#1e293b;
+
+}
+
+.full{
+
+    grid-column:1 / -1;
+
+}
+
+.ticket-footer{
+
+    margin-top:auto;
+
+    padding-top:18px;
+
+    border-top:1px solid #eef2f7;
+
+}
+
+.priority{
+
+    font-weight:600;
+
+    display:flex;
+
+    gap:8px;
+
+    align-items:center;
+
+}
+
+.priority.medium{
+
+    color:#d97706;
+
+}
+
+.btn-light{
+
+    border-radius:10px;
+
+    border:1px solid #dbe4ee;
+
+    padding:8px 18px;
+
+}
+
+.btn-light:hover{
+
+    background:#062c52;
+
+    color:#fff;
+
+}
+
+@media(max-width:992px){
+
+.ticket-body{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:18px;
+
+    margin-top:18px;
+
+}
+
+.ticket-toolbar{
+
+flex-direction:column;
+
+align-items:stretch;
+
+}
+
+.filter-group{
+
+flex-direction:column;
+
+}
+
+.filter-group select{
+
+width:100%;
+
+}
+
+.ticket-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:15px;
+
+}
+
+}
+.ticket-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+    margin-top:25px;
+
+}
+
+.ticket-info span{
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+    line-height:1.5;
+
+    min-height:48px;
 }
 </style>
 {{-- Greeting --}}
@@ -676,7 +979,7 @@
         aria-labelledby="modalMetricsLabel"
         aria-hidden="true">
 
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-xl">
 
             <div class="modal-content">
 
@@ -691,27 +994,166 @@
 
                 </div>
 
-                <div class="modal-body d-none" id="totalTicketBody">
-                    <table>
-                        <thead class="table-light">
-                            <tr>                            
-                                <th class="p-2">Ticket Number</th>
-                                <th class="p-2">Ticket Category</th>
-                                <th class="p-2">Ticket Program</th>
-                                <th class="p-2">Request Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>TEST number<strong></td>
-                                <td>TEST category</td>
-                                <td>TEST program</td>
-                                <td>TEST description</td>
-                            </tr>
-                        </tbody>
-                    </table>
+    {{-- Total Tickets --}}
+    <div id="totalTicketBody" class="d-none">
+        <div id="ticketTableContainer">
+            <div class="container-fluid p-4">
+
+                <!-- Header -->
+                <div class="ticket-header">
+
+                    <div>
+                        <h2>All Tickets</h2>
+                        <p>Manage and monitor all submitted service requests.</p>
+                    </div>
 
                 </div>
+
+                <!-- Search & Filters -->
+
+                <div class="ticket-toolbar">
+
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input class="ps-5" type="text" placeholder="Search ticket number, requestor or program...">
+                    </div>
+
+                    <div class="filter-group">
+
+                        <select class="form-select">
+                            <option>Status</option>
+                        </select>
+
+                        <select class="form-select">
+                            <option>Category</option>
+                        </select>
+
+                        <select class="form-select">
+                            <option>Program</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- Ticket Cards -->
+            <div class="ticket-grid">
+                @foreach($tickets as $ticket)
+
+                <div class="ticket-card">
+
+                    <div class="ticket-top">
+
+                        <div>
+
+                            <h5>{{ $ticket->ticket_id }}</h5>
+
+                            <small>
+                                Submitted {{ $ticket->created_at->format('F d, Y') }}
+                            </small>
+
+                        </div>
+
+                        <span class="status status-progress">
+                            In Progress
+                        </span>
+
+                    </div>
+
+                    <div class="ticket-body">
+
+                        <div class="info">
+
+                            <label>Requestor</label>
+
+                            <p>{{ $ticket->requestor_first_name }}</p>
+
+                        </div>
+
+                        <div class="info">
+
+                            <label>Category</label>
+
+                            <p>
+
+                                @switch($ticket->ticket_category)
+
+                                    @case('completed')
+                                        Technical Assistance on Completed Program
+                                        @break
+
+                                    @case('enhancement')
+                                        Technical Assistance on Program Development
+                                        @break
+
+                                    @case('resource')
+                                        Resource Person
+                                        @break
+
+                                    @case('knowledge')
+                                        Knowledge Product
+                                        @break
+
+                                @endswitch
+
+                            </p>
+
+                        </div>
+
+                        <div class="info">
+
+                            <label>Program</label>
+
+                            <span title="{{ $ticket->programDetails->program ?? '-' }}">
+                                {{ Str::limit($ticket->programDetails->program ?? '-', 35) }}
+                            </span>
+
+                        </div>
+
+                        <div class="info full">
+
+                            <label>Purpose of Request</label>
+
+                            <span title="{{ $ticket->purpose_of_request }}">
+                                {{ Str::limit($ticket->purpose_of_request, 45) }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="ticket-footer">
+
+                        <div>
+
+                            <button class="btn btn-light">
+
+                                <i class="bi bi-eye"></i>
+
+                                View Details
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                @endforeach
+            </div>
+
+                <!-- Pagination -->
+
+                <div class="mt-4 d-flex justify-content-end">
+
+                    {{ $tickets->links('pagination::bootstrap-5') }}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
                 <div class="modal-body d-none" id="newTicketBody">
 
                     newTicketBody
@@ -743,7 +1185,6 @@
         </div>
 
         </div>
-    </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -999,5 +1440,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
 </script>
 @endsection
