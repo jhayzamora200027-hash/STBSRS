@@ -213,6 +213,406 @@
 .kp-content:hover{
     border-color:#0d6efd;
 }
+
+/* OTP modal stacking and blur styles */
+.otp-modal{ border-radius:18px; }
+.otp-label{ color:#0b3ea9; font-weight:600; letter-spacing:.5px; }
+.otp-title{ color:#0b3ea9; font-weight:500; }
+.otp-info-card{ display:flex; align-items:center; border:2px solid #8d4dff; border-radius:10px; padding:18px; margin-top:15px; }
+.otp-icon{ width:64px; height:64px; border-radius:14px; background:#4c7ff7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; flex-shrink:0; }
+.otp-code-card{ margin-top:25px; border:1px solid #ddd; border-radius:18px; padding:25px; }
+.otp-input{ width:60px; height:60px; text-align:center; font-size:24px; font-weight:600; border-radius:14px; }
+.otp-btn{ height:52px; border-radius:14px; font-size:24px; }
+.btn-primary.otp-btn{ background:#123c90; border:none; }
+.btn-outline-secondary.otp-btn{ border:1px solid #ddd; }
+
+/* Ensure OTP modal is above other modals */
+#otpModal { z-index: 2050 !important; }
+.modal-backdrop.otp-backdrop { z-index: 2040 !important; background: rgba(255,255,255,0.08) !important; backdrop-filter: blur(1000px); }
+/* Ensure SweetAlert2 appears above the OTP modal */
+.swal2-container { z-index: 99999 !important; }
+.swal2-popup { z-index: 100000 !important; }
+
+.review-section{
+    background:#fff;
+    border:1px solid #e9ecef;
+    border-radius:12px;
+    padding:20px;
+}
+
+.review-section h6{
+    font-weight:700;
+    margin-bottom:18px;
+    color:#0d6efd;
+}
+
+.review-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    padding:10px 0;
+    border-bottom:1px dashed #e5e7eb;
+}
+
+.review-item:last-child{
+    border-bottom:none;
+}
+
+.review-item span{
+    color:#6c757d;
+}
+
+.review-item strong{
+    text-align:right;
+    max-width:60%;
+}
+
+.review-section{
+    border:1px solid #e9ecef;
+    border-radius:12px;
+    padding:20px;
+    background:#fff;
+}
+
+.review-section h6{
+    font-weight:600;
+    color:#0d6efd;
+    margin-bottom:20px;
+}
+
+.review-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    padding:10px 0;
+    border-bottom:1px dashed #dee2e6;
+}
+
+.review-item:last-child{
+    border-bottom:none;
+}
+
+.review-item span{
+    color:#6c757d;
+    font-size:.9rem;
+}
+
+.review-item strong{
+    max-width:60%;
+    text-align:right;
+    font-weight:600;
+}
+
+#reviewKnowledgeProduct div,
+#reviewAttachment div{
+    padding:8px 0;
+    border-bottom:1px dashed #dee2e6;
+}
+
+#reviewKnowledgeProduct div:last-child,
+#reviewAttachment div:last-child{
+    border-bottom:none;
+}
+.step-card{
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.step-card.clicked{
+    animation: cardPop .35s ease;
+}
+
+.step-card::after{
+    content: "";
+    position: absolute;
+    left: var(--x,50%);
+    top: var(--y,50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(13,110,253,.18);
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+}
+
+.step-card.clicked::after{
+    animation: ripple .55s ease-out;
+}
+
+@keyframes cardPop{
+
+    0%{
+        transform:scale(1);
+    }
+
+    35%{
+        transform:scale(.97);
+    }
+
+    70%{
+        transform:scale(1.02);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}
+
+@keyframes ripple{
+
+    0%{
+        width:0;
+        height:0;
+        opacity:.5;
+    }
+
+    100%{
+        width:420px;
+        height:420px;
+        opacity:0;
+    }
+
+}
+
+.wizard-back-btn{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:.75rem 1.2rem;
+
+    border:1px solid #d0d7de;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    color:#495057;
+
+    font-weight:600;
+
+    transition:all .25s ease;
+
+}
+
+.wizard-back-btn:hover{
+
+    background:#f8f9fa;
+
+    color:#062c52;
+
+    border-color:#062c52;
+
+    transform:translateX(-3px);
+
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+.wizard-back-btn:active{
+
+    transform:scale(.97);
+
+}
+
+.wizard-back-btn i{
+
+    transition:transform .25s ease;
+
+}
+
+.wizard-back-btn:hover i{
+
+    transform:translateX(-5px);
+
+}
+
+.wizard-cancel-btn{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    min-width:130px;
+    height:48px;
+
+    border:1px solid #d6dbe3;
+    border-radius:12px;
+
+    background:#fff;
+    color:#6c757d;
+
+    font-weight:600;
+
+    transition:all .25s ease;
+
+}
+
+.wizard-cancel-btn:hover{
+
+    background:#f8f9fa;
+    border-color:#adb5bd;
+    color:#343a40;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+.wizard-cancel-btn:active{
+
+    transform:scale(.97);
+
+}
+
+.wizard-submit-btn{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    min-width:220px;
+    height:48px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#062c52;
+
+    color:#fff;
+
+    font-weight:600;
+
+    transition:all .25s ease;
+
+    box-shadow:0 10px 24px rgba(13,110,253,.25);
+
+}
+
+.wizard-submit-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 16px 30px rgba(13,110,253,.35);
+
+}
+
+.wizard-submit-btn:hover i{
+
+    transform:translateX(4px);
+
+}
+
+.wizard-submit-btn:active{
+
+    transform:scale(.97);
+
+}
+
+.wizard-submit-btn i{
+
+    transition:.25s;
+
+}
+
+.wizard-cancel-btn{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    min-width:130px;
+    height:48px;
+
+    border:1px solid #d6dbe3;
+    border-radius:12px;
+
+    background:#fff;
+    color:#6c757d;
+
+    font-weight:600;
+
+    transition:all .25s ease;
+
+}
+
+.wizard-cancel-btn:hover{
+
+    background:#f8f9fa;
+
+    color:#343a40;
+
+    border-color:#adb5bd;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+.wizard-cancel-btn:active{
+
+    transform:scale(.97);
+
+}
+
+.wizard-next-btn{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    min-width:230px;
+    height:48px;
+
+    border:none;
+    border-radius:12px;
+
+    background: #062c52;
+
+    color:#fff;
+
+    font-weight:600;
+
+    transition:all .25s ease;
+
+    box-shadow:0 10px 24px rgba(13,110,253,.25);
+
+}
+
+.wizard-next-btn i{
+
+    transition:all .25s ease;
+
+}
+
+.wizard-next-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 16px 30px rgba(13,110,253,.35);
+
+}
+
+.wizard-next-btn:hover i{
+
+    transform:translateX(6px);
+
+}
+
+.wizard-next-btn:active{
+
+    transform:scale(.97);
+
+}
 </style>
 
 
@@ -297,11 +697,17 @@
                                     <p class="text-muted mb-0" style="font-size:0.7rem;"> Click the button to get started.</p>
                                 </div>
                                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                    <button type="button" id="new_ticket" data-bs-toggle="modal" data-bs-target="#createTicketModal" class="btn btn-primary btn-lg px-4" style="height:50px; font-size:1rem; align-items-center">
+                                    <button
+                                        type="button"
+                                        id="new_ticket"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#createTicketModal"
+                                        class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center"
+                                        style="height: 60px; font-size: 1rem;">
                                         <i class="bi bi-plus-square me-2"></i>
                                         Create New Request
-                                    </button> 
-                                </div> 
+                                    </button>
+                                </div>
                             </div>   
                         </div>    
                     </div>
@@ -562,162 +968,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content otp-modal border-0">
-
-            <div class="modal-header border-0 pb-0">
-                <div>
-                    <small class="text-uppercase otp-label">Secure Sign-In</small>
-                    <h2 class="otp-title mb-0">Two-step verification</h2>
-                </div>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal">
-                </button>
-            </div>
-
-            <div class="modal-body">
-
-                <!-- Information Card -->
-                <div class="otp-info-card">
-
-                    <div class="otp-icon">
-                        2FA
-                    </div>
-
-                    <div class="ms-3">
-                        <p class="mb-0 text-muted">
-                            Verification code has been sent to
-                            <strong id="otpEmailMasked"></strong>.
-                            Confirm the request first, complete the verification to proceed with your request.
-                        </p>
-                    </div>
-
-                </div>
-
-                <!-- OTP Card -->
-                <div class="otp-code-card">
-
-                    <h2 class="text-center text-primary mb-4">
-                        Verification Code
-                    </h2>
-
-                    <div class="d-flex justify-content-center gap-2 mb-3">
-
-                        <input type="text" maxlength="1" class="form-control otp-input">
-                        <input type="text" maxlength="1" class="form-control otp-input">
-                        <input type="text" maxlength="1" class="form-control otp-input">
-                        <input type="text" maxlength="1" class="form-control otp-input">
-                        <input type="text" maxlength="1" class="form-control otp-input">
-                        <input type="text" maxlength="1" class="form-control otp-input">
-
-                    </div>
-
-                    <p class="text-center text-muted mb-0">
-                        Enter the 6-digit code you received by email.
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="modal-footer border-0 d-block">
-
-                <button class="btn btn-primary w-100 mb-3 otp-btn"
-                        id="verifyOtpBtn">
-                    Verify
-                </button>
-
-                <button class="btn btn-outline-secondary w-100 otp-btn"
-                        data-bs-dismiss="modal">
-                    Cancel
-                </button>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-    <style>
-    .otp-modal{
-        border-radius:18px;
-    }
-
-    .otp-label{
-        color:#0b3ea9;
-        font-weight:600;
-        letter-spacing:.5px;
-    }
-
-    .otp-title{
-        color:#0b3ea9;
-        font-weight:500;
-    }
-
-    .otp-info-card{
-        display:flex;
-        align-items:center;
-        border:2px solid #8d4dff;
-        border-radius:10px;
-        padding:18px;
-        margin-top:15px;
-    }
-
-    .otp-icon{
-        width:64px;
-        height:64px;
-        border-radius:14px;
-        background:#4c7ff7;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:24px;
-        font-weight:700;
-        flex-shrink:0;
-    }
-
-    .otp-code-card{
-        margin-top:25px;
-        border:1px solid #ddd;
-        border-radius:18px;
-        padding:25px;
-    }
-
-    .otp-input{
-        width:60px;
-        height:60px;
-        text-align:center;
-        font-size:24px;
-        font-weight:600;
-        border-radius:14px;
-    }
-
-    .otp-btn{
-        height:52px;
-        border-radius:14px;
-        font-size:24px;
-    }
-
-    .btn-primary.otp-btn{
-        background:#123c90;
-        border:none;
-    }
-
-    .btn-outline-secondary.otp-btn{
-        border:1px solid #ddd;
-    }
-    </style>
+                <!-- OTP modal moved out to be sibling of ticket modal to ensure proper stacking -->
 
                 {{-- Body --}}
                 
                     <div class="m-3">
                         <div class="row mx-5">
                                 <div class="col-md-6 py-2">
-                                    <div class= "card shadow-sm cursor-pointer" id ="card1" style="background-color: #ddecff; border-color:#062c52; cursor: pointer;">
+                                    <div class= "card shadow-sm cursor-pointer step-card" id ="card1" style="background-color: #ddecff; border-color:#062c52; cursor: pointer;">
                                         <div class="d-flex align-items-center">    
                                                 <div class="justify-content-center align-items-center d-flex h-100" >
                                                     <div class="card-body d-flex align-items-center">
@@ -738,7 +996,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 py-2">
-                                    <div class= "card shadow-sm" id="card2" style="background-color:#e4e4e4; cursor:pointer;">
+                                    <div class= "card shadow-sm step-card" id="card2" style="background-color:#e4e4e4; cursor:pointer;">
                                         <div class="d-flex align-items-center">    
                                                 <div class="justify-content-center align-items-center d-flex h-100">
                                                     <div class="card-body d-flex align-items-center" >
@@ -863,9 +1121,22 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex flex-column flex-sm-row w-100 w-md-auto gap-2 justify-content-end">
-                                                <button type="button" class="btn btn-outline-secondary wizard-btn" data-bs-dismiss="modal"  style="width:100px; border-radius:10px;">Cancel</button>
-                                                <button type="button" id="nextBtn" class="d-submit-button btn btn-primary wizard-bt" style="width:200px; border-radius:10px;" >Next: Request Details <i class="bi bi-arrow-right"></i></button>
+                                    <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-3">
+
+                                        <button type="button"
+                                                class="wizard-cancel-btn"
+                                                data-bs-dismiss="modal">
+                                            <i class="bi bi-x-circle me-2"></i>
+                                            Cancel
+                                        </button>
+
+                                        <button type="button"
+                                                id="nextBtn"
+                                                class="wizard-next-btn">
+                                            <span>Next: Request Details</span>
+                                            <i class="bi bi-arrow-right-circle-fill"></i>
+                                        </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -1069,7 +1340,7 @@
                                                         </div>
                                                         <div>
                                                             <h6 class="me-1">
-                                                                Program <span style="color:rgb(72, 0, 255)">*</span>
+                                                                Program <span style="color:red">*</span>
                                                             </h6>
                                                             <span class="text-muted">
                                                                 Select a program you want for this request
@@ -1271,15 +1542,42 @@
                                                         <div class='col-md-4 d-flex flex-column'>
                                                             <div class="d-flex align-items-center ps-3"> 
                                                                 <div class="pt-3">
-                                                                    <div>
-                                                                        <h6 class="mb-0">
-                                                                            Date of Activity <span style="color:red">*</span>
-                                                                        </h6>
-                                                                        <small class="text-muted">
-                                                                            Select the date or date range of the activity
-                                                                        </small>    
+                                                                    <div class="mb-3">
+                                                                        <div class="mb-2">
+                                                                            <h6 class="mb-0">
+                                                                                Activity Schedule <span class="text-danger">*</span>
+                                                                            </h6>
+                                                                            <small class="text-muted">
+                                                                                Select the start and end date of the activity.
+                                                                            </small>
+                                                                        </div>
+
+                                                                        <div class="row g-3">
+                                                                            <div class="col-md-6">
+                                                                                <label for="dateOfActivity" class="form-label small text-muted">
+                                                                                    Start Date
+                                                                                </label>
+                                                                                <input
+                                                                                    type="date"
+                                                                                    class="form-control"
+                                                                                    id="dateOfActivity"
+                                                                                    name="date_of_activity"
+                                                                                    required>
+                                                                            </div>
+
+                                                                            <div class="col-md-6">
+                                                                                <label for="dateOfActivityEnd" class="form-label small text-muted">
+                                                                                    End Date
+                                                                                </label>
+                                                                                <input
+                                                                                    type="date"
+                                                                                    class="form-control"
+                                                                                    id="dateOfActivityEnd"
+                                                                                    name="date_of_activity_end"
+                                                                                    required>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-                                                                        <input type="date" class="form-control" id="dateOfActivity" name="date_of_activity">
 
                                                                     <h6 class="mb-0 p-1 mt-3">
                                                                         Supporting Document(Optional)
@@ -1312,7 +1610,7 @@
                                                     </div>
                                     </div>
                                 </div>
-                                
+                        {{-- Knowledge Product --}}
                                 <div id="kpBody" class="d-none">
                                     <div class="row p-2">
                                         <div class="col-md-6"> 
@@ -1561,14 +1859,28 @@
                                 </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
                                 <div class="d-flex justify-content-between align-items-center mt-4">
-                                    <button type="button" id="back" class="btn btn-outline-secondary wizard-btn">
-                                        <i class="bi bi-arrow-left"></i>
-                                    </button> 
+                                    <button type="button" id="back" class="btn btn-light wizard-back-btn">
+                                        <i class="bi bi-arrow-left-short fs-5"></i>
+                                        <span>Back</span>
+                                    </button>
 
   
-                                        <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-outline-secondary wizard-btn" data-bs-dismiss="modal"  style="width:100px; border-radius:10px;">Cancel</button>
-                                                <button type="submit" id="submitBtn" class="d-submit-button" class="btn btn-primary wizard-bt" style="width:200px; border-radius:10px;" >Submit</i></button>
+                                        <div class="d-flex justify-content-end gap-3 mt-3">
+
+                                            <button type="button"
+                                                    class="wizard-cancel-btn"
+                                                    data-bs-dismiss="modal">
+                                                <i class="bi bi-x-circle me-2"></i>
+                                                Cancel
+                                            </button>
+
+                                            <button type="submit"
+                                                    id="submitBtn"
+                                                    class="wizard-submit-btn">
+                                                <i class="bi bi-send-check-fill me-2"></i>
+                                                Submit Request
+                                            </button>
+
                                         </div>
                                 </div>
                             </div>
@@ -1581,8 +1893,360 @@
     </div>
 </div>
 </div>
-    <script>
-        let step2Unlocked = false;
+
+<!-- OTP modal !-->
+<div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content otp-modal border-0">
+
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <small class="text-uppercase otp-label">Secure Sign-In</small>
+                    <h2 class="otp-title mb-0">Two-step verification</h2>
+                </div>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Information Card -->
+                <div class="otp-info-card">
+
+                    <div class="otp-icon">
+                        2FA
+                    </div>
+
+                    <div class="ms-3">
+                        <p class="mb-0 text-muted">
+                            Verification code has been sent to
+                            <strong id="otpEmailMasked"></strong>.
+                            Confirm the request first, complete the verification to proceed with your request.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- OTP Card -->
+                <div class="otp-code-card">
+
+                    <h2 class="text-center text-primary mb-4">
+                        Verification Code
+                    </h2>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+                        <input type="text" maxlength="1" class="form-control otp-input">
+
+                    </div>
+
+                    <p class="text-center text-muted mb-0">
+                        Enter the 6-digit code you received by email.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-0 d-block">
+
+                <button class="btn btn-primary w-100 mb-3 otp-btn"
+                        id="verifyOtpBtn">
+                    Verify
+                </button>
+
+                <button class="btn btn-outline-secondary w-100 otp-btn"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+
+</style>
+
+<!-- Processing modal shown when submitting until OTP is sent -->
+<div class="modal fade" id="processingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-body text-center p-5">
+                <div class="loader-circle mb-4">
+                    <div class="spinner-border text-primary" style="width:70px;height:70px;" role="status"></div>
+                </div>
+
+                <h4 class="fw-bold mb-2">Processing Your Request</h4>
+                <p class="text-muted mb-4">Please wait while we securely process your request. This may take a few moments.</p>
+
+                <div class="progress mb-4" style="height:8px;">
+                    <div id="processProgress" class="progress-bar progress-bar-striped progress-bar-animated" style="width:10%;"></div>
+                </div>
+
+                <div class="text-start">
+                    <div id="procStep1" class="process-step"><span class="step-icon"></span> Validating your information</div>
+                    <div id="procStep2" class="process-step"><span class="step-icon"></span> Preparing request details</div>
+                    <div id="procStep3" class="process-step"><span class="step-icon"></span> Generating verification code</div>
+                    <div id="procStep4" class="process-step"><span class="step-icon"></span> Sending OTP to your email</div>
+                    <div id="procStep5" class="process-step"><span class="step-icon"></span> Finalizing Progress</div>
+                </div>
+
+                <small class="text-muted d-block mt-4">Please do not refresh or close this window.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .process-step{ padding:8px 0; color:#6b7280; display:flex; align-items:center; gap:8px; }
+    .step-icon{ width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; flex:0 0 28px; }
+    .step-icon i{ font-size:1rem; color:#9ca3af; }
+    .step-icon svg{ width:24px; height:24px; }
+    .check-svg{ transform-origin:center; transform:scale(.92); transition: transform 220ms cubic-bezier(.2,.9,.2,1); }
+    .check-svg.animate{ transform:scale(1); }
+    .check-svg .check-mark{ stroke-dasharray: 40; stroke-dashoffset: 40; transition: stroke-dashoffset 360ms cubic-bezier(.2,.9,.2,1); stroke-linecap:round; stroke-linejoin:round; }
+    .check-svg.animate .check-mark{ stroke-dashoffset: 0; transition-delay: 160ms; }
+    .check-svg circle{ stroke-dasharray: 80; stroke-dashoffset: 80; transition: stroke-dashoffset 380ms cubic-bezier(.2,.9,.2,1); }
+    .check-svg.animate circle{ stroke-dashoffset: 0; }
+    @keyframes popIn {
+        0% { transform: scale(.92); }
+        60% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+    }
+    .check-svg.animate{ animation: popIn 260ms cubic-bezier(.2,.9,.2,1); }
+    .process-step .bi{ margin-right:6px; }
+    .process-step.completed{ color:#16a34a; font-weight:600; }
+    .process-step.active{ color:#0b3ea9; font-weight:600; }
+</style>
+
+<!-- Success processing modal shown after OTP verification before final submission -->
+<div class="modal fade" id="successProcessingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-body text-center p-5">
+                <div class="loader-circle mb-4">
+                    <div class="spinner-border text-success" style="width:70px;height:70px;" role="status"></div>
+                </div>
+
+                <h4 class="fw-bold mb-2 text-success">Finishing Up</h4>
+                <p class="text-muted mb-4">We are finalizing and submitting your request. This should only take a moment.</p>
+
+                <div class="progress mb-4" style="height:8px;">
+                    <div id="successProcessProgress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width:0%;"></div>
+                </div>
+
+                <div class="text-start">
+                    <div id="successStep1" class="process-step"><span class="step-icon"></span> Finalizing your request</div>
+                </div>
+
+                <small class="text-muted d-block mt-4">Please do not refresh or close this window.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket success modal shown after submission -->
+<div class="modal fade" id="ticketSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius:12px;">
+            <div class="modal-body text-center p-4">
+                <div style="width:72px;height:72px;margin:0 auto;border-radius:18px;background:#e6fff0;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-check2-circle" style="color:#16a34a;font-size:36px;"></i>
+                </div>
+                <p class="mb-2 text-muted">your request!</p>
+
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
+                    <div style="font-weight:700;">Ticket Number:</div>
+                    <div id="createdTicketNumber" style="font-weight:700;color:#0b3ea9"></div>
+                    <span id="swalCopyBtn" style="cursor:pointer;">
+                        <i class="bi bi-clipboard"></i>
+                    </span>                
+                </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Review Inputs --}}
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-primary text-white">
+                <div>
+                    <h5 class="mb-1">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Review Your Request
+                    </h5>
+                    <small>Please review all information before proceeding with OTP verification.</small>
+                </div>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Requestor Information -->
+                <div class="review-section">
+                    <h6>
+                        <i class="bi bi-person-circle me-2"></i>
+                        Requestor Information
+                    </h6>
+
+                    <div class="review-item">
+                        <span>Full Name</span>
+                        <strong id="reviewName"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Email Address</span>
+                        <strong id="reviewEmail"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Sex</span>
+                        <strong id="reviewSex"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Region</span>
+                        <strong id="reviewRegion"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Province</span>
+                        <strong id="reviewProvince"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>City / Municipality</span>
+                        <strong id="reviewCity"></strong>
+                    </div>
+                </div>
+
+                <!-- Service Details -->
+                <div class="review-section mt-4">
+
+                    <h6>
+                        <i class="bi bi-briefcase me-2"></i>
+                        Service Details
+                    </h6>
+
+                    <div class="review-item">
+                        <span>Service Category</span>
+                        <strong id="reviewCategory"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Program</span>
+                        <strong id="reviewProgram"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Purpose of Request</span>
+                        <strong id="reviewPurpose"></strong>
+                    </div>
+
+                </div>
+
+                <!-- Resource Person Only -->
+                <div class="review-section mt-4" id="reviewRPSection">
+
+                    <h6>
+                        <i class="bi bi-calendar-event me-2"></i>
+                        Activity Details
+                    </h6>
+
+                    <div class="review-item">
+                        <span>Venue</span>
+                        <strong id="reviewVenue"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Type of Activity</span>
+                        <strong id="reviewActivityType"></strong>
+                    </div>
+
+                    <div class="review-item">
+                        <span>Date of Activity</span>
+                        <strong id="reviewDate"></strong>
+                    </div>
+
+                </div>
+
+                <!-- Knowledge Product Only -->
+                <div class="review-section mt-4" id="reviewKPSection">
+
+                    <h6>
+                        <i class="bi bi-journal-bookmark me-2"></i>
+                        Knowledge Product
+                    </h6>
+
+                    <div id="reviewKnowledgeProduct"></div>
+
+                </div>
+
+                <!-- Attachment -->
+                <div class="review-section mt-4">
+
+                    <h6>
+                        <i class="bi bi-paperclip me-2"></i>
+                        Supporting Attachment
+                    </h6>
+
+                    <div id="reviewAttachment"></div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-light border"
+                    data-bs-dismiss="modal">
+
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Back & Edit
+
+                </button>
+
+                <button
+                    type="button"
+                    id="proceedOtpBtn"
+                    class="btn btn-primary">
+
+                    <i class="bi bi-shield-lock me-2"></i>
+                    Proceed to OTP
+
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let step2Unlocked = false;
         const serviceCards = ['tacp', 'tapd','rp', 'kp'];   
         const toggle = document.getElementById('togglePassword');
         const password = document.getElementById('password');
@@ -1594,6 +2258,367 @@
         const textarea = document.getElementById('reasonRequestTAPD');
         const checkboxes = document.querySelectorAll('.kp-input');
         const otherInput = document.getElementById('otherKnowledgeProduct');
+
+    function animateCard(cardId, e = null){
+
+    const card = document.getElementById(cardId);
+    const rect = card.getBoundingClientRect();
+
+    let x, y;
+
+    if(e){
+        x = e.clientX - rect.left;
+        y = e.clientY - rect.top;
+    }else{
+        x = rect.width / 2;
+        y = rect.height / 2;
+    }
+
+    card.style.setProperty('--x', x + 'px');
+    card.style.setProperty('--y', y + 'px');
+
+    card.classList.remove('clicked');
+    void card.offsetWidth;
+    card.classList.add('clicked');
+}
+
+        
+    (function(){
+        const pre = "{{ session('created_ticket_number') ?? '' }}";
+        if(pre && pre.length){
+            const ticketNum = pre;
+            const swalHtml = `
+                <div style="text-align:center">
+                    <div style="font-size:14px;color:#16a34a;font-weight:600;margin-bottom:8px">Successfully Submitted</div>
+                    <div style="color:#374151">Your request was submitted successfully.</div>
+                    <div style="margin-top:12px;font-weight:700">Ticket Number</div>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;">
+                        <div id="swalTicketNum" style="color:#0b3ea9;font-size:16px;font-weight:700">${ticketNum}</div>
+                        <button id="swalCopyBtn" type="button" role="button" style="color:#0b3ea9;font-size:16px;text-decoration:none;padding:6px;border-radius:6px;border:1px solid transparent;background:#fff"><i class="bi bi-clipboard"></i></button>
+                    </div>
+                </div>`;
+
+            Swal.fire({
+                icon:'success',
+                title:'Request submitted',
+                html: swalHtml,
+                confirmButtonColor:'#062c52',
+                confirmButtonText: 'OK',
+                focusConfirm: false,
+                allowEnterKey: false,
+                didOpen: ()=>{
+                const copyBtn = document.getElementById('swalCopyBtn');
+                if(copyBtn) copyBtn.addEventListener('click', (e)=>{
+                    e.preventDefault(); e.stopPropagation();
+                    navigator.clipboard.writeText(ticketNum).then(()=>{
+                        Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Copied', showConfirmButton:false, timer:1200 });
+                    });
+                });
+            }}).then((result)=>{ if (result && result.isConfirmed) { window.location.reload(); } });
+        }
+    })();
+
+document.addEventListener('click', function (e) {
+    const copyBtn = e.target.closest('#swalCopyBtn');
+    if (!copyBtn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const ticketNum = document.getElementById('swalTicketNum')?.textContent.trim();
+
+    if (!ticketNum) return;
+
+    navigator.clipboard.writeText(ticketNum).then(() => {
+        copyBtn.innerHTML = '<i class="bi bi-check-lg text-success"></i>';
+
+        setTimeout(() => {
+            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+        }, 1200);
+    });
+}, true);
+
+window._preventAutoReload = false;
+(function(){
+    (function(){
+        const _origReload = window.location.reload.bind(window.location);
+        window.__forceReload = function(){ return _origReload(); };
+
+        window.location.reload = function(){
+            if (window._preventAutoReload) {
+                console.warn('Blocked reload due to active flow');
+                return;
+            }
+            if (window._reloadPromptShown) return;
+            window._reloadPromptShown = true;
+
+            Swal.fire({
+                title: 'Refresh page?',
+                text: 'Click OK to refresh the page.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#062c52'
+            }).then(result => {
+                window._reloadPromptShown = false;
+                if (result && result.isConfirmed) {
+                    _origReload();
+                } else {
+                    console.log('Reload cancelled by user');
+                }
+            });
+        };
+    })();
+})();
+
+(function(){
+    const el = document.getElementById('otpModal');
+    if(!el) return;
+    el.addEventListener('shown.bs.modal', function(){
+        // The backdrop is appended to body; pick the last one
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        const last = backdrops[backdrops.length - 1];
+        if(last) last.classList.add('otp-backdrop');
+    });
+    el.addEventListener('hidden.bs.modal', function(){
+        document.querySelectorAll('.modal-backdrop.otp-backdrop').forEach(b => b.classList.remove('otp-backdrop'));
+    });
+})();
+
+       function showAttachment(fileInputId){
+
+    const attachment = document.getElementById('reviewAttachment');
+    attachment.innerHTML = '';
+
+    const fileInput = document.getElementById(fileInputId);
+
+    if(fileInput.files.length){
+
+        attachment.innerHTML = `
+            <i class="bi bi-paperclip me-2"></i>
+            ${fileInput.files[0].name}
+        `;
+
+    }else{
+
+        attachment.innerHTML = '-';
+
+    }
+
+}
+const proceedOtpBtn = document.getElementById('proceedOtpBtn');
+
+if (proceedOtpBtn) {
+    proceedOtpBtn.addEventListener('click', function () {
+
+        const reviewModalEl = document.getElementById('reviewModal');
+        const reviewModal = bootstrap.Modal.getInstance(reviewModalEl);
+
+        reviewModal.hide();
+
+        reviewModalEl.addEventListener('hidden.bs.modal', function () {
+            const email = document.getElementById('email').value.trim();
+            startOtpFlow(email);
+        }, { once: true });
+
+    });
+}
+
+        function populateReviewSlip() {
+            const program = document.getElementById('programSelectKP');
+            document.getElementById('reviewRPSection').style.display = 'none';
+            document.getElementById('reviewKPSection').style.display = 'none';
+            
+
+    // ============================
+    // Common Information
+    // ============================
+    document.getElementById('reviewName').textContent =
+        `${document.getElementById('first_name').value}
+         ${document.getElementById('middle_name').value}
+         ${document.getElementById('last_name').value}`;
+
+    document.getElementById('reviewEmail').textContent =
+        document.getElementById('email').value;
+
+    document.getElementById('reviewSex').textContent =
+        document.getElementById('sex').selectedOptions?.[0]?.text || '-';
+
+    document.getElementById('reviewRegion').textContent =
+        document.getElementById('region').selectedOptions?.[0]?.text || '-';
+
+    document.getElementById('reviewProvince').textContent =
+        document.getElementById('province').selectedOptions?.[0]?.text || '-';
+
+    document.getElementById('reviewCity').textContent =
+        document.getElementById('city').selectedOptions?.[0]?.text || '-';
+
+    const category = document.getElementById('ticket_category').value;
+
+        let categoryText = '';
+
+        switch (category) {
+            case 'completed':
+                categoryText = 'Technical Assistance on Completed Program';
+                break;
+
+            case 'enhancement':
+                categoryText = 'Technical Assistance on Program Development';
+                break;
+
+            case 'resource':
+                categoryText = 'Resource Person';
+                break;
+
+            case 'knowledge':
+                categoryText = 'Knowledge Product';
+                break;
+
+            default:
+                categoryText = category;
+        }
+
+        document.getElementById('reviewCategory').textContent = categoryText;
+            
+    const categoryNames = {
+    tacp: "Technical Assistance Completed Program",
+    tapd: "Technical Assistance Program Development",
+    rp: "Resource Person",
+    kp: "Knowledge Product"
+};
+
+
+    // ============================
+    // Clear Review Fields
+    // ============================
+    document.getElementById('reviewProgram').textContent = '-';
+    document.getElementById('reviewPurpose').textContent = '-';
+    document.getElementById('reviewVenue').textContent = '-';
+    document.getElementById('reviewActivityType').textContent = '-';
+    document.getElementById('reviewDate').textContent = '-';
+    document.getElementById('reviewKnowledgeProduct').innerHTML = '-';
+    document.getElementById('reviewAttachment').innerHTML = '-';
+
+
+    // ============================
+    // TACP
+    // ============================
+    if(category === 'completed'){
+        const program = document.getElementById('programSelectTACP');
+
+        document.getElementById('reviewProgram').textContent =
+            program.value === 'others'
+            ? document.getElementById('otherProgramInputTACP').value
+            : program.selectedOptions?.[0]?.text || '-';
+
+        document.getElementById('reviewPurpose').textContent =
+            document.getElementById('reasonRequestTACP').value;
+
+        showAttachment('supportFileTACP');
+
+    }
+
+    // ============================
+    // TAPD
+    // ============================
+    else if(category === 'enhancement'){
+
+        const program = document.getElementById('programSelectTAPD');
+
+        document.getElementById('reviewProgram').textContent =
+            program.value === 'others'
+            ? document.getElementById('otherProgramInputTAPD').value
+            : program.selectedOptions?.[0]?.text || '-';
+
+        document.getElementById('reviewPurpose').textContent =
+            document.getElementById('reasonRequestTAPD').value;
+
+        showAttachment('supportFileTAPD');
+
+    }
+
+    // ============================
+    // Resource Person
+    // ============================
+    else if(category === 'resource'){
+        document.getElementById('reviewRPSection').style.display = 'block';
+
+        const program = document.getElementById('programSelectRP');
+
+        document.getElementById('reviewProgram').textContent =
+            program.value === 'others'
+            ? document.getElementById('otherProgramInputRP').value
+            : program.selectedOptions?.[0]?.text || '-';
+
+        document.getElementById('reviewPurpose').textContent =
+            document.getElementById('reasonRequestRP').value;
+
+        document.getElementById('reviewVenue').textContent =
+            document.getElementById('venue').value;
+
+        document.getElementById('reviewActivityType').textContent =
+            document.getElementById('type_of_activity').value;
+
+        const startDate = document.getElementById('dateOfActivity').value;
+        const endDate = document.getElementById('dateOfActivityEnd').value;
+
+        if (startDate && endDate) {
+            if (startDate === endDate) {
+                document.getElementById('reviewDate').textContent = startDate;
+            } else {
+                document.getElementById('reviewDate').textContent = `${startDate} to ${endDate}`;
+            }
+        } else if (startDate) {
+            document.getElementById('reviewDate').textContent = startDate;
+        } else {
+            document.getElementById('reviewDate').textContent = '-';
+}
+
+        showAttachment('supportFileRP');
+
+    }
+
+    // ============================
+    // Knowledge Product
+    // ============================
+    else if(category === 'knowledge'){
+    document.getElementById('reviewKPSection').style.display = 'block';
+
+        const program = document.getElementById('programSelectKP');
+
+        document.getElementById('reviewProgram').textContent =
+            program.value === 'others'
+            ? document.getElementById('otherProgramInputKP').value
+            : program.selectedOptions?.[0]?.text || '-';
+
+        document.getElementById('reviewPurpose').textContent =
+            document.getElementById('reasonRequestKP').value;
+
+        const kpContainer = document.getElementById('reviewKnowledgeProduct');
+        kpContainer.innerHTML = '';
+
+        document.querySelectorAll('input[name="type_of_knowledge_product[]"]:checked')
+            .forEach(cb => {
+
+                let value = cb.value;
+
+                if(value === 'Others'){
+                    value = document.getElementById('otherKnowledgeProduct').value;
+                }
+
+                kpContainer.innerHTML += `
+                    <div class="mb-1">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        ${value}
+                    </div>
+                `;
+            });
+
+    }
+
+        }
 
     toggle.addEventListener('click', function () {
         if(password.type === 'password'){
@@ -1683,9 +2708,15 @@
         .catch(error => console.error(error));
 });
 
-        // Request details bodies transition
         document.addEventListener('DOMContentLoaded', function () {
-                    // Remove purpose_of_request and program names initially; they'll be set when a service is selected
+                    const today = new Date().toISOString().split('T')[0];
+
+                    const startDate = document.getElementById('dateOfActivity');
+                    const endDate = document.getElementById('dateOfActivityEnd');
+
+                    startDate.min = today;
+                    endDate.min = today;
+
                     const initialTa = ['reasonRequestTACP','reasonRequestTAPD','reasonRequestRP','reasonRequestKP'];
                     initialTa.forEach(id => {
                         const ta = document.getElementById(id);
@@ -1725,7 +2756,7 @@
                 return;
             }
             step2Unlocked = true;
-
+            animateCard('card2');
             //Step 1
             document.getElementById('step1').classList.add('d-none');
             //Step 2
@@ -1747,7 +2778,8 @@
 
             });
             //Card 1 Body
-            document.getElementById('card1').addEventListener('click', function(){
+            document.getElementById('card1').addEventListener('click', function(e){
+                animateCard('card1',e);
             //Step 1
             document.getElementById('step1').classList.remove('d-none');
             //Step 2
@@ -1768,7 +2800,8 @@
             })
 
             //Card 2 Body
-            document.getElementById('card2').addEventListener('click', function(){
+            document.getElementById('card2').addEventListener('click', function(e){
+                
                 if(
                 document.getElementById('first_name').value.trim() === '' ||
                 document.getElementById('last_name').value.trim() === '' ||
@@ -1790,6 +2823,7 @@
             }
             
                 if(step2Unlocked){
+                    animateCard('card2',e);
             //Step 1
             document.getElementById('step1').classList.add('d-none');
             //Step 2
@@ -1840,7 +2874,6 @@
 
                 // Show only the selected one
                 document.getElementById(service + 'Body').classList.remove('d-none');
-                // set hidden ticket_category input to the selected service
                 const svc = document.getElementById(service).dataset.service || '';
                 const ticketCatInput = document.getElementById('ticket_category');
                 if(ticketCatInput) ticketCatInput.value = svc;
@@ -1865,7 +2898,6 @@
                     }
                 });
 
-                // ensure only the active service program select has name='program'
                 const progMap = {
                     tacp: 'programSelectTACP',
                     tapd: 'programSelectTAPD',
@@ -1882,7 +2914,6 @@
                     }
                 });
 
-                // set program_others name only for active other input
                 const otherMap = {
                     tacp: 'otherProgramInputTACP',
                     tapd: 'otherProgramInputTAPD',
@@ -1899,10 +2930,8 @@
                     }
                 });
 
-                // ensure purpose_of_request has content when moving to step3
                 const activePurpose = document.querySelector('textarea[name="purpose_of_request"]');
                 if (activePurpose) {
-                    // remove previous invalid style/message
                     activePurpose.classList.remove('is-invalid');
                 }
 
@@ -1920,6 +2949,13 @@
             //step 3
             document.getElementById('step3').classList.add('d-none');
     })
+    startDate.addEventListener('change', function () {
+    endDate.min = this.value;
+
+    if (endDate.value && endDate.value < this.value) {
+        endDate.value = '';
+    }
+});
 });
 
 document.getElementById('programSelectTACP').addEventListener('change', function(){
@@ -1980,16 +3016,136 @@ document.getElementById('programSelectKP').addEventListener('change', function()
     }
 });
 
-// OTP send & verify flow (used by Submit flow)
-async function startOtpFlow(email) {
-    if (!email) {
-        Swal.fire({ icon: 'warning', title: 'Email required', text: 'Please enter your email first.', confirmButtonColor: '#062c52' });
-        return;
-    }
+function renderCheckSVG(){
+    return `
+        <svg class="check-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="11" stroke="#16a34a" stroke-width="2" fill="transparent" />
+            <path class="check-mark" d="M7 12.5 L10 15.5 L17 8.5" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>`;
+}
 
+function markStepCompleted(el){
+    if(!el) return;
+    el.classList.remove('active');
+    el.classList.add('completed');
+    const icon = el.querySelector('.step-icon');
+    if(icon){
+        icon.innerHTML = renderCheckSVG();
+        // trigger animation by reflow
+        const svg = icon.querySelector('.check-svg');
+        if(svg){
+            svg.classList.remove('animate');
+            void svg.offsetWidth;
+            svg.classList.add('animate');
+        }
+    }
+}
+
+function setStepActive(el){
+    if(!el) return;
+    el.classList.add('active');
+    el.classList.remove('completed');
+    const icon = el.querySelector('.step-icon');
+    if(icon){
+        icon.innerHTML = '<i class="bi bi-circle-fill"></i>';
+    }
+}
+
+function showSuccessProcessing() {
+    const el = document.getElementById('successProcessingModal');
+    if (!el) return null;
+    const bs = new bootstrap.Modal(el, { backdrop: 'static', keyboard: false });
+    const progress = document.getElementById('successProcessProgress');
+    const step = document.getElementById('successStep1');
+    // reset
+    if (progress) progress.style.width = '0%';
+    if (step) { step.classList.remove('completed','active'); const si = step.querySelector('.step-icon'); if (si) si.innerHTML = '<i class="bi bi-circle"></i>'; }
+    bs.show();
+    window._preventAutoReload = true;
+
+    let pct = 0;
+    const iv = setInterval(() => {
+        pct = Math.min(90, pct + Math.floor(Math.random() * 20) + 10);
+        if (progress) progress.style.width = pct + '%';
+        if (pct >= 90) {
+            clearInterval(iv);
+        }
+    }, 160);
+
+        return {
+        finish: () => new Promise((resolve) => {
+            clearInterval(iv);
+            if (progress) progress.style.width = '100%';
+            if (step) markStepCompleted(step);
+            setTimeout(() => { bs.hide();
+                // allow reloads after processing finished
+                window._preventAutoReload = false;
+                resolve();
+            }, 450);
+        })
+    };
+}
+
+async function startOtpFlow(email) {
+        console.debug('startOtpFlow called with email:', email);
+        if (!email) {
+            Swal.fire({ icon: 'warning', title: 'Email required', text: 'Please enter your email first.', confirmButtonColor: '#062c52' });
+            return;
+        }
+    window._preventAutoReload = true;
+    const procModalEl = document.getElementById('processingModal');
+    let procBs = null;
+    let procInterval = null;
     try {
+        if (procModalEl) {
+            procBs = new bootstrap.Modal(procModalEl, { backdrop: 'static', keyboard: false });
+            procBs.show();
+
+            const progressEl = document.getElementById('processProgress');
+            const steps = [
+                document.getElementById('procStep1'),
+                document.getElementById('procStep2'),
+                document.getElementById('procStep3'),
+                document.getElementById('procStep4'),
+                document.getElementById('procStep5')
+            ];
+            steps.forEach((s, i) => {
+                if (!s) return;
+                s.classList.remove('active', 'completed');
+                if (i === 0) {
+                    markStepCompleted(s);
+                } else if (i === 1) {
+                    setStepActive(s);
+                } else {
+                    const icon = s.querySelector('.step-icon');
+                    if (icon) icon.innerHTML = '<i class="bi bi-circle"></i>';
+                }
+            });
+
+            let pct = 10;
+            let idx = 1;
+            procInterval = setInterval(() => {
+                pct = Math.min(80, pct + Math.floor(Math.random() * 10) + 5);
+                if (progressEl) progressEl.style.width = pct + '%';
+                steps.forEach((s, i) => {
+                    if (!s) return;
+                    if (i < idx) {
+                        markStepCompleted(s);
+                    } else if (i === idx) {
+                        setStepActive(s);
+                    } else {
+                        const icon = s.querySelector('.step-icon');
+                        if (icon) icon.innerHTML = '<i class="bi bi-circle"></i>';
+                        s.classList.remove('active','completed');
+                    }
+                });
+                idx = Math.min(steps.length - 1, idx + 1);
+            }, 700);
+        }
+
         const res = await fetch('{{ route('tickets.sendOtp') }}', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -2001,18 +3157,76 @@ async function startOtpFlow(email) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
 
-        // show custom OTP modal with 6-digit inputs
+            if (procInterval) clearInterval(procInterval);
+            const progressEl2 = document.getElementById('processProgress');
+            if (progressEl2) progressEl2.style.width = '100%';
+        ['procStep1','procStep2','procStep3','procStep4','procStep5'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                markStepCompleted(el);
+            }
+        });
+
+        await new Promise(r => setTimeout(r, 400));
+        if (procBs) procBs.hide();
+        window._preventAutoReload = false;
+
         const otpModalEl = document.getElementById('otpModal');
+        if (!otpModalEl) {
+            console.error('OTP modal element not found');
+            Swal.fire({ icon: 'error', title: 'OTP unavailable', text: 'Could not open OTP modal. Please try again or refresh the page.', confirmButtonColor: '#062c52' });
+            return;
+        }
         const otpEmailMasked = document.getElementById('otpEmailMasked');
         const otpInputs = otpModalEl.querySelectorAll('.otp-input');
+        if (!otpInputs || !otpInputs.length) {
+            console.error('OTP inputs not found');
+            Swal.fire({ icon: 'error', title: 'OTP inputs missing', text: 'OTP inputs are not available on this page.', confirmButtonColor: '#062c52' });
+            return;
+        }
         otpEmailMasked.innerText = email.replace(/(.).*(.@)/, '$1***$2');
-        const bsOtpModal = new bootstrap.Modal(otpModalEl);
-        otpInputs.forEach(i => { i.value = ''; i.disabled = false; });
-        bsOtpModal.show();
+        try {
+            const ticketModalEl = document.getElementById('createTicketModal');
+            if (ticketModalEl) {
+                const inst = bootstrap.Modal.getInstance(ticketModalEl) || new bootstrap.Modal(ticketModalEl);
+                inst.hide();
+            }
+        } catch (e) { console.warn('Could not hide other modal', e); }
 
-        setTimeout(() => otpInputs[0].focus(), 200);
+        const bsOtpModal = new bootstrap.Modal(otpModalEl, { backdrop: 'static', keyboard: false });
+        otpInputs.forEach(i => { i.value = ''; i.disabled = false; });
+        // small delay before showing to let previous modal teardown finish
+        setTimeout(() => {
+            bsOtpModal.show();
+            // ensure reloads remain blocked while OTP modal is open
+            window._preventAutoReload = true;
+            // delay focus slightly to avoid focusin reentrancy with Bootstrap focus trap
+            setTimeout(() => { try { otpInputs[0].focus(); } catch (e) {} }, 220);
+        }, 60);
 
         const gatherCode = () => Array.from(otpInputs).map(i => i.value.trim()).join('');
+
+        // simple input navigation & paste
+        otpInputs.forEach((input, idx) => {
+            input.addEventListener('input', (e) => {
+                const v = input.value.trim();
+                if (v.length > 1) {
+                    // handle paste of full code
+                    const paste = v.split('');
+                    for (let j = 0; j < otpInputs.length; j++) {
+                        otpInputs[j].value = paste[j] || '';
+                    }
+                    otpInputs[Math.min(otpInputs.length-1, paste.length-1)].focus();
+                } else if (v.length === 1) {
+                    if (idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && idx > 0) {
+                    otpInputs[idx - 1].focus();
+                }
+            });
+        });
 
         otpInputs.forEach((input, idx) => {
             input.addEventListener('input', function (e) {
@@ -2035,7 +3249,13 @@ async function startOtpFlow(email) {
             });
         });
 
+        console.debug('Showing OTP modal');
         const verifyBtn = document.getElementById('verifyOtpBtn');
+        if (!verifyBtn) {
+            console.error('Verify button not found');
+            Swal.fire({ icon: 'error', title: 'OTP verify unavailable', text: 'Verify button missing.', confirmButtonColor: '#062c52' });
+            return;
+        }
         const onVerify = async () => {
             const otp = gatherCode();
             if (!otp || otp.length < 6) {
@@ -2046,9 +3266,10 @@ async function startOtpFlow(email) {
             verifyBtn.disabled = true;
             verifyBtn.innerText = 'Verifying...';
 
-            try {
+                try {
                 const verifyRes = await fetch('{{ route('tickets.verifyOtp') }}', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -2059,13 +3280,27 @@ async function startOtpFlow(email) {
                 const verifyData = await verifyRes.json();
                 if (!verifyRes.ok) throw new Error(verifyData.message || 'OTP verification failed');
 
-                Swal.fire({ icon: 'success', title: 'Verified', text: 'Your email has been verified.', confirmButtonColor: '#062c52' });
                 ticketForm.dataset.otpVerified = 'true';
-                try { ticketForm.dispatchEvent(new Event('otp:verified')); } catch (e) {}
+                try { ticketForm.dispatchEvent(new Event('otp:verified')); console.debug('Dispatched otp:verified'); } catch (e) { console.error('dispatch error', e); }
                 bsOtpModal.hide();
+                window._preventAutoReload = false;
                 verifyBtn.removeEventListener('click', onVerify);
+
+                (async () => {
+                    let confirmed = false;
+                    for (let attempt = 0; attempt < 6; attempt++) {
+                        await new Promise(r => setTimeout(r, 200));
+                        try {
+                            const statusRes = await fetch('{{ route('tickets.otpStatus') }}', { method: 'GET', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                            if (!statusRes.ok) continue;
+                            const statusJson = await statusRes.json();
+                            if (statusJson.verified && statusJson.verifiedEmail === email) { confirmed = true; break; }
+                        } catch (e) { /* ignore */ }
+                    }
+                })();
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
+                try { otpInputs[0].focus(); } catch (e) {}
                 verifyBtn.disabled = false;
                 verifyBtn.innerText = 'Verify';
             }
@@ -2075,11 +3310,12 @@ async function startOtpFlow(email) {
         verifyBtn.addEventListener('click', onVerify);
 
     } catch (err) {
+        if (procInterval) clearInterval(procInterval);
+        if (procBs) procBs.hide();
         Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
     }
 }
 
-        // Show filename for the specific file input
         [input1, input2, input3, input4].forEach(input => {
             if (!input) return;
             input.addEventListener('change', function () {
@@ -2097,7 +3333,6 @@ async function startOtpFlow(email) {
             });
         });
 
-        // Wire up each upload-box label to its corresponding input for drag/drop and click
         uploadBoxes.forEach(label => {
             const forId = label.getAttribute('for');
             const input = forId ? document.getElementById(forId) : null;
@@ -2117,9 +3352,7 @@ async function startOtpFlow(email) {
                 input.files = e.dataTransfer.files;
                 input.dispatchEvent(new Event('change'));
             });
-            // clicking label will focus file input automatically via for="id"
         });
-// document.addEventListener('DOMContentLoaded', function(){
     
     const cardBodyChangeftf = document.getElementById('facetoface');
     const cardBodyChangev = document.getElementById('virtual');
@@ -2162,10 +3395,26 @@ document.getElementById('blended').addEventListener('click', function(){
     if(typeInput) typeInput.value = 'Blended';
 });
 
-// Client-side guard + AJAX submit so file uploads are reliably sent
 const ticketForm = document.getElementById('ticketForm');
+const ticketEmailInput = document.getElementById('email');
+const createTicketModalEl = document.getElementById('createTicketModal');
+
+function resetOtpVerificationState() {
+    if (!ticketForm) return;
+    ticketForm.dataset.otpVerified = 'false';
+}
+
+if (ticketEmailInput) {
+    ticketEmailInput.addEventListener('input', resetOtpVerificationState);
+    ticketEmailInput.addEventListener('change', resetOtpVerificationState);
+}
+
+if (createTicketModalEl) {
+    createTicketModalEl.addEventListener('show.bs.modal', resetOtpVerificationState);
+}
+
 if (ticketForm) {
-    ticketForm.addEventListener('submit', function (e) {
+    ticketForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const ticketCat = document.getElementById('ticket_category')?.value || '';
@@ -2223,23 +3472,6 @@ if (ticketForm) {
             return false;
         }
 
-        // If OTP not yet verified, trigger OTP flow then submit after verification
-        const proceedAfterOtp = async () => {
-            // attach one-time listener to continue submission when OTP verified
-            const handler = async () => {
-                try {
-                    await doSubmit();
-                } catch (e) {
-                    // doSubmit handles errors
-                }
-            };
-            ticketForm.addEventListener('otp:verified', handler, { once: true });
-            // start OTP flow which will show modal and continue submission on verify
-            startOtpFlow(email);
-            return;
-        };
-
-        // If Knowledge Product (KP) service selected, require at least one product checkbox
         if (ticketCat === 'knowledge') {
             const selectedProducts = ticketForm.querySelectorAll('input[name="type_of_knowledge_product[]"]:checked');
             if (!selectedProducts || selectedProducts.length === 0) {
@@ -2249,7 +3481,6 @@ if (ticketForm) {
                     text: 'Please select at least one Type of knowledge product.',
                     confirmButtonColor: '#062c52'
                 });
-                // Bring user back to KP step
                 document.getElementById('step1').classList.add('d-none');
                 document.getElementById('step2').classList.add('d-none');
                 document.getElementById('step3').classList.remove('d-none');
@@ -2261,7 +3492,6 @@ if (ticketForm) {
                 return false;
             }
 
-            // If 'Others' is selected, require the specification field
             const othersEl = ticketForm.querySelector('input[name="type_of_knowledge_product[]"][value="Others"]');
             const otherSpec = document.getElementById('otherKnowledgeProduct');
             if (othersEl && othersEl.checked && otherSpec && otherSpec.value.trim() === '') {
@@ -2277,14 +3507,53 @@ if (ticketForm) {
             }
         }
 
-        // Build FormData and ensure the selected file (if any) is included explicitly
+        if (ticketCat === 'resource') {
+
+    const startDate = document.getElementById('dateOfActivity').value;
+    const endDate = document.getElementById('dateOfActivityEnd').value;
+
+    if (!startDate) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Start Date Required',
+            text: 'Please select the activity start date.',
+            confirmButtonColor: '#062c52'
+        });
+
+        document.getElementById('dateOfActivity').focus();
+        return false;
+    }
+
+    if (!endDate) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'End Date Required',
+            text: 'Please select the activity end date.',
+            confirmButtonColor: '#062c52'
+        });
+
+        document.getElementById('dateOfActivityEnd').focus();
+        return false;
+    }
+
+    if (new Date(endDate) < new Date(startDate)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid Date Range',
+            text: 'The activity end date cannot be earlier than the start date.',
+            confirmButtonColor: '#062c52'
+        });
+
+        document.getElementById('dateOfActivityEnd').focus();
+        return false;
+    }
+    }
+
         const fd = new FormData(ticketForm);
 
-        // Find any file input that has files (priority to the visible/active one)
         const fileInputs = Array.from(ticketForm.querySelectorAll('input[type="file"]'));
         for (const fi of fileInputs) {
             if (fi.files && fi.files.length) {
-                // append under 'attachment' name (overwrites any blank entries)
                 fd.set('attachment', fi.files[0], fi.files[0].name);
                 break;
             }
@@ -2292,44 +3561,108 @@ if (ticketForm) {
 
         const submitBtn = document.getElementById('submitBtn');
 
-        // helper to perform the actual submission
         const doSubmit = async () => {
             if (submitBtn) submitBtn.disabled = true;
+            try {
+                const response = await fetch(ticketForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: fd,
+                    credentials: 'same-origin'
+                });
 
-            const response = await fetch(ticketForm.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: fd,
-            credentials: 'same-origin'
-            }).then(async response => {
                 const text = await response.text();
                 let data = null;
                 try { data = text ? JSON.parse(text) : null; } catch(e) { data = null; }
 
-                if (response.ok) {
-                    const title = (data && data.title) ? data.title : 'Request submitted';
-                    const message = (data && data.message) ? data.message : 'Your ticket was submitted successfully.';
-                    await Swal.fire({
+                if (!response.ok) {
+                    const errMsg = (data && data.message) ? data.message : text || 'Unknown server error';
+                    throw new Error(errMsg);
+                }
+
+                return data;
+            } catch (err) {
+                if (submitBtn) submitBtn.disabled = false;
+                throw err;
+            }
+        };
+
+        const submitAndShowResult = async () => {
+            const proc = showSuccessProcessing();
+            try {
+                const data = await doSubmit();
+                if (proc && proc.finish) await proc.finish();
+
+                const title = (data && data.title) ? data.title : 'Request submitted';
+                const message = (data && data.message) ? data.message : 'Your ticket was submitted successfully.';
+
+                if (data && data.ticket_number) {
+                    const ticketNum = data.ticket_number;
+                    const swalHtml = `
+                        <div style="text-align:center">
+                            <div style="color:#374151">${message}</div>
+                            <div style="margin-top:12px;font-weight:700">Ticket Number</div>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;">
+                                <div id="swalTicketNum" style="color:#0b3ea9;font-size:16px;font-weight:700">${ticketNum}</div>
+                                <button id="swalCopyBtn" type="button" role="button" style="color:#0b3ea9;font-size:16px;text-decoration:none;padding:6px;border-radius:6px;border:1px solid transparent;background:#fff"><i class="bi bi-clipboard"></i></button>
+                            </div>
+                        </div>`;
+
+                    Swal.fire({
                         icon: 'success',
                         title: title,
-                        text: message,
-                        confirmButtonColor: '#062c52'
+                        html: swalHtml,
+                        showConfirmButton: true,
+                        confirmButtonColor: '#062c52',
+                        confirmButtonText: 'OK',
+                        focusConfirm: false,
+                        allowEnterKey: false,
+                        didOpen: () => {
+                            const copyBtn = document.getElementById('swalCopyBtn');
+                            if (copyBtn) copyBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(ticketNum).then(() => {
+                                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Copied to clipboard', showConfirmButton: false, timer: 1200 });
+                                }).catch(() => {
+                                    Swal.fire({ icon: 'info', title: 'Copy', text: ticketNum });
+                                });
+                            });
+                        }
+                    }).then((result) => {
+                        if (result && result.isConfirmed) {
+                            if (data && data.redirect) {
+                                window.location.href = data.redirect;
+                            } else {
+                                window.location.reload();
+                            }
+                        }
                     });
 
-                    if (data && data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        window.location.reload();
-                    }
                     return;
                 }
 
-                const errMsg = (data && data.message) ? data.message : text || 'Unknown server error';
-                throw new Error(errMsg);
-            }).catch(err => {
+                const swalRes = await Swal.fire({
+                    icon: 'success',
+                    title: title,
+                    text: message,
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK',
+                    focusConfirm: false,
+                    allowEnterKey: false
+                });
+                if (swalRes && swalRes.isConfirmed) {
+                    if (data && data.redirect) { window.location.href = data.redirect; } else { window.location.reload(); }
+                }
+                resetOtpVerificationState();
+                return;
+            } catch (err) {
+                if (proc && proc.finish) {
+                    try { await proc.finish(); } catch (e) {}
+                }
                 Swal.fire({
                     icon: 'error',
                     title: 'Submission failed',
@@ -2337,16 +3670,27 @@ if (ticketForm) {
                     confirmButtonColor: '#062c52'
                 });
                 if (submitBtn) submitBtn.disabled = false;
-            });
+            }
         };
 
-        // If OTP not verified, trigger OTP flow then submit when verified
         if (ticketForm.dataset.otpVerified !== 'true') {
-            proceedAfterOtp();
+            ticketForm.dataset.otpVerified = 'false';
+            ticketForm.addEventListener('otp:verified', async function onOtpVerified() {
+                try {
+                    await submitAndShowResult();
+                } catch (e) {
+                    console.error('Post-OTP submission failed', e);
+                }
+            }, { once: true });
+            const reviewModalEl = document.getElementById('reviewModal');
+            const reviewModal = new bootstrap.Modal(reviewModalEl);
+
+            populateReviewSlip();
+            reviewModal.show();
             return;
         }
-        // otherwise submit immediately
-        doSubmit();
+
+        await submitAndShowResult();
     });
 }
 
@@ -2366,7 +3710,6 @@ checkboxes.forEach(checkbox => {
             icon.classList.add('bi-square');
         }
 
-        // Show "Others" textbox if Others is checked
         const othersChecked = document.querySelector(
             '.kp-input[value="Others"]'
         ).checked;
@@ -2383,7 +3726,150 @@ checkboxes.forEach(checkbox => {
 
 });
 
-// });
+function clearFileUpload(inputId) {
+
+    const input = document.getElementById(inputId);
+
+    if (!input) return;
+
+    // Clear selected file
+    input.value = '';
+
+    // Hide filename
+    const card = input.closest('.card');
+    const fileName = card?.querySelector('.file-name');
+
+    if (fileName) {
+        fileName.classList.add('d-none');
+        fileName.innerHTML = '';
+    }
+}
+
+function clearTACPFields(){
+    document.querySelectorAll('#tacpBody input').forEach(input =>{
+        if(input.type === 'checkbox' || input.type === 'radio'){
+            input.checked = false;
+        } else if(input.type !== 'hidden'){
+            input.value = '';
+        }
+    });
+
+    document.querySelectorAll('#tacpBody textarea').forEach(textarea => {
+        textarea.value = '';
+    });
+
+    document.querySelectorAll('#tacpBody select').forEach(select =>{
+        select.selectedIndex = 0;
+    });
+
+    document.getElementById('otherProgramFieldTACP').classList.add('d-none');
+    document.getElementById('otherProgramInputTACP').value = '';
+    clearFileUpload('supportFileTACP');
+}
+
+function clearTAPDFields(){
+    document.querySelectorAll('#tapdBody input').forEach(input =>{
+        if(input.type === 'checkbox' || input.type === 'radio'){
+            input.checked = false;
+        } else if(input.type !== 'hidden'){
+            input.value = '';
+        }
+    });
+
+    document.querySelectorAll('#tapdBody textarea').forEach(textarea => {
+        textarea.value = '';
+    });
+
+    document.querySelectorAll('#tapdBody select').forEach(select =>{
+        select.selectedIndex = 0;
+    });
+
+    document.getElementById('otherProgramFieldTAPD').classList.add('d-none');
+    document.getElementById('otherProgramInputTAPD').value = '';
+        clearFileUpload('supportFileTAPD');
+
+}
+
+function clearRPFields(){
+    document.querySelectorAll('#rpBody input').forEach(input =>{
+        if(input.type === 'checkbox' || input.type === 'radio'){
+            input.checked = false;
+        } else if(input.type !== 'hidden'){
+            input.value = '';
+        }
+    });
+
+    document.querySelectorAll('#rpBody textarea').forEach(textarea => {
+        textarea.value = '';
+    });
+
+    document.querySelectorAll('#rpBody select').forEach(select =>{
+        select.selectedIndex = 0;
+    });
+
+    document.getElementById('otherProgramFieldRP').classList.add('d-none');
+    document.getElementById('otherProgramInputRP').value = '';
+        clearFileUpload('supportFileRP');
+
+}
+
+function clearKPFields(){
+    document.querySelectorAll('#kpBody input').forEach(input =>{
+        if(input.type === 'checkbox' || input.type === 'radio'){
+            input.checked = false;
+        } else if(input.type !== 'hidden'){
+            input.value = '';
+        }
+    });
+
+    document.querySelectorAll('#kpBody textarea').forEach(textarea => {
+        textarea.value = '';
+    });
+
+    document.querySelectorAll('#kpBody select').forEach(select =>{
+        select.selectedIndex = 0;
+    });
+
+    document.getElementById('otherProgramFieldKP').classList.add('d-none');
+    document.getElementById('otherProgramInputKP').value = '';
+
+    document.querySelectorAll('#kpBody .kp-input').forEach(input => {
+    input.checked = false;
+
+    const icon = input.nextElementSibling.querySelector('.kp-check');
+
+    icon.classList.remove('bi-check-square-fill');
+    icon.classList.add('bi-square');
+        clearFileUpload('supportFileKP');
+
+});
+};
+
+document.getElementById('tacp').addEventListener('click', function() {
+    clearTAPDFields();
+    clearRPFields();
+    clearKPFields();
+});
+
+document.getElementById('tapd').addEventListener('click', function() {
+    clearTACPFields();
+    clearRPFields();
+    clearKPFields();
+});
+
+document.getElementById('rp').addEventListener('click', function() {
+    clearTACPFields();
+    clearTAPDFields();
+    clearKPFields();
+});
+
+document.getElementById('kp').addEventListener('click', function() {
+    clearTACPFields();
+    clearTAPDFields();
+    clearRPFields();
+});
+
+
 
 
         

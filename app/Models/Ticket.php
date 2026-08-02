@@ -35,5 +35,6 @@ class Ticket extends Model
     'venue',
     'type_of_activity',
     'date_of_activity',
+    'date_of_activity_end'
 ];
 }

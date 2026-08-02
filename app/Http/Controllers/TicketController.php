@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class TicketController extends Controller
@@ -41,7 +40,7 @@ class TicketController extends Controller
             'ticket_category' => 'required',
             'purpose_of_request' => 'required',
 
-            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
         ]);
 
         DB::beginTransaction();
@@ -86,6 +85,8 @@ class TicketController extends Controller
                 'type_of_activity' => $request->type_of_activity,
 
                 'date_of_activity' => $request->date_of_activity,
+
+                'date_of_activity_end' => $request->date_of_activity_end
             ]);
 
 
@@ -122,20 +123,35 @@ class TicketController extends Controller
 
             DB::commit();
 
+            // send confirmation email to requester (non-blocking)
+            try {
+                Mail::send('emails.ticket_submitted', ['ticket' => $ticket], function ($m) use ($ticket) {
+                    $m->to($ticket->requestor_email)->subject('STBSRS - Request Submitted: ' . $ticket->ticket_id);
+                    if (config('mail.from.address')) {
+                        $m->from(config('mail.from.address'), config('mail.from.name'));
+                    }
+                });
+            } catch (\Exception $e) {
+                Log::warning('Failed to send ticket confirmation email', ['error' => $e->getMessage()]);
+            }
+
             // clear OTP verification after successful submission
             Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email']);
 
+            // Prepare response including ticket number
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'title' => 'Request submitted',
                     'message' => 'Your ticket was submitted successfully.',
-                    'redirect' => url('/')
+                    'redirect' => url('/'),
+                    'ticket_number' => $ticket->ticket_id
                 ]);
             }
 
             return redirect()
                 ->back()
-                ->with('success', 'Ticket submitted successfully.');
+                ->with('success', 'Ticket submitted successfully.')
+                ->with('created_ticket_number', $ticket->ticket_id);
 
         } catch (\Exception $e) {
 
@@ -155,6 +171,9 @@ class TicketController extends Controller
 
         $email = $request->email;
 
+        // A new OTP request always invalidates any previous verification state.
+        Session::forget(['ticket_otp_verified', 'ticket_otp_email']);
+
         // Generate 6-digit OTP
         $otp = random_int(100000, 999999);
 
@@ -166,15 +185,32 @@ class TicketController extends Controller
             'expires_at' => $expires->toDateTimeString()
         ]);
 
-        // Send email with OTP
-        try {
-            Mail::raw("Your STBSRS OTP is: {$otp}. It expires in 10 minutes.", function ($m) use ($email) {
-                $m->to($email)->subject('STBSRS Verification Code');
-            });
-        } catch (\Exception $e) {
-            Log::error('Failed to send OTP email', ['error' => $e->getMessage()]);
-            return response()->json(['message' => 'Failed to send OTP.'], 500);
-        }
+            // Prepare first name fallback from email local part
+            $firstName = null;
+            if (strpos($email, '@') !== false) {
+                $firstName = explode('@', $email)[0];
+                $firstName = preg_replace('/[._\-\d]+/', ' ', $firstName);
+                $firstName = trim($firstName);
+                $firstName = $firstName ? ucwords($firstName) : null;
+            }
+
+            // Send styled HTML email using a blade view
+            try {
+                $minutes = 10;
+                Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
+                    $m->to($email)->subject('OTP Verification');
+                    if (config('mail.from.address')) {
+                        $m->from(config('mail.from.address'), config('mail.from.name'));
+                    }
+                });
+            } catch (\Exception $e) {
+                Log::error('Failed to send OTP email', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+                $payload = ['message' => 'Failed to send OTP.'];
+                if (config('app.debug')) {
+                    $payload['error'] = $e->getMessage();
+                }
+                return response()->json($payload, 500);
+            }
 
         return response()->json(['message' => 'OTP sent to ' . $email]);
     }
@@ -208,5 +244,22 @@ class TicketController extends Controller
         Session::put('ticket_otp_email', $request->email);
 
         return response()->json(['message' => 'Email verified.']);
+    }
+
+    /**
+     * Return current OTP status from session for client-side validation.
+     */
+    public function otpStatus(Request $request)
+    {
+        $payload = Session::get('ticket_otp', null);
+        $verified = Session::get('ticket_otp_verified', false);
+        $verifiedEmail = Session::get('ticket_otp_email', null);
+
+        return response()->json([
+            'exists' => $payload !== null,
+            'payload' => $payload,
+            'verified' => (bool)$verified,
+            'verifiedEmail' => $verifiedEmail,
+        ]);
     }
 }
