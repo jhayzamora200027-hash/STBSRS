@@ -9,6 +9,7 @@ use App\Models\Region;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AllticketController;
+use App\Http\Controllers\ViewTicketController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
 
@@ -21,6 +22,10 @@ Route::middleware('auth')->group(function () {
     ->name('dashboard.filter');
 
     Route::get('/tickets',[AllticketController::class, 'index'])->name('tickets');
+
+    Route::get('/tickets/{ticket_id}',[ViewTicketController::class, 'index'])->name('ticket.view');
+
+    Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
 });
 
 

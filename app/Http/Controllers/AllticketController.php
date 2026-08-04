@@ -63,6 +63,20 @@ class AllticketController extends Controller
             $tickets->where('program', $request->program);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $tickets->where(function ($q) use ($search) {
+                $q->where('ticket_id', 'like', "%{$search}%")
+                    ->orWhere('requestor_first_name', 'like', "%{$search}%")
+                    ->orWhere('requestor_last_name', 'like', "%{$search}%")
+                    ->orWhere('purpose_of_request', 'like', "%{$search}%")
+                    ->orWhereHas('programDetails', function ($q2) use ($search) {
+                        $q2->where('program', 'like', "%{$search}%");
+                    });
+            });
+        }
+
         $tickets = $tickets
         ->with('programDetails')
         ->latest()

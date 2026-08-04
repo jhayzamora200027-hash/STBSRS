@@ -35,7 +35,8 @@ class Ticket extends Model
     'venue',
     'type_of_activity',
     'date_of_activity',
-    'date_of_activity_end'
+    'date_of_activity_end',
+    'ticket_priority'
 ];
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');

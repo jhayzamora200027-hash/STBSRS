@@ -1308,7 +1308,7 @@
                                                             Select priority of this request.
                                                         </span>
                                                     </div>
-                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTACP">
+                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTACP" required>
                                                         <option value="">Select priority</option>
                                                         <option value="low">Low</option>
                                                         <option value="medium">Medium</option>
@@ -1437,7 +1437,7 @@
                                                             Select priority of this request.
                                                         </span>
                                                     </div>
-                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTADP">
+                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTADP" required>
                                                         <option value="">Select priority</option>
                                                         <option value="low">Low</option>
                                                         <option value="medium">Medium</option>
@@ -1599,7 +1599,7 @@
                                                                         Select priority of this request.
                                                                     </span>
                                                                 </div>
-                                                                <select class="form-select" name="ticket_priority" id="prioritySelectRP">
+                                                                <select class="form-select" name="ticket_priority" id="prioritySelectRP" required>
                                                                     <option value="">Select priority</option>
                                                                     <option value="low">Low</option>
                                                                     <option value="medium">Medium</option>
@@ -1738,7 +1738,7 @@
                                                                                 Select priority of this request.
                                                                             </span>
                                                                         </div>
-                                                                        <select class="form-select" name="ticket_priority" id="prioritySelectKP">
+                                                                        <select class="form-select" name="ticket_priority" id="prioritySelectKP" required>
                                                                             <option value="">Select priority</option>
                                                                             <option value="low">Low</option>
                                                                             <option value="medium">Medium</option>
@@ -2854,6 +2854,7 @@ if (proceedOtpBtn) {
                 document.getElementById('region').value.trim() === '' ||
                 document.getElementById('province').value.trim() === '' ||
                 document.getElementById('city').value.trim() === ''
+                
             ){
                 Swal.fire({
                     icon: 'warning',
@@ -3998,6 +3999,70 @@ document.getElementById('kp').addEventListener('click', function() {
     clearRPFields();
 });
 
+
+
+document.addEventListener('DOMContentLoaded', function(){
+    function showInvalid(el, msg){
+        el.classList.add('is-invalid');
+        var next = el.nextElementSibling;
+        if(!next || !next.classList || !next.classList.contains('invalid-feedback')){
+            var fb = document.createElement('div');
+            fb.className = 'invalid-feedback';
+            fb.textContent = msg || 'Please select priority.';
+            el.parentNode.insertBefore(fb, el.nextSibling);
+        }
+        el.focus();
+    }
+
+    function clearInvalid(el){
+        if(!el) return;
+        el.classList.remove('is-invalid');
+        var next = el.nextElementSibling;
+        if(next && next.classList && next.classList.contains('invalid-feedback')){
+            next.remove();
+        }
+    }
+
+    var submitBtn = document.getElementById('submitBtn');
+    if(!submitBtn) return;
+
+    submitBtn.addEventListener('click', function(e){
+        var bodies = [
+            {id:'tacpBody', select:'prioritySelectTACP'},
+            {id:'tapdBody', select:'prioritySelectTADP'},
+            {id:'rpBody', select:'prioritySelectRP'},
+            {id:'kpBody', select:'prioritySelectKP'}
+        ];
+
+        // clear previous invalid states
+        bodies.forEach(function(b){ var s=document.getElementById(b.select); if(s) clearInvalid(s); });
+
+        for(var i=0;i<bodies.length;i++){
+            var body = document.getElementById(bodies[i].id);
+            if(body && body.classList && !body.classList.contains('d-none')){
+                var select = document.getElementById(bodies[i].select);
+                if(select && (!select.value || select.value.trim() === '')){
+                    e.preventDefault();
+                    showInvalid(select, 'Please select a priority for this request.');
+                    
+                    Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Information',
+                    text: 'Please complete all required fields before proceeding.',
+                    confirmButtonColor: '#062c52',
+                    confirmButtonText: 'OK'
+                });
+
+                return;
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    });
+});
 
 
 

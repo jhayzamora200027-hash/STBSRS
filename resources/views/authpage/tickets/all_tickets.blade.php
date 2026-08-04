@@ -39,6 +39,51 @@
     color:#0b3b75;
     line-height:1;
 }
+
+.drag-scroll{
+    overflow-x: auto;
+    overflow-y: hidden;
+    cursor: grab;
+    user-select: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.drag-scroll.dragging{
+    cursor: grabbing;
+}
+
+.drag-scroll::-webkit-scrollbar{
+    height: 8px;
+}
+
+.drag-scroll::-webkit-scrollbar-thumb{
+    background: #cfd4da;
+    border-radius: 10px;
+}
+
+.drag-scroll::-webkit-scrollbar-thumb:hover{
+    background: #adb5bd;
+}
+.ticket-row {
+    cursor: pointer;
+}
+#ticketMenu{
+    z-index: 9999;
+    min-width: 220px;
+    animation: fadeIn .15s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:scale(.95);
+    }
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
 </style>
 <div class="row mb-4">
     <div class="col-md-2">
@@ -161,6 +206,18 @@
 
 <div class="card mb-4">
     <div class="card-body">
+
+        <div class="row mb-3">
+
+            <div class="col-12">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input id="search" name="search" type="search" class="form-control"
+                        placeholder="Search tickets or user..." value="{{ request('search') }}">
+                </div>
+            </div>
+
+        </div>
 
         <div class="row g-3">
 
@@ -373,7 +430,7 @@
 </form>
 {{-- Table --}}
 <div id="tickets-container">
-<div class="table-responsive">
+<div class="table-responsive drag-scroll" id="dragScroll">
     <table class="table align-middle table-hover mb-0">
 
         <thead class="table-light">
@@ -386,7 +443,6 @@
                 <th style="min-width:140px;">Status</th>
                 <th style="min-width:130px;">Priority</th>
                 <th style="min-width:170px;">Last Updated</th>
-                <th width="90" class="text-center">Actions</th>
             </tr>
         </thead>
 
@@ -394,7 +450,8 @@
 
             @forelse($tickets as $ticket)
 
-            <tr>
+            <tr class="ticket-row" data-url="{{ route('ticket.view', $ticket->ticket_id) }}">
+                
 
                 {{-- Ticket Number --}}
                 <td>
@@ -547,7 +604,7 @@
                 <td>
 
                     @php
-                        $priority = strtolower($ticket->priority ?? 'low');
+                        $priority = strtolower($ticket->ticket_priority ?? 'low');
                     @endphp
 
                     @switch($priority)
@@ -593,63 +650,23 @@
                 </td>
 
                 {{-- Actions --}}
-                <td class="text-center">
+                <div id="ticketMenu" class="dropdown-menu shadow">
+                    <a class="dropdown-item view-ticket" href="{{route('ticket.view', $ticket->ticket_id)}}">
+                        <i class="bi bi-eye me-2"></i> View Ticket
+                    </a>
 
-                    <div class="dropdown">
+                    <div class="dropdown-divider"></div>
 
-                        <button
-                            class="btn btn-light btn-sm border"
-                            data-bs-toggle="dropdown">
+                    <form method="POST" action={{route('ticket.delete', $ticket->ticket_id)}} class="delete-form">
+                    @csrf
+                    @method('DELETE')
 
-                            <i class="bi bi-three-dots-vertical"></i>
-
+                        <button type="submit" class="dropdown-item text-danger delete-button" >
+                            <i class="bi bi-trash me-2"></i>
+                            Delete
                         </button>
-
-                        <ul class="dropdown-menu dropdown-menu-end">
-
-                            <li>
-
-                                <a class="dropdown-item" href="#">
-
-                                    <i class="bi bi-eye me-2"></i>
-
-                                    View Ticket
-
-                                </a>
-
-                            </li>
-
-                            <li>
-
-                                <a class="dropdown-item" href="#">
-
-                                    <i class="bi bi-pencil-square me-2"></i>
-
-                                    Update Status
-
-                                </a>
-
-                            </li>
-
-                            <li><hr class="dropdown-divider"></li>
-
-                            <li>
-
-                                <a class="dropdown-item text-danger" href="#">
-
-                                    <i class="bi bi-trash me-2"></i>
-
-                                    Delete
-
-                                </a>
-
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                </td>
+                    </form>
+                </div>
 
             </tr>
 
@@ -730,6 +747,180 @@ window.addEventListener('popstate', function(){
         })
         .catch(err => console.error(err));
 });
+
+// Debounced AJAX search/filter submission
+(function(){
+    const form = document.querySelector('form[action="{{ route('tickets') }}"]');
+    if(!form) return;
+
+    const searchInput = document.getElementById('search');
+    let timer = null;
+
+    function submitFilters(){
+        const params = new URLSearchParams(new FormData(form));
+        const url = form.action + '?' + params.toString();
+
+        fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContainer = doc.querySelector('#tickets-container');
+                const current = document.querySelector('#tickets-container');
+                if(newContainer && current){
+                    current.innerHTML = newContainer.innerHTML;
+                    window.history.pushState({}, '', url);
+                }
+            })
+            .catch(err => console.error('Filter load failed', err));
+    }
+
+    if(searchInput){
+        searchInput.addEventListener('input', function(){
+            clearTimeout(timer);
+            timer = setTimeout(submitFilters, 400);
+        });
+    }
+
+})();
+
+const slider = document.getElementById("dragScroll");
+
+let isDown = false;
+let isDragging = false;
+let startX;
+let scrollLeft;
+
+// Drag to scroll
+slider.addEventListener("mousedown", (e) => {
+    isDown = true;
+    isDragging = false;
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+    slider.classList.add("dragging");
+});
+
+document.addEventListener("mousemove", (e) => {
+
+    if (!isDown) return;
+
+    e.preventDefault();
+
+    const x = e.pageX - slider.offsetLeft;
+    const walk = x - startX;
+
+    if (Math.abs(walk) > 5) {
+        isDragging = true;
+    }
+
+    slider.scrollLeft = scrollLeft - walk;
+});
+
+document.addEventListener("mouseup", () => {
+    isDown = false;
+    slider.classList.remove("dragging");
+});
+
+function getTicketMenu(){
+    return document.getElementById('ticketMenu');
+}
+
+// Use event delegation so newly loaded rows work after AJAX replaces content
+document.addEventListener('click', function(e){
+
+    const row = e.target.closest('.ticket-row');
+
+    // If clicking on a row (but not on an actionable child like a link/button)
+    if(row && !e.target.closest('a, button')){
+
+        if (isDragging) {
+            isDragging = false;
+            return;
+        }
+
+        const menu = getTicketMenu();
+        if(!menu) return;
+
+        const viewLink = menu.querySelector('.view-ticket');
+        if(viewLink) viewLink.href = row.dataset.url;
+
+        menu.style.position = 'fixed';
+        const menuWidth = menu.offsetWidth;
+        const menuHeight = menu.offsetHeight;
+
+        let left = e.clientX;
+        let top = e.clientY;
+
+        if (left + menuWidth > window.innerWidth) {
+            left = window.innerWidth - menuWidth - 10;
+        }
+
+        if (top + menuHeight > window.innerHeight) {
+            top = window.innerHeight - menuHeight - 10;
+        }
+
+        left = Math.max(10, left);
+        top = Math.max(10, top);
+
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+        menu.classList.add('show');
+
+        return;
+    }
+
+    // If click outside any row and outside the menu, hide the menu
+    const menu = getTicketMenu();
+    if(menu && !menu.contains(e.target) && !e.target.closest('.ticket-row')){
+        menu.classList.remove('show');
+    }
+
+});
+
+document.querySelectorAll('.delete-button').forEach(btn => {
+    btn.addEventListener('click', function(){
+        menu.classList.remove('show');
+    })
+})
+
+document.querySelectorAll('.delete-form').forEach(form => {
+    form.addEventListener('submit', function(e){
+
+        e.preventDefault();
+
+        Swal.fire({
+            title: 'Delete Ticket?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if(result.isConfirmed){
+                form.submit();
+            }
+        });
+    });
+});
+
 </script>
+
+
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        Swal.fire({
+            icon:'Success',
+            title: 'Deleted',
+            text: @json(session('success')),
+            confirmButtonColor: '#198754',
+            timer : 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    });
+</script>
+@endif
 
 @endsection
