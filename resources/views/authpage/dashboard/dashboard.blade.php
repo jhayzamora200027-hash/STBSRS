@@ -567,16 +567,19 @@
 
     border-radius:50px;
 
-    font-size:.82rem;
+    font-size:.6rem;
 
     font-weight:600;
+
+    min-width: 90px;
+
+    padding-right:7px;
 
 }
 
 .status-progress{
-
     background:#e9f3ff;
-
+    font-size:0.6rem;
     color:#0d6efd;
 
 }
@@ -1015,21 +1018,32 @@ gap:15px;
 
                     <div class="search-box">
                         <i class="bi bi-search"></i>
-                        <input class="ps-5" type="text" placeholder="Search ticket number, requestor or program...">
+                        <input id="search" class="ps-5" type="text" placeholder="Search ticket number, requestor or program...">
                     </div>
 
                     <div class="filter-group">
 
-                        <select class="form-select">
-                            <option>Status</option>
+                        <select class="form-select" id="status"> 
+                            <option value="">Status</option>
+                            <option value="review">For Review</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="completed">Completed</option>
                         </select>
 
-                        <select class="form-select">
-                            <option>Category</option>
+                        <select class="form-select" id="category">
+                            <option value="">Category</option>
+                            <option value="completed">Technical Assistance on Completed Program</option>
+                            <option value="enhancement">Technical Assistance on Development of Program</option>
+                            <option value="resource">Resource Person</option>
+                            <option value="knowledge">Knowledge Product</option>
                         </select>
 
-                        <select class="form-select">
-                            <option>Program</option>
+                        <select class="form-select" id="program">
+                            <option value="">Program</option>
+                            @foreach($programs as $program)
+                            <option value="{{$program->program_id}}">{{$program->program}}</option>
+                            @endforeach
                         </select>
 
                     </div>
@@ -1037,119 +1051,177 @@ gap:15px;
                 </div>
 
                 <!-- Ticket Cards -->
-            <div class="ticket-grid">
-                @foreach($tickets as $ticket)
+                <div class="ticket-grid" id="ticketGrid">
+                    @foreach($programName as $programname)
 
-                <div class="ticket-card">
+                    <div class="ticket-card">
 
-                    <div class="ticket-top">
+                        <div class="ticket-top">
 
-                        <div>
+                            <div>
 
-                            <h5>{{ $ticket->ticket_id }}</h5>
+                                <h5>{{ $programname->ticket_id }}</h5>
 
-                            <small>
-                                Submitted {{ $ticket->created_at->format('F d, Y') }}
-                            </small>
+                                <small>
+                                    Submitted {{ $programname->created_at->format('F d, Y') }}
+                                </small>
 
-                        </div>
+                            </div>
 
-                        <span class="status status-progress">
-                            In Progress
-                        </span>
-
-                    </div>
-
-                    <div class="ticket-body">
-
-                        <div class="info">
-
-                            <label>Requestor</label>
-
-                            <p>{{ $ticket->requestor_first_name }}</p>
-
-                        </div>
-
-                        <div class="info">
-
-                            <label>Category</label>
-
-                            <p>
-
-                                @switch($ticket->ticket_category)
-
-                                    @case('completed')
-                                        Technical Assistance on Completed Program
-                                        @break
-
-                                    @case('enhancement')
-                                        Technical Assistance on Program Development
-                                        @break
-
-                                    @case('resource')
-                                        Resource Person
-                                        @break
-
-                                    @case('knowledge')
-                                        Knowledge Product
-                                        @break
-
-                                @endswitch
-
-                            </p>
-
-                        </div>
-
-                        <div class="info">
-
-                            <label>Program</label>
-
-                            <span title="{{ $ticket->programDetails->program ?? '-' }}">
-                                {{ Str::limit($ticket->programDetails->program ?? '-', 35) }}
+                            <span class="status status-progress justify-content-center">
+                                In Progress
                             </span>
 
                         </div>
 
-                        <div class="info full">
+                        <div class="ticket-body">
 
-                            <label>Purpose of Request</label>
+                            <div class="info">
 
-                            <span title="{{ $ticket->purpose_of_request }}">
-                                {{ Str::limit($ticket->purpose_of_request, 45) }}
-                            </span>
+                                <label>Requestor</label>
+
+                                <p>{{ $programname->requestor_first_name }}</p>
+
+                            </div>
+
+                            <div class="info">
+
+                                <label>Category</label>
+
+                                <p>
+
+                                    @switch($programname->ticket_category)
+
+                                        @case('completed')
+                                            Technical Assistance on Completed Program
+                                            @break
+
+                                        @case('enhancement')
+                                            Technical Assistance on Program Development
+                                            @break
+
+                                        @case('resource')
+                                            Resource Person
+                                            @break
+
+                                        @case('knowledge')
+                                            Knowledge Product
+                                            @break
+
+                                    @endswitch
+
+                                </p>
+
+                            </div>
+
+                            <div class="info">
+
+                                <label>Program</label>
+
+                                <span title="{{ $programname->programDetails->program ?? '-' }}">
+                                    {{ Str::limit($programname->programDetails->program ?? '-', 35) }}
+                                </span>
+
+                            </div>
+
+                            <div class="info full">
+
+                                <label>Purpose of Request</label>
+
+                                <span title="{{ $programname->purpose_of_request }}">
+                                    {{ Str::limit($programname->purpose_of_request, 45) }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ticket-footer">
+
+                            <div>
+
+                                <button class="btn btn-light">
+
+                                    <i class="bi bi-eye"></i>
+
+                                    View Details
+
+                                </button>
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                    <div class="ticket-footer">
-
-                        <div>
-
-                            <button class="btn btn-light">
-
-                                <i class="bi bi-eye"></i>
-
-                                View Details
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
+                    @endforeach
                 </div>
-
-                @endforeach
-            </div>
 
                 <!-- Pagination -->
 
-                <div class="mt-4 d-flex justify-content-end">
+               <div class="mt-4 d-flex justify-content-end" id="paginationContainer">
 
-                    {{ $tickets->links('pagination::bootstrap-5') }}
+    <ul class="pagination" id="ajaxPagination">
 
-                </div>
+        @if($programName->hasPages())
+
+            {{-- Previous --}}
+            @if($programName->onFirstPage())
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link ajax-page"
+                        href="{{ $programName->previousPageUrl() }}">
+                        Previous
+                    </a>
+                </li>
+            @endif
+
+            {{-- Pages --}}
+            @for($i = 1; $i <= $programName->lastPage(); $i++)
+
+                <li class="page-item {{ $programName->currentPage() == $i ? 'active' : '' }}">
+
+                    <a class="page-link ajax-page"
+                        href="{{ $programName->url($i) }}">
+                        {{ $i }}
+                    </a>
+
+                </li>
+
+            @endfor
+
+            {{-- Next --}}
+            @if($programName->hasMorePages())
+
+                <li class="page-item">
+
+                    <a class="page-link ajax-page"
+                        href="{{ $programName->nextPageUrl() }}">
+                        Next
+                    </a>
+
+                </li>
+
+            @else
+
+                <li class="page-item disabled">
+
+                    <span class="page-link">
+                        Next
+                    </span>
+
+                </li>
+
+            @endif
+
+        @endif
+
+    </ul>
+
+</div>
 
             </div>
         </div>
@@ -1439,6 +1511,264 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+$(document).ready(function () {
+
+    // Load tickets when the modal opens to ensure #ticketGrid is populated
+    document.getElementById('modalMetrics').addEventListener('show.bs.modal', function (event) {
+
+        // If the Total Tickets tab/body is visible, load tickets
+        const label = document.getElementById('modalMetricsLabel').textContent;
+
+        if (label === 'Total Tickets') {
+            loadTickets();
+        }
+
+    });
+
+    function loadTickets(page = 1) {
+
+        $.ajax({
+
+            url: "/dashboard/filter",
+
+            type: "GET",
+
+            data: {
+                page: page,
+                status: $('#status').val(),
+                category: $('#category').val(),
+                program: $('#program').val(),
+                search: $('#search').val() // remove if you don't have a search box
+            },
+
+            success: function (response) {
+
+                let html = '';
+
+                response.data.forEach(function (ticket) {
+
+                    let category = '';
+
+                    switch (ticket.ticket_category) {
+                        case 'completed':
+                            category = 'Technical Assistance on Completed Program';
+                            break;
+
+                        case 'enhancement':
+                            category = 'Technical Assistance on Program Development';
+                            break;
+
+                        case 'resource':
+                            category = 'Resource Person';
+                            break;
+
+                        case 'knowledge':
+                            category = 'Knowledge Product';
+                            break;
+                    }
+
+                    html += `
+                    <div class="ticket-card">
+
+                        <div class="ticket-top">
+
+                            <div>
+
+                                <h5>${ticket.ticket_id}</h5>
+
+                                <small>
+                                    Submitted ${new Date(ticket.created_at).toLocaleDateString('en-US',{
+                                        year:'numeric',
+                                        month:'long',
+                                        day:'2-digit'
+                                    })}
+                                </small>
+
+                            </div>
+
+                            <span class="status status-progress justify-content-center">
+                                ${ticket.ticket_status}
+                            </span>
+
+                        </div>
+
+                        <div class="ticket-body">
+
+                            <div class="info">
+
+                                <label>Requestor</label>
+
+                                <p>${ticket.requestor_first_name}</p>
+
+                            </div>
+
+                            <div class="info">
+
+                                <label>Category</label>
+
+                                <p>${category}</p>
+
+                            </div>
+
+                            <div class="info">
+
+                                <label>Program</label>
+
+                                <span title="${ticket.program_details?.program ?? '-'}">
+
+                                    ${(ticket.program_details?.program ?? '-').length > 35
+                                        ? (ticket.program_details.program.substring(0,35) + '...')
+                                        : (ticket.program_details?.program ?? '-')}
+
+                                </span>
+
+                            </div>
+
+                            <div class="info full">
+
+                                <label>Purpose of Request</label>
+
+                                <span title="${ticket.purpose_of_request}">
+
+                                    ${ticket.purpose_of_request.length > 45
+                                        ? ticket.purpose_of_request.substring(0,45)+'...'
+                                        : ticket.purpose_of_request}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ticket-footer">
+
+                            <div>
+
+                                <button class="btn btn-light">
+
+                                    <i class="bi bi-eye"></i>
+
+                                    View Details
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    `;
+                });
+
+                $('#ticketGrid').html(html);
+
+                //---------------- Pagination ----------------//
+
+                let pagination = '';
+
+                if (response.prev_page_url) {
+
+                    pagination += `
+                        <li class="page-item">
+                            <a class="page-link ajax-page"
+                               href="${response.prev_page_url}">
+                                Previous
+                            </a>
+                        </li>
+                    `;
+                }
+
+                for (let i = 1; i <= response.last_page; i++) {
+
+                    pagination += `
+                        <li class="page-item ${response.current_page == i ? 'active' : ''}">
+                            <a class="page-link ajax-page"
+                               href="?page=${i}">
+                               ${i}
+                            </a>
+                        </li>
+                    `;
+                }
+
+                if (response.next_page_url) {
+
+                    pagination += `
+                        <li class="page-item">
+                            <a class="page-link ajax-page"
+                               href="${response.next_page_url}">
+                                Next
+                            </a>
+                        </li>
+                    `;
+                }
+
+                $('#paginationContainer').html(
+                    `<ul class="pagination">${pagination}</ul>`
+                );
+
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+    //---------------- Filters ----------------//
+
+    $('#status,#category,#program').change(function () {
+
+        loadTickets();
+
+    });
+
+    //---------------- Search ----------------//
+
+    $('#search').keyup(function () {
+
+        loadTickets();
+
+    });
+
+    //---------------- Pagination ----------------//
+
+                $(document).on('click', '.ajax-page', function (e) {
+
+        e.preventDefault();
+
+        // Try to read page param robustly from href, fallback to data-page
+        let href = $(this).attr('href') || '';
+
+        let page = null;
+
+        try {
+            const url = new URL(href, window.location.origin);
+            page = url.searchParams.get('page');
+        } catch (err) {
+            // href might be a relative URL or just ?page=2 or something else
+            const match = href.match(/[?&]page=(\d+)/);
+            if (match) page = match[1];
+        }
+
+        // allow data-page attribute like <a data-page="2" ...>
+        if (!page) page = $(this).data('page');
+
+        // fallback to 1
+        page = page ? parseInt(page, 10) : 1;
+
+        loadTickets(page);
+
+    });
+
+});
 });
 
 </script>

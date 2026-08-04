@@ -1299,6 +1299,23 @@
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
                                                         <input type="text" class="form-control" id="otherProgramInputTACP" name="program_others">
                                                 </div>
+                                                <div class="mt-3">
+                                                    <div>
+                                                        <h6 class="me-2">
+                                                            Priority <i style="color:red">*</i>
+                                                        </h6>
+                                                        <span class="text-muted">
+                                                            Select priority of this request.
+                                                        </span>
+                                                    </div>
+                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTACP">
+                                                        <option value="">Select priority</option>
+                                                        <option value="low">Low</option>
+                                                        <option value="medium">Medium</option>
+                                                        <option value="high">High</option>
+                                                        <option value="urgent">Urgent</option>
+                                                    </select>
+                                                </div>
                                              </div>
                                         </div>
                                     </div>                                
@@ -1388,12 +1405,48 @@
                                                     </div>
                                                 </div>
                                              </div>
+                                             {{-- <div class="col-md-6"> 
+                                                <div class="p-2">
+                                                    <div>
+                                                        <h6 class="me-2">
+                                                            Priority <i style="color:red">*</i>
+                                                        </h6>
+                                                        <span class="text-muted">
+                                                            Select priority of this request.
+                                                        </span>
+                                                    </div>
+                                                    <select class="form-select" name="priority" id="prioritySelectTAPD">
+                                                        <option value="">Select priority</option>
+                                                        <option value="low">Low</option>
+                                                        <option value="medium">Medium</option>
+                                                        <option value="urgent">Urgent</option>
+                                                    </select>
+                                                </div>
+                                             </div> --}}
                                              <div class="col-md-6">
                                                 <div id="otherProgramFieldTAPD" class="mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
                                                         <input type="text" class="form-control" id="otherProgramInputTAPD" name="program_others">
                                                 </div>
+                                                <div class="mt-3">
+                                                    <div>
+                                                        <h6 class="me-2">
+                                                            Priority <i style="color:red">*</i>
+                                                        </h6>
+                                                        <span class="text-muted">
+                                                            Select priority of this request.
+                                                        </span>
+                                                    </div>
+                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTADP">
+                                                        <option value="">Select priority</option>
+                                                        <option value="low">Low</option>
+                                                        <option value="medium">Medium</option>
+                                                        <option value="high">High</option>
+                                                        <option value="urgent">Urgent</option>
+                                                    </select>
+                                                </div>
                                              </div>
+                                             
                                         </div>
                                     </div>                                
                                 </div>
@@ -1537,6 +1590,23 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
+                                                            <div class="p-3">
+                                                                <div>
+                                                                    <h6 class="me-2">
+                                                                        Priority <i style="color:red">*</i>
+                                                                    </h6>
+                                                                    <span class="text-muted">
+                                                                        Select priority of this request.
+                                                                    </span>
+                                                                </div>
+                                                                <select class="form-select" name="ticket_priority" id="prioritySelectRP">
+                                                                    <option value="">Select priority</option>
+                                                                    <option value="low">Low</option>
+                                                                    <option value="medium">Medium</option>
+                                                                    <option value="high">High</option>
+                                                                    <option value="urgent">Urgent</option>
+                                                                </select>
+                                                            </div>
                                                           </div>
 
                                                         <div class='col-md-4 d-flex flex-column'>
@@ -1606,6 +1676,7 @@
                                                                     
                                                                 </div>
                                                             </div> 
+                                                            
                                                         </div>
                                                     </div>
                                     </div>
@@ -1657,6 +1728,23 @@
                                                                         <input type="file" id="supportFileKP" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
 
                                                                         <div class="file-name mt-3 text-success fw-semibold d-none"></div>
+                                                                    </div>
+                                                                    <div class="mt-3">
+                                                                        <div>
+                                                                            <h6 class="me-2">
+                                                                                Priority <i style="color:red">*</i>
+                                                                            </h6>
+                                                                            <span class="text-muted">
+                                                                                Select priority of this request.
+                                                                            </span>
+                                                                        </div>
+                                                                        <select class="form-select" name="ticket_priority" id="prioritySelectKP">
+                                                                            <option value="">Select priority</option>
+                                                                            <option value="low">Low</option>
+                                                                            <option value="medium">Medium</option>
+                                                                            <option value="high">High</option>
+                                                                            <option value="urgent">Urgent</option>
+                                                                        </select>
                                                                     </div>
                                         </div>
                                         <div class="col-md-6"> 
@@ -2156,6 +2244,11 @@
                     </div>
 
                     <div class="review-item">
+                        <span>Priority</span>
+                        <strong id="reviewPriority"></strong>
+                    </div>
+
+                    <div class="review-item">
                         <span>Purpose of Request</span>
                         <strong id="reviewPurpose"></strong>
                     </div>
@@ -2500,6 +2593,7 @@ if (proceedOtpBtn) {
     document.getElementById('reviewDate').textContent = '-';
     document.getElementById('reviewKnowledgeProduct').innerHTML = '-';
     document.getElementById('reviewAttachment').innerHTML = '-';
+    document.getElementById('reviewPriority').textContent = '-';
 
 
     // ============================
@@ -2517,6 +2611,10 @@ if (proceedOtpBtn) {
             document.getElementById('reasonRequestTACP').value;
 
         showAttachment('supportFileTACP');
+
+        // Priority for TACP
+        const prTACP = document.getElementById('prioritySelectTACP');
+        document.getElementById('reviewPriority').textContent = prTACP?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -2536,6 +2634,10 @@ if (proceedOtpBtn) {
             document.getElementById('reasonRequestTAPD').value;
 
         showAttachment('supportFileTAPD');
+
+        // Priority for TAPD
+        const prTAPD = document.getElementById('prioritySelectTADP');
+        document.getElementById('reviewPriority').textContent = prTAPD?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -2578,6 +2680,10 @@ if (proceedOtpBtn) {
 
         showAttachment('supportFileRP');
 
+        // Priority for RP
+        const prRP = document.getElementById('prioritySelectRP');
+        document.getElementById('reviewPriority').textContent = prRP?.selectedOptions?.[0]?.text || '-';
+
     }
 
     // ============================
@@ -2615,6 +2721,10 @@ if (proceedOtpBtn) {
                     </div>
                 `;
             });
+
+            // Priority for KP
+            const prKP = document.getElementById('prioritySelectKP');
+            document.getElementById('reviewPriority').textContent = prKP?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -2927,6 +3037,25 @@ if (proceedOtpBtn) {
                         inp.setAttribute('name', 'program_others');
                     } else {
                         inp.removeAttribute('name');
+                    }
+                });
+
+                // Priority selects: only the active service's priority should be submitted;
+                // clear values for others when switching category.
+                const priorityMap = {
+                    tacp: 'prioritySelectTACP',
+                    tapd: 'prioritySelectTADP',
+                    rp: 'prioritySelectRP',
+                    kp: 'prioritySelectKP'
+                };
+                Object.keys(priorityMap).forEach(key => {
+                    const sel = document.getElementById(priorityMap[key]);
+                    if (!sel) return;
+                    if (key === service) {
+                        sel.setAttribute('name', 'ticket_priority');
+                    } else {
+                        sel.removeAttribute('name');
+                        try { sel.value = ''; } catch(e){}
                     }
                 });
 

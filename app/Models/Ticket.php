@@ -40,4 +40,8 @@ class Ticket extends Model
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');
     }
+
+    public function programs(){
+        return $this->belongsTo(Program::class, 'program');
+    }
 }

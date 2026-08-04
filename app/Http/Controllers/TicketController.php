@@ -40,6 +40,10 @@ class TicketController extends Controller
             'ticket_category' => 'required',
             'purpose_of_request' => 'required',
 
+            // ticket_priority may be submitted as a string or (accidentally) as an array
+            // (multiple selects with same name). Accept nullable and normalize below.
+            'ticket_priority' => 'nullable',
+
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
         ]);
 
@@ -87,7 +91,25 @@ class TicketController extends Controller
                 'date_of_activity' => $request->date_of_activity,
 
                 'date_of_activity_end' => $request->date_of_activity_end
+                ,
+                // Normalize ticket_priority: if an array is submitted, pick the first non-empty value.
+                'ticket_priority' => (function($val){
+                    if (is_array($val)) {
+                        $first = collect($val)->filter(function($v){ return $v !== null && $v !== ''; })->first();
+                        return $first ?? null;
+                    }
+                    if ($val === '') return null;
+                    return $val;
+                })($request->ticket_priority)
             ]);
+
+            // Defensive check and logging to aid debugging if ticket isn't persisted
+            if (!$ticket || !$ticket->id) {
+                Log::error('TicketController: Ticket::create returned null or missing id', ['ticket_object' => $ticket]);
+                throw new \Exception('Failed to create ticket record');
+            }
+
+            Log::info('TicketController: ticket created', ['id' => $ticket->id, 'ticket_id' => $ticket->ticket_id]);
 
 
 
@@ -144,7 +166,8 @@ class TicketController extends Controller
                     'title' => 'Request submitted',
                     'message' => 'Your ticket was submitted successfully.',
                     'redirect' => url('/'),
-                    'ticket_number' => $ticket->ticket_id
+                    'ticket_number' => $ticket->ticket_id,
+                    'ticket' => $ticket->toArray(),
                 ]);
             }
 
@@ -213,6 +236,15 @@ class TicketController extends Controller
             }
 
         return response()->json(['message' => 'OTP sent to ' . $email]);
+    }
+
+    public function index(Request $request)
+    {
+        $tickets = Ticket::with('programDetails')
+            ->latest()
+            ->paginate(10);
+
+        return view('authpage.tickets.all_tickets', compact('tickets'));
     }
 
     public function verifyOtp(Request $request)

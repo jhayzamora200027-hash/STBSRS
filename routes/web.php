@@ -8,6 +8,7 @@ use App\Http\Controllers\LandingpageController;
 use App\Models\Region;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AllticketController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
 
@@ -15,6 +16,11 @@ Route::get('/',[LandingpageController::class, 'index'])->name('home');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+        Route::get('/dashboard/filter', [DashboardController::class, 'filterTickets'])
+    ->name('dashboard.filter');
+
+    Route::get('/tickets',[AllticketController::class, 'index'])->name('tickets');
 });
 
 

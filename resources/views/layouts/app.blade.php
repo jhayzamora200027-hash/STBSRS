@@ -123,7 +123,7 @@
 
     </span>
 
-    <a href="#" class="justify-content-start">
+    <a href="{{route('tickets')}}" class="justify-content-start">
 
         <i class="bi bi-file-earmark-text"></i>
 
@@ -167,7 +167,7 @@
 
             'dashboard'       => 'Dashboard & Reports',
             'feedback.index'  => 'Feedback Report',
-            'tickets.index'   => 'All Tickets',
+            'tickets'   => 'All Tickets',
             'tickets.review'  => 'Review Tickets',
             'users.index'     => 'User Management',
 
@@ -966,7 +966,7 @@ body{
 <!-- Bootstrap JS bundle fallback -->
 @stack('modals')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {

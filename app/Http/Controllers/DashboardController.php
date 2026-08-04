@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\Program;
 
 class DashboardController extends Controller
 {
@@ -69,9 +70,11 @@ class DashboardController extends Controller
             ->count();
 
         // Load tickets for the modal
-        $tickets = Ticket::with('programDetails')
+        $programName = Ticket::with('programDetails')
             ->latest()
             ->paginate(3);
+
+        $programs = Program::orderBy('program')->get();
 
         return view('authpage.dashboard.dashboard', compact(
             'totalTickets',
@@ -82,9 +85,47 @@ class DashboardController extends Controller
             'overdueTickets',
             'monthlyTickets',
             'ticketGrowth',
-            'tickets'
+            'programName',
+            'programs'
         ));
     }
+
+public function filterTickets(Request $request)
+{
+    $tickets = Ticket::with('programDetails')
+        ->when($request->status, function ($query) use ($request) {
+            $query->where('ticket_status', $request->status);
+        })
+
+        ->when($request->category, function ($query) use ($request) {
+            $query->where('ticket_category', $request->category);
+        })
+
+        ->when($request->program, function ($query) use ($request) {
+            $query->where('program', $request->program);
+        })
+
+        ->when($request->search, function ($query) use ($request) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_id', 'like', "%{$search}%")
+                    ->orWhere('requestor_first_name', 'like', "%{$search}%")
+                    ->orWhere('purpose_of_request', 'like', "%{$search}%");
+            })
+            ->orWhereHas('programDetails', function ($q2) use ($search) {
+                $q2->where('program', 'like', "%{$search}%");
+            });
+        })
+
+        ->latest()
+        ->paginate(3);
+
+    // Preserve query parameters in pagination URLs
+    $tickets->appends($request->all());
+
+    return response()->json($tickets);
+}
 
     
 }
