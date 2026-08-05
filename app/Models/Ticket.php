@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Region;
+use App\Models\Province;
+use App\Models\City;
 
 class Ticket extends Model
 {
@@ -45,4 +48,18 @@ class Ticket extends Model
     public function programs(){
         return $this->belongsTo(Program::class, 'program');
     }
+
+    public function requestRegion(){
+        return $this->belongsTo(Region::class, 'requestor_region', 'region_code');
+    }
+
+    public function requestProvince(){
+        return $this->belongsTo(Province::class, 'requestor_province', 'province_code');
+    }
+
+    public function requestCity(){
+        return $this->belongsTo(City::class, 'requestor_city', 'city_code');
+    }
+
+
 }

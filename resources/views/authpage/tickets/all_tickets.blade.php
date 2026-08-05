@@ -359,14 +359,12 @@
                 <label class="form-label fw-semibold">
                     Program
                 </label>
-
-                <input
-                    type="text"
-                    class="form-control"
-                    name="program"
-                    value="{{ request('program') }}"
-                    placeholder="Program">
-
+                <select name="program" class="form-select">
+                    <option value="">All Program</option>
+                    @foreach($programs as $program)
+                    <option value="{{$program->program_id}}">{{$program->program}}</option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- DATE FROM --}}

@@ -7,7 +7,12 @@ use Illuminate\Http\Request;
 class ViewTicketController extends Controller
 {
     public function index(string $ticket_id){
-            $ticket = Ticket::with('programDetails')->where('ticket_id', $ticket_id)->firstOrFail();
+            $ticket = Ticket::with([
+                'programDetails',
+                'requestRegion',
+                'requestProvince',
+                'requestCity'
+                ])->where('ticket_id', $ticket_id)->firstOrFail();
 
 
             return view('authpage.tickets.viewticket', compact('ticket'));

@@ -24,6 +24,7 @@ return new class extends Migration
         Schema::table('tickets', function (Blueprint $table) {
                 $table->dropColumn([
                 'ticket_resolved_at',
-            ]);        });
+            ]);        
+            });
     }
 };

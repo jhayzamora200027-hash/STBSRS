@@ -22,16 +22,6 @@ class TicketController extends Controller
         Log::info('TicketController: allFiles keys', array_keys($request->allFiles()));
         Log::info('TicketController: content-length', ['CONTENT_LENGTH' => $_SERVER['CONTENT_LENGTH'] ?? null]);
 
-        // Require that the requestor email has been verified via OTP in session
-        $otpVerified = Session::get('ticket_otp_verified', false);
-        $otpEmail = Session::get('ticket_otp_email', null);
-
-        if (!$otpVerified || $otpEmail !== $request->requestor_email) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Email not verified via OTP. Please verify your email before submitting.'], 422);
-            }
-            return back()->withErrors('Email not verified via OTP. Please verify your email before submitting.');
-        }
 
         $request->validate([
             'requestor_first_name' => 'required',
@@ -39,9 +29,6 @@ class TicketController extends Controller
             'requestor_email' => 'required|email',
             'ticket_category' => 'required',
             'purpose_of_request' => 'required',
-
-            // ticket_priority may be submitted as a string or (accidentally) as an array
-            // (multiple selects with same name). Accept nullable and normalize below.
             'ticket_priority' => 'nullable',
 
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',

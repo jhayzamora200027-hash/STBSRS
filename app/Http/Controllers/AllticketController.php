@@ -5,6 +5,8 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Program;
+
 
 class AllticketController extends Controller
 {
@@ -41,7 +43,7 @@ class AllticketController extends Controller
 
 
         if ($request->filled('priority')) {
-            $tickets->where('priority', $request->priority);
+            $tickets->where('ticket_priority', $request->priority);
         }
 
 
@@ -93,6 +95,8 @@ class AllticketController extends Controller
             ->orderBy('requestor_last_name')
             ->get();
 
+        $programs = Program::orderBy('program')->get();
+
 
 
         return view('authpage.tickets.all_tickets',compact(
@@ -103,7 +107,8 @@ class AllticketController extends Controller
             'inprogressTicket',
             'rejectedTIcket',
             'requestors',
-            'tickets'
+            'tickets',
+            'programs'
         ));
 
     }
