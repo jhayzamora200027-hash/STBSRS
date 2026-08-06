@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Region;
 use App\Models\Province;
 use App\Models\City;
+use App\Models\TicketComment;
+use App\Models\TicketAttachment;
 
 class Ticket extends Model
 {
@@ -61,5 +63,16 @@ class Ticket extends Model
         return $this->belongsTo(City::class, 'requestor_city', 'city_code');
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(TicketAttachment::class, 'ticket_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(TicketComment::class)
+                    ->whereNull('parent_id')
+                    ->latest();
+    }
 
 }

@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket_id}',[ViewTicketController::class, 'index'])->name('ticket.view');
 
     Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
+    Route::post('/tickets/{ticket}/comments',[ViewTicketController::class, 'storeComment'])->name('tickets.comments.store');
 });
 
 

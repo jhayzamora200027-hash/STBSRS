@@ -1235,8 +1235,12 @@
                                                     name="purpose_of_request" 
                                                     class="form-control" 
                                                     rows="5" 
+                                                    maxlength="200"
                                                     placeholder="Input purpose of your request..."
                                                     style="height:30px;"></textarea>
+                                                <div class="text-end small text-muted mt-1">
+                                                    <span id="reasonRequestTACP_count">0/200</span>
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="p-2">
@@ -1346,8 +1350,12 @@
                                                     name="purpose_of_request" 
                                                     class="form-control" 
                                                     rows="5" 
+                                                    maxlength="200"
                                                     placeholder="Input purpose of your request..."
                                                     style="height:30px;"></textarea>
+                                                <div class="text-end small text-muted mt-1">
+                                                    <span id="reasonRequestTAPD_count">0/200</span>
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="p-2">
@@ -1476,8 +1484,12 @@
                                                             name="purpose_of_request" 
                                                             class="form-control" 
                                                             rows="5" 
+                                                            maxlength="200"
                                                             placeholder="Input purpose of your request..."
                                                             style="height:30px;"></textarea>
+                                                        <div class="text-end small text-muted mt-1">
+                                                            <span id="reasonRequestRP_count">0/200</span>
+                                                        </div>
                                                 </div>
                                                 <div class="vertical-divider" style="width: 1px;"></div>
                                                 <div class="col-md" style="flex: 0 0 31%; max width:31px;">
@@ -1703,8 +1715,12 @@
                                                                 name="purpose_of_request" 
                                                                 class="form-control" 
                                                                 rows="5" 
+                                                                maxlength="200"
                                                                 placeholder="Input purpose of your request..."
                                                                 style="height:30px;"></textarea>
+                                                                <div class="text-end small text-muted mt-1">
+                                                                    <span id="reasonRequestKP_count">0/200</span>
+                                                                </div>
                                                                     <h6 class="mb-0 p-1 mt-3">
                                                                         Supporting Document(Optional)
                                                                     </h6>
@@ -4068,6 +4084,32 @@ document.addEventListener('DOMContentLoaded', function(){
 
         
     
+</script>
+<script>
+    (function(){
+        const MAX = 200;
+        document.querySelectorAll('textarea[name="purpose_of_request"]').forEach(function(el){
+            // ensure maxlength set (in case added dynamically)
+            if(!el.getAttribute('maxlength')) el.setAttribute('maxlength', MAX);
+
+            const countEl = document.getElementById(el.id + '_count');
+            if(!countEl) return;
+
+            const update = function(){
+                const len = el.value.length;
+                const remaining = MAX - len;
+                countEl.textContent = len + '/' + MAX;
+                if(remaining <= 20){
+                    countEl.classList.add('text-danger');
+                } else {
+                    countEl.classList.remove('text-danger');
+                }
+            };
+
+            el.addEventListener('input', update);
+            update();
+        });
+    })();
 </script>
 @endpush
 @endsection

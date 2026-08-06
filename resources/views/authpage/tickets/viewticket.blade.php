@@ -222,6 +222,8 @@
 
     transition:.3s;
 
+    min-height:150px;
+
 }
 
 .info-box:hover{
@@ -264,10 +266,6 @@
 
 }
 
-/* =========================================================
-   A4 PRINTABLE DOCUMENT
-   STB Service Request System
-========================================================= */
 
 .a4-document{
 
@@ -292,9 +290,6 @@
 
 }
 
-/* =========================================================
-HEADER
-========================================================= */
 
 .document-header{
 
@@ -342,9 +337,6 @@ HEADER
 
 }
 
-/* =========================================================
-TITLE
-========================================================= */
 
 .a4-document h3{
 
@@ -358,9 +350,7 @@ TITLE
 
 }
 
-/* =========================================================
-SECTION TITLE
-========================================================= */
+
 
 .section-title{
 
@@ -382,9 +372,6 @@ SECTION TITLE
 
 }
 
-/* =========================================================
-TABLES
-========================================================= */
 
 .a4-document table{
 
@@ -429,9 +416,6 @@ TABLES
 
 }
 
-/* =========================================================
-FOOTER
-========================================================= */
 
 .document-footer{
 
@@ -449,9 +433,6 @@ FOOTER
 
 }
 
-/* =========================================================
-LINES
-========================================================= */
 
 hr{
 
@@ -460,10 +441,6 @@ hr{
     border-top:1px solid #d9d9d9;
 
 }
-
-/* =========================================================
-PRINT PREVIEW
-========================================================= */
 
 .print-preview{
 
@@ -489,9 +466,6 @@ PRINT PREVIEW
 
 }
 
-/* =========================================================
-PRINT BUTTON
-========================================================= */
 
 #printBtn{
 
@@ -503,9 +477,6 @@ PRINT BUTTON
 
 }
 
-/* =========================================================
-PRINT
-========================================================= */
 
 @page{
 
@@ -530,6 +501,33 @@ PRINT
 
         height:297mm;
 
+    }
+
+    /* Prevent breaking of boxed sections across printed pages */
+    #printArea .no-break,
+    #printArea .info-box,
+    #printArea .request-card,
+    #printArea table,
+    #printArea .a4-document table,
+    #printArea .document-header,
+    #printArea .section-title {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Keep section title grouped with its following content */
+    #printArea .section-title {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
+
+    #printArea .section-title + table,
+    #printArea .section-title + .info-box,
+    #printArea .section-title + .request-card {
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     body *{
@@ -614,10 +612,6 @@ PRINT
 
 }
 
-/* =========================================================
-RESPONSIVE PREVIEW
-========================================================= */
-
 @media(max-width:1200px){
 
     .print-preview .a4-document{
@@ -640,6 +634,490 @@ RESPONSIVE PREVIEW
 
 }
 
+.comments-wrap {
+            --avatar-sm: 34px;
+            --avatar-md: 40px;
+            --line-color: #e9ecef;
+            --bg-hover: #f8f9fa;
+        }
+
+        /* ---- Composer ---- */
+        .composer-card {
+            border: 1px solid #eef0f2;
+            border-radius: 16px;
+            background: #fff;
+            padding: 1rem 1.1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+        }
+
+        .composer-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            margin-bottom: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .composer-body {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: var(--avatar-md);
+            height: var(--avatar-md);
+            min-width: var(--avatar-md);
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            user-select: none;
+        }
+
+        .avatar.avatar-sm {
+            width: var(--avatar-sm);
+            height: var(--avatar-sm);
+            min-width: var(--avatar-sm);
+            font-size: 0.8rem;
+        }
+
+        .composer-input-group {
+            flex: 1;
+        }
+
+        .composer-textarea {
+            width: 100%;
+            border: 1px solid #e2e5e9;
+            border-radius: 14px;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.92rem;
+            resize: none;
+            min-height: 46px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .composer-textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        .composer-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.6rem;
+        }
+
+        .attach-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.82rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.3rem 0.55rem;
+            border-radius: 8px;
+            transition: background 0.15s ease;
+        }
+        .attach-btn:hover { background: var(--bg-hover); color: #374151; }
+        .attach-btn input[type="file"] { display: none; }
+
+        .file-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+
+        .file-chip {
+            font-size: 0.75rem;
+            background: #f1f3f5;
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            color: #495057;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        .char-counter.limit-near { color: #f59e0b; }
+        .char-counter.limit-hit { color: #ef4444; }
+
+        .btn-post {
+            background: #6d28d9;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.4rem 1.1rem;
+            border-radius: 999px;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .btn-post:hover { background: #5b21b6; color: #fff; }
+        .btn-post:active { transform: scale(0.97); }
+        .btn-post:disabled { background: #c4b5fd; cursor: not-allowed; }
+
+        /* ---- Thread ---- */
+        .thread {
+            position: relative;
+        }
+
+        .comment-node {
+            position: relative;
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.9rem 0.25rem;
+            border-radius: 12px;
+            transition: background 0.15s ease;
+            background-color:#fff;
+        }
+        .comment-node.comment-node-with-replies {
+            margin-bottom: 0.45rem;
+        }
+        .comment-node + .comment-node {
+            margin-top: 1rem;
+        }
+        .comment-node:hover { background: var(--bg-hover); }
+
+        .comment-node .rail {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .comment-content { flex: 1; min-width: 0; }
+
+        .comment-meta {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #111827;
+        }
+
+        .comment-time {
+            font-size: 0.78rem;
+            color: #9ca3af;
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+            color: #374151;
+            line-height: 1.5;
+            margin-top: 0.15rem;
+            word-break: break-word;
+        }
+
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.4rem;
+        }
+
+        .action-link {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+        .action-link:hover { color: #6d28d9; }
+        .action-link.text-danger-hover:hover { color: #ef4444; }
+
+        .attachment-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.78rem;
+            background: #f1f3f5;
+            color: #374151;
+            border-radius: 8px;
+            padding: 0.3rem 0.6rem;
+            margin-top: 0.5rem;
+            margin-right: 0.4rem;
+            text-decoration: none;
+            transition: background 0.15s ease;
+        }
+        .attachment-chip:hover { background: #e5e7eb; color: #111827; }
+
+        /* ---- Reply form (collapsed by default) ---- */
+        .reply-form-wrap {
+            display: none;
+            margin-top: 0.85rem;
+            padding: 0.9rem;
+            gap: 0.75rem;
+            align-items: flex-start;
+            border: 1px solid #ece9f8;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+        }
+        .reply-form-wrap.open {
+            display: flex;
+            animation: fadeSlideIn 0.15s ease;
+        }
+
+        .reply-form-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .reply-form-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .reply-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #6d28d9;
+            text-transform: uppercase;
+        }
+
+        .reply-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reply-input {
+            flex: 1;
+            border: 1px solid #e2e5e9;
+            border-radius: 14px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.85rem;
+            min-height: 74px;
+            resize: vertical;
+            width: 100%;
+            background: #fff;
+        }
+        .reply-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        .reply-form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .reply-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .reply-file-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 0.8rem;
+            border-radius: 999px;
+            background: var(--bg-hover);
+            color: #6b7280;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .reply-file-btn:hover { background: #e9ecef; }
+        .reply-file-btn input { display: none; }
+
+        .reply-file-name {
+            font-size: 0.76rem;
+            color: #6b7280;
+            max-width: 240px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .reply-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .btn-reply-cancel {
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.35rem 0.5rem;
+        }
+
+        .btn-reply-cancel:hover {
+            color: #374151;
+        }
+
+        .btn-reply-send {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 0.9rem;
+            border-radius: 999px;
+            border: none;
+            background: #6d28d9;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .btn-reply-send:hover { background: #5b21b6; }
+
+        /* ---- Replies list ---- */
+        .replies-list {
+            margin-left: calc(var(--avatar-md) + 0.35rem);
+            margin-top: 0.15rem;
+            padding-left: 0;
+        }
+
+        .replies-toggle {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6d28d9;
+            background: none;
+            border: none;
+            padding: 0.3rem 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-left: calc(var(--avatar-md) + 0.35rem);
+        }
+        .replies-toggle:hover { text-decoration: underline; }
+        .replies-toggle .chevron { transition: transform 0.15s ease; font-size: 0.7rem; }
+        .replies-toggle.expanded .chevron { transform: rotate(90deg); }
+
+        .replies-list.collapsed { display: none; }
+
+        .reply-node {
+            position: relative;
+            display: flex;
+            gap: 0.6rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 14px;
+            transition: background 0.15s ease, border-color 0.15s ease;
+            background: #fff;
+            border: 1px solid #edf0f3;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+            margin-bottom: 25px;
+        }
+
+        .reply-node + .reply-node {
+            margin-top: 0.5rem;
+        }
+        .reply-node:hover {
+            background: var(--bg-hover);
+            border-color: #e2e8f0;
+        }
+
+        .reply-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 0.35rem;
+            padding: 0.18rem 0.5rem;
+            border-radius: 999px;
+            background: #f3f0ff;
+            color: #6d28d9;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        @media(max-width: 768px){
+            .reply-form-wrap {
+                padding: 0.8rem;
+            }
+
+            .reply-form-footer {
+                align-items: flex-start;
+            }
+
+            .reply-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-left: 0;
+            }
+
+            .reply-file-name {
+                max-width: 100%;
+            }
+
+            .replies-list {
+                margin-left: calc(var(--avatar-md) + 0.2rem);
+                padding-left: 0;
+            }
+
+            .replies-toggle {
+                margin-left: calc(var(--avatar-md) + 0.2rem);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+        }
+        .empty-state i { font-size: 2.2rem; opacity: 0.5; }
+        .empty-state h6 { margin-top: 0.75rem; color: #4b5563; font-weight: 600; }
+
+        #attachmentModal .modal-body{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:1rem;
+    }
+    #attachmentModalImage, #attachmentModalFrame{
+        margin:0 auto;
+        max-width:100%;
+        max-height:70vh;
+    }
 </style>
 <div class="p-2">
     <a href="{{ route('tickets') }}" class="btn back-btn border shadow-sm rounded-pill px-4">
@@ -710,7 +1188,7 @@ RESPONSIVE PREVIEW
 
                                 {{ $ticket->ticket_id }}
 
-                                <i class="bi bi-copy copy-ticket text-muted ms-2"
+                                <i class="bi bi-copy copy-ticket text-muted ms-2 fs-6"
                                    role="button"
                                    data-ticket="{{ $ticket->ticket_id }}"
                                    title="Copy Ticket Number"></i>
@@ -1048,7 +1526,6 @@ RESPONSIVE PREVIEW
 
             <div class="card-body p-4">
 
-                <!-- Purpose -->
 
                 <div class="info-box mb-4">
 
@@ -1072,29 +1549,8 @@ RESPONSIVE PREVIEW
 
                 <div class="row g-4">
 
-                    <div class="col-md-6">
 
-                        <div class="info-box h-100">
-
-                            <div class="info-title">
-
-                                <i class="bi bi-folder2-open"></i>
-
-                                Document Type
-
-                            </div>
-
-                            <div class="info-content">
-
-                                {{ $ticket->document_type ?? '-' }}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-md-6">
+                    <div class="col-md-12">
 
                         <div class="info-box h-100">
 
@@ -1107,8 +1563,32 @@ RESPONSIVE PREVIEW
                             </div>
 
                             <div class="info-content">
+                                @php
+                                    $kp = $ticket->type_of_knowledge_product ?? null;
+                                    $kpItems = [];
+                                    if($kp) {
+                                        if(is_array($kp)) {
+                                            $kpItems = $kp;
+                                        } else {
+                                            $decoded = json_decode($kp, true);
+                                            if(is_array($decoded)) {
+                                                $kpItems = $decoded;
+                                            } else {
+                                                $kpItems = array_filter(array_map('trim', explode(',', $kp)));
+                                            }
+                                        }
+                                    }
+                                @endphp
 
-                                {{ $ticket->knowledge_product ?? '-' }}
+                                @if(empty($kpItems))
+                                    -
+                                @else
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($kpItems as $item)
+                                            <span class="badge bg-light text-dark">{{ e($item) }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
 
                             </div>
 
@@ -1120,10 +1600,89 @@ RESPONSIVE PREVIEW
 
                 @endif
 
+                @if($ticket->ticket_category === 'resource')
+                <div class=row>
+                    <div class="col-md-6">
+                        <div class="info-box">
+
+                            <div class="info-title">
+
+                                <i class="bi bi-geo-alt-fill"></i>
+
+                                Venue
+
+                            </div>
+
+                            <div class="info-content">
+
+                                {{ $ticket->venue }}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-box">
+
+                            <div class="info-title">
+
+                                <i class="bi bi-calendar-event"></i>
+
+                                Type of activity
+
+                            </div>
+
+                            <div class="info-content">
+
+                                {{$ticket->type_of_activity}}
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div style="background:#f8fafc;
+                        border:1px solid #e5e7eb;
+                        border-radius:16px;
+                        padding:22px;
+                        transition:.3s;
+                        min-height:80px;">
+                            <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>
+                                            Start of Acitivty
+
+                                        </h6>
+
+                                        <div class="info-content">
+
+                                            {{ $ticket->date_of_activity }}
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <h6 >
+                                            End of Activity
+
+                                        </h6>
+
+                                        <div class="info-content">
+
+                                            {{ $ticket->date_of_activity_end }}
+
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 @if($ticket->ticket_category === 'completed')
 
-                <div class="info-box mt-4">
+                <div class="info-box">
 
                     <div class="info-title">
 
@@ -1169,21 +1728,21 @@ RESPONSIVE PREVIEW
         <table width="100%">
             <tr>
 
-                <td style="width:250px; text-align:center; vertical-align:middle; border:none">
+                <td style="width:300px; text-align:center; vertical-align:middle; border:none">
                     <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}"
                         style="width:250px; max-width:100%; height:auto; display:block; margin:auto;">
                 </td>
 
                 <td class="text-center" style="border:none">
 
-                    <h6 class="mb-0">
-                        Republic of the Philippines
-                    </h6>
-
+                    
                     <h5 class="fw-bold mb-0">
                         SOCIAL TECHNOLOGY BUREAU
                     </h5>
-
+                    <h6 class="mb-0">
+                        Republic of the Philippines
+                    </h6>
+                    
                     <span>
                         Department of Social Welfare and Development
                     </span>
@@ -1215,7 +1774,6 @@ RESPONSIVE PREVIEW
         </small>
 
     </div>
-
 
     <table class="table table-bordered">
 
@@ -1322,10 +1880,6 @@ RESPONSIVE PREVIEW
         </tr>
 
     </table>
-
-
-
-
     <h5 class="section-title">
 
         Requester Information
@@ -1420,9 +1974,6 @@ RESPONSIVE PREVIEW
 
     </table>
 
-
-
-
     <h5 class="section-title">
 
         Request Details
@@ -1430,7 +1981,27 @@ RESPONSIVE PREVIEW
     </h5>
 
     <table class="table table-bordered">
+        @if($ticket->ticket_category === "resource")
+        <tr>
+            
+            <th>Venue</th>
 
+            <td style="height:50px;">
+                {{$ticket->venue}}
+            </td>
+
+        </tr>
+        <tr>
+            <th>Type of Activity</th>
+            <td style="height:50px;">
+                {{$ticket->type_of_activity}}
+            </td>
+        </tr>
+        <tr>
+            <th>Activity Schedule</th>
+            <td style="height:50px;">{{$ticket->date_of_activity}} - {{$ticket->date_of_activity_end}}</td>
+        </tr>
+        @endif
         <tr>
 
             <th width="25%">
@@ -1444,38 +2015,27 @@ RESPONSIVE PREVIEW
             </td>
 
         </tr>
-
-    </table>
-
-
-
-    <!-- ===================== KNOWLEDGE PRODUCT ===================== -->
-
-    @if($ticket->ticket_category == 'knowledge')
-
-    <h5 class="section-title">
-
-        Knowledge Product Details
-
-    </h5>
-
-    <table class="table table-bordered">
-
         <tr>
-
-            <th width="25%">
-                Document Type
-            </th>
-
+            <th>With Attachment?</th>
             <td>
-
-                {{ $ticket->document_type ?? '-' }}
-
+                @if($ticket->attachments && $ticket->attachments->count() > 0)
+                    Yes
+                    <div class="mt-2">
+                        @foreach($ticket->attachments as $attachment)
+                            <a href="{{ asset('storage/' . $attachment->attachment_path) }}"
+                               class="d-block attachment-link"
+                               data-filetype="{{ $attachment->file_type }}"
+                               data-name="{{ $attachment->attachment }}">
+                                {{ $attachment->attachment }}
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    No
+                @endif
             </td>
-
         </tr>
-
-        <tr>
+            @if($ticket->ticket_category == 'knowledge')
 
             <th>
 
@@ -1485,19 +2045,34 @@ RESPONSIVE PREVIEW
 
             <td>
 
-                {{ $ticket->knowledge_product ?? '-' }}
+                @php
+                    $kpPrint = $ticket->type_of_knowledge_product ?? null;
+                    $kpPrintItems = [];
+                    if($kpPrint) {
+                        if(is_array($kpPrint)) {
+                            $kpPrintItems = $kpPrint;
+                        } else {
+                            $decodedPrint = json_decode($kpPrint, true);
+                            if(is_array($decodedPrint)) {
+                                $kpPrintItems = $decodedPrint;
+                            } else {
+                                $kpPrintItems = array_filter(array_map('trim', explode(',', $kpPrint)));
+                            }
+                        }
+                    }
+                @endphp
+
+                @if(empty($kpPrintItems))
+                    -
+                @else
+                    @foreach($kpPrintItems as $item)
+                        {{ e($item) }}@if(!$loop->last), @endif
+                    @endforeach
+                @endif
 
             </td>
-
-        </tr>
-
+            @endif
     </table>
-
-    @endif
-
-
-
-    <!-- ===================== REMARKS ===================== -->
 
     <h5 class="section-title">
 
@@ -1505,7 +2080,7 @@ RESPONSIVE PREVIEW
 
     </h5>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered no-break">
 
         <tr>
 
@@ -1515,28 +2090,23 @@ RESPONSIVE PREVIEW
 
     </table>
 
-
-
-    <!-- ===================== SIGNATURES ===================== -->
-
     <br><br>
 
-    <table width="100%">
+    <table width="100%" class="no-break"  style=" height:100px">
 
-        <tr>
+        <tr >
 
-            <td width="45%" align="center">
+            <td width="45%" align="center" style="padding-top:40px;">
 
                 _______________________________
 
                 <br>
-
                 <strong>iSTAksyon Personnel</strong>
 
             </td>
 
 
-            <td width="45%" align="center">
+            <td width="45%" align="center" height:100px style="padding-top:40px;">
 
                 _______________________________
 
@@ -1552,7 +2122,6 @@ RESPONSIVE PREVIEW
 
 
 
-    <!-- ===================== FOOTER ===================== -->
 
     <div class="document-footer">
 
@@ -1596,10 +2165,340 @@ RESPONSIVE PREVIEW
 
     
     
-    <div id="commentBody" class="d-none mt-3">commentBody</div>
+    <div id="commentBody" class="d-none mt-4">
+
+    <div class="comments-wrap">
+
+        <!-- ===== Composer ===== -->
+        <div class="composer-card">
+
+            <div class="composer-title">
+                <i class="bi bi-chat-left-text"></i>
+                Discussion
+                @if(isset($ticket) && $ticket->comments->count())
+                    <span class="text-muted fw-normal">({{ $ticket->comments->count() }})</span>
+                @endif
+            </div>
+
+            @if(session('success'))
+                <div class="alert alert-success py-2">{{ session('success') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-danger py-2">
+                    <ul class="mb-0 ps-3">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form id="commentForm" enctype="multipart/form-data" method="POST"
+                  action="{{ route('tickets.comments.store', $ticket->id) }}">
+                @csrf
+                <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
+                <input type="hidden" name="parent_id" value="">
+
+                <div class="composer-body">
+
+                    <div class="avatar">
+                        {{ strtoupper(substr(optional(auth()->user())->name ?? 'G', 0, 1)) }}
+                    </div>
+
+                    <div class="composer-input-group">
+                        <textarea
+                            class="composer-textarea"
+                            name="comment"
+                            id="main_comment"
+                            rows="1"
+                            maxlength="1000"
+                            placeholder="Write a comment..."
+                            required></textarea>
+
+                        <div id="main_file_chips" class="file-chip-row"></div>
+
+                        <div class="composer-footer">
+                            <label class="attach-btn">
+                                <i class="bi bi-paperclip"></i>
+                                Attach
+                                <input type="file" name="attachments[]" id="main_attachments" multiple>
+                            </label>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="char-counter"><span id="comment_count">0</span>/1000</span>
+                                <button class="btn-post" id="postCommentBtn" type="submit" disabled>
+                                    <span id="postCommentSpinner" class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                                    Post
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="thread">
+
+            @forelse($ticket->comments as $comment)
+                <div class="comment-node {{ $comment->replies->count() ? 'has-replies comment-node-with-replies' : '' }}" data-comment-id="{{ $comment->id }}">
+                    <div class="rail">
+                        <div class="avatar">
+                            {{ strtoupper(substr(optional($comment->user)->name ?? $comment->guest_name, 0, 1)) }}
+                        </div>
+                    </div>
+
+                    <div class="comment-content">
+
+                        <div class="comment-meta">
+                            <span class="comment-author">
+                                {{ optional($comment->user)->name ?? $comment->guest_name }}
+                            </span>
+                            <span class="comment-time">{{ $comment->created_at->diffForHumans() }}</span>
+                        </div>
+
+                        <div class="comment-text">
+                            {!! nl2br(e($comment->comment)) !!}
+                        </div>
+
+                        @if($comment->attachments->count())
+                            <div>
+                                @foreach($comment->attachments as $file)
+                                    <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip">
+                                        <i class="bi bi-paperclip"></i>
+                                        {{ $file->original_name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="comment-actions">
+                            <button type="button" class="action-link replyToggleBtn" data-target="reply-form-{{ $comment->id }}">
+                                <i class="bi bi-reply"></i> Reply
+                            </button>
+                        </div>
+
+                        <form id="reply-form-{{ $comment->id }}"
+                              class="reply-form-wrap"
+                              enctype="multipart/form-data" method="POST"
+                              action="{{ route('tickets.comments.store', $ticket->id) }}">
+                            @csrf
+                            <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+
+                            <div class="avatar avatar-sm">
+                                {{ strtoupper(substr(optional(auth()->user())->name ?? 'G', 0, 1)) }}
+                            </div>
+
+                            <div class="reply-form-main">
+                                <div class="reply-form-top">
+                                    <span class="reply-label">Replying to {{ optional($comment->user)->name ?? $comment->guest_name }}</span>
+                                    <span class="reply-hint">Max 500 characters</span>
+                                </div>
+
+                                <textarea name="comment" class="reply-input"
+                                          rows="3"
+                                          placeholder="Write a thoughtful reply..."
+                                          maxlength="500" required></textarea>
+
+                                <div class="reply-form-footer">
+                                    <div class="reply-tools">
+                                        <label class="reply-file-btn" title="Attach a file">
+                                            <i class="bi bi-paperclip"></i>
+                                            <span>Attach</span>
+                                            <input type="file" name="attachments[]" class="reply-file-input">
+                                        </label>
+                                        <span class="reply-file-name">No file chosen</span>
+                                    </div>
+
+                                    <div class="reply-actions">
+                                        <button type="button" class="btn-reply-cancel">Cancel</button>
+                                        <button type="submit" class="btn-reply-send" title="Send reply">
+                                            <i class="bi bi-send-fill me-1"></i>
+                                            <span>Reply</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+
+                @if($comment->replies->count())
+
+                    <button type="button" class="replies-toggle" data-target="replies-{{ $comment->id }}">
+                        <i class="bi bi-chevron-right chevron"></i>
+                        {{ $comment->replies->count() }} {{ Str::plural('reply', $comment->replies->count()) }}
+                    </button>
+
+                    <div class="replies-list collapsed" id="replies-{{ $comment->id }}">
+
+                        @foreach($comment->replies as $reply)
+
+                                    <div class="reply-node" data-comment-id="{{ $reply->id }}">
+
+                                <div class="avatar avatar-sm">
+                                    {{ strtoupper(substr(optional($reply->user)->name ?? $reply->guest_name, 0, 1)) }}
+                                </div>
+
+                                <div class="comment-content">
+
+                                    <div class="comment-meta">
+                                        <span class="reply-badge">
+                                            <i class="bi bi-arrow-return-right"></i>
+                                            Reply
+                                        </span>
+                                    </div>
+
+                                    <div class="comment-meta">
+                                        <span class="comment-author" style="font-size:0.85rem;">
+                                            {{ optional($reply->user)->name ?? $reply->guest_name }}
+                                        </span>
+                                        <span class="comment-time">{{ $reply->created_at->diffForHumans() }}</span>
+                                    </div>
+
+                                    <div class="comment-text" style="font-size:0.85rem;">
+                                        {!! nl2br(e($reply->comment)) !!}
+                                    </div>
+
+                                    @if($reply->attachments->count())
+                                        <div>
+                                            @foreach($reply->attachments as $file)
+                                                <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip">
+                                                    <i class="bi bi-paperclip"></i>
+                                                    {{ $file->original_name }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                </div>
+                            </div>
+
+                        @endforeach
+
+                    </div>
+
+                @endif
+
+            @empty
+
+                <div class="empty-state">
+                    <i class="bi bi-chat-left-text"></i>
+                    <h6>No comments yet</h6>
+                    <small>Start the discussion by posting the first comment.</small>
+                </div>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
+</div>
     <div id="historyBody" class="d-none mt-3">historyBody</div>
 </div>
 <script>
+    (function () {
+            const textarea = document.getElementById('main_comment');
+            const counter = document.getElementById('comment_count');
+            const postBtn = document.getElementById('postCommentBtn');
+
+            function autoGrow(el) {
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+            }
+
+            if (textarea) {
+                textarea.addEventListener('input', function () {
+                    autoGrow(this);
+                    const len = this.value.length;
+                    counter.textContent = len;
+                    counter.classList.toggle('limit-near', len > 800 && len <= 950);
+                    counter.classList.toggle('limit-hit', len > 950);
+                    postBtn.disabled = len === 0;
+                });
+            }
+
+            // ---- File chips preview for main composer ----
+            const fileInput = document.getElementById('main_attachments');
+            const chipRow = document.getElementById('main_file_chips');
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    chipRow.innerHTML = '';
+                    Array.from(this.files).forEach(function (file) {
+                        const chip = document.createElement('span');
+                        chip.className = 'file-chip';
+                        chip.innerHTML = '<i class="bi bi-paperclip"></i> ' + file.name;
+                        chipRow.appendChild(chip);
+                    });
+                });
+            }
+
+            // ---- Toggle reply form ----
+            document.querySelectorAll('.replyToggleBtn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const target = document.getElementById(this.dataset.target);
+                    if (!target) return;
+                    const isOpen = target.classList.contains('open');
+
+                    // close any other open reply forms
+                    document.querySelectorAll('.reply-form-wrap.open').forEach(function (f) {
+                        if (f !== target) f.classList.remove('open');
+                    });
+
+                    target.classList.toggle('open', !isOpen);
+                    if (!isOpen) {
+                        const input = target.querySelector('[name="comment"]');
+                        if (input) input.focus();
+                    }
+                });
+            });
+
+            document.addEventListener('change', function (e) {
+                const input = e.target.closest('.reply-file-input');
+                if (!input) return;
+                const form = input.closest('.reply-form-wrap');
+                if (!form) return;
+                const fileName = form.querySelector('.reply-file-name');
+                if (!fileName) return;
+                fileName.textContent = input.files && input.files.length ? input.files[0].name : 'No file chosen';
+            });
+
+            document.addEventListener('click', function (e) {
+                const btn = e.target.closest('.btn-reply-cancel');
+                if (!btn) return;
+                const form = btn.closest('.reply-form-wrap');
+                if (!form) return;
+                form.classList.remove('open');
+                form.reset();
+                const fileName = form.querySelector('.reply-file-name');
+                if (fileName) fileName.textContent = 'No file chosen';
+            });
+
+            // ---- Toggle replies list ----
+            document.querySelectorAll('.replies-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const target = document.getElementById(this.dataset.target);
+                    if (!target) return;
+                    const collapsed = target.classList.toggle('collapsed');
+                    this.classList.toggle('expanded', !collapsed);
+                });
+            });
+
+            // ---- Submit spinner on main form ----
+            const commentForm = document.getElementById('commentForm');
+            const spinner = document.getElementById('postCommentSpinner');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function () {
+                    postBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                });
+            }
+        })();
+
     document.querySelector('.copy-ticket').addEventListener('click', async function(){
         const ticketNumber = this.dataset.ticket;
 
@@ -1669,12 +2568,299 @@ RESPONSIVE PREVIEW
 
     });
 
-    // Print handler for printable A4 panel
     const printBtn = document.getElementById('printBtn');
     if(printBtn){
         printBtn.addEventListener('click', function(){
             window.print();
         });
     }
+
+    document.addEventListener('click', function(e){
+        const btn = e.target.closest('.replyBtn');
+        if(!btn) return;
+        e.preventDefault();
+        const id = btn.dataset.id;
+        const parentInput = document.getElementById('parent_id');
+        parentInput.value = id;
+        const textarea = document.querySelector('textarea[name="comment"]');
+        if(textarea){
+            textarea.focus();
+        }
+        // Switch to comments tab
+        document.getElementById('btnComment').click();
+    });
+</script>
+
+<div class="modal fade" id="attachmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachmentModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="attachmentModalImage" src="" alt="Attachment" style="max-width:100%; max-height:70vh; display:none;" />
+                <iframe id="attachmentModalFrame" src="" frameborder="0" style="width:100%; height:70vh; display:none;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <a id="attachmentModalDownload" href="#" class="btn btn-primary" target="_blank">Download</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('click', function(e){
+        const link = e.target.closest('.attachment-link');
+        if(!link) return;
+        e.preventDefault();
+
+        const url = link.getAttribute('href');
+        const filetype = (link.dataset.filetype || '').toLowerCase();
+        const name = link.dataset.name || '';
+
+        const img = document.getElementById('attachmentModalImage');
+        const frame = document.getElementById('attachmentModalFrame');
+        const title = document.getElementById('attachmentModalLabel');
+        const download = document.getElementById('attachmentModalDownload');
+
+        img.style.display = 'none'; img.src = '';
+        frame.style.display = 'none'; frame.src = '';
+
+        if(filetype.startsWith('image/')){
+                img.src = url;
+                img.style.display = '';
+        } else {
+                frame.src = url;
+                frame.style.display = '';
+        }
+
+        title.textContent = name;
+        download.href = url;
+        if(name){
+            download.setAttribute('download', name);
+        } else {
+            download.removeAttribute('download');
+        }
+        download.removeAttribute('target');
+
+        const modalEl = document.getElementById('attachmentModal');
+        const bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+
+        modalEl.addEventListener('hidden.bs.modal', function handler(){
+                img.src = '';
+                frame.src = '';
+                modalEl.removeEventListener('hidden.bs.modal', handler);
+        });
+});
+(function(){
+    const mainTextarea = document.getElementById('main_comment');
+    const counter = document.getElementById('comment_count');
+    const fileInput = document.getElementById('main_attachments');
+    const fileListPreview = document.getElementById('file_list_preview');
+    const postBtn = document.getElementById('postCommentBtn');
+    const postSpinner = document.getElementById('postCommentSpinner');
+
+    if(mainTextarea && counter){
+        counter.textContent = mainTextarea.value.length;
+        mainTextarea.addEventListener('input', function(){
+            counter.textContent = this.value.length;
+            postBtn.disabled = this.value.trim().length === 0;
+        });
+    }
+
+    if(fileInput && fileListPreview){
+        fileInput.addEventListener('change', function(){
+            if(this.files.length === 0){ fileListPreview.textContent = 'No files chosen'; return; }
+            const names = Array.from(this.files).map(f => f.name).join(', ');
+            fileListPreview.textContent = names;
+        });
+    }
+
+    // show spinner when AJAX main submit in progress
+    const commentForm = document.getElementById('commentForm');
+    if(commentForm){
+        commentForm.addEventListener('submit', function(){
+            if(postSpinner) postSpinner.classList.remove('d-none');
+        });
+    }
+})();
+</script>
+<script>
+// AJAX comment submit and inline reply form
+(function(){
+    const token = document.querySelector('input[name="_token"]').value;
+
+    // Submit main comment form via AJAX
+    const commentForm = document.getElementById('commentForm');
+    if(commentForm){
+        commentForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const submitBtn = commentForm.querySelector('button[type="submit"]') || commentForm.querySelector('button');
+            submitBtn.disabled = true;
+            const spinnerEl = document.getElementById('postCommentSpinner');
+            if(spinnerEl) spinnerEl.classList.remove('d-none');
+            const fd = new FormData(commentForm);
+            try{
+                const res = await fetch(commentForm.action, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token },
+                    body: fd
+                });
+                if(!res.ok){
+                    const txt = await res.text();
+                    let msg = `Request failed: ${res.status} ${res.statusText}`;
+                    try{
+                        const j = JSON.parse(txt);
+                        if(j.message) msg += '\n' + j.message;
+                    }catch(_) { msg += '\n' + txt; }
+                    throw new Error(msg);
+                }
+                const data = await res.json();
+                // insert server-rendered html, or build fallback from JSON
+                if(data.html){
+                    insertRenderedComment(data);
+                } else {
+                    const html = buildFallbackHtml(data);
+                    insertRenderedComment({ parent_id: data.parent_id ?? null, html });
+                }
+                commentForm.reset();
+                // clear parent_id hidden
+                const pid = document.getElementById('parent_id'); if(pid) pid.value = '';
+            }catch(err){
+                console.error(err);
+                alert('Failed to post comment:\n' + (err.message || err));
+            }finally{ submitBtn.disabled = false; if(spinnerEl) spinnerEl.classList.add('d-none'); }
+        });
+    }
+
+    function insertRenderedComment(data){
+        const container = document.querySelector('#commentBody');
+        if(!container) return;
+        // find the composer/form card where new comments should be inserted after
+        const formCard = container.querySelector('.composer-card') || container.querySelector('#commentForm') || container.querySelector('form');
+
+        if(!data.parent_id){
+            // main comment: insert after form if available, otherwise append to container
+            if(formCard && typeof formCard.insertAdjacentHTML === 'function'){
+                formCard.insertAdjacentHTML('afterend', data.html);
+            } else {
+                container.insertAdjacentHTML('beforeend', data.html);
+            }
+            return;
+        }
+
+        // reply: try several targets in order: element with data-comment-id, replies list by id, or append to container
+        const parentByData = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
+        const repliesList = document.getElementById(`replies-${data.parent_id}`);
+        if(repliesList){
+            repliesList.insertAdjacentHTML('beforeend', data.html);
+            return;
+        }
+        if(parentByData){
+            // prefer an inner replies container if present
+            const innerReplies = parentByData.querySelector('.replies-container') || parentByData.querySelector('.replies-list');
+            if(innerReplies){
+                innerReplies.insertAdjacentHTML('beforeend', data.html);
+                return;
+            }
+            // otherwise append after parent node
+            parentByData.insertAdjacentHTML('afterend', data.html);
+            return;
+        }
+
+        // fallback: append to main container
+        container.insertAdjacentHTML('beforeend', data.html);
+    }
+
+    // Fallback: build minimal comment HTML when server returns JSON instead of rendered HTML
+    function buildFallbackHtml(d){
+        const user = d.user_name || d.guest_name || 'Guest';
+        const avatar = (user && user.length) ? user.charAt(0).toUpperCase() : 'G';
+        let attachHtml = '';
+        if(d.attachments && d.attachments.length){
+            attachHtml = '<div>' + d.attachments.map(a=>
+                `<a href="${a.url}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i> ${a.original_name}</a>`
+            ).join(' ') + '</div>';
+        }
+        return `
+            <div class="comment-node" data-comment-id="${d.id}">
+                <div class="rail"><div class="avatar">${avatar}</div></div>
+                <div class="comment-content">
+                    <div class="comment-meta"><span class="comment-author">${user}</span> <span class="comment-time">${d.created_at}</span></div>
+                    <div class="comment-text">${(d.comment||'').replace(/\n/g,'<br>')}</div>
+                    ${attachHtml}
+                    <div class="comment-actions"><button type="button" class="action-link replyToggleBtn" data-target="reply-form-${d.id}"><i class="bi bi-reply"></i> Reply</button></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Inline reply form handler
+    document.addEventListener('click', function(e){
+        const btn = e.target.closest('.replyBtn');
+        if(!btn) return;
+        e.preventDefault();
+        const id = btn.dataset.id;
+        // if reply form already exists for this comment, focus
+        const commentItem = btn.closest('.comment-item');
+        if(!commentItem) return;
+        if(commentItem.querySelector('.inline-reply-form')){
+            commentItem.querySelector('textarea').focus();
+            return;
+        }
+        const formHtml = `
+            <form class="inline-reply-form mt-3" enctype="multipart/form-data" data-parent="${id}" action="${commentForm.action}">
+                <input type="hidden" name="_token" value="${token}">
+                <input type="hidden" name="parent_id" value="${id}">
+                <div class="mb-2"><textarea name="comment" rows="3" class="form-control" required placeholder="Write your reply..."></textarea></div>
+                <div class="d-flex gap-2"><input type="file" name="attachments[]" class="form-control form-control-sm flex-grow-1"><button class="btn btn-primary btn-sm">Reply</button><button class="btn btn-secondary btn-sm btn-cancel-reply" type="button">Cancel</button></div>
+            </form>
+        `;
+        const repliesContainer = commentItem.querySelector('.replies-container');
+        repliesContainer.insertAdjacentHTML('beforeend', formHtml);
+    });
+
+    // Handle inline reply submit/cancel
+    document.addEventListener('submit', async function(e){
+        const form = e.target;
+        if(!form.classList.contains('inline-reply-form')) return;
+        e.preventDefault();
+        const btn = form.querySelector('button[type=submit]') || form.querySelector('button');
+        btn.disabled = true;
+        const fd = new FormData(form);
+        try{
+            const res = await fetch(form.action, { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'X-CSRF-TOKEN': token }, body: fd });
+            if(!res.ok){
+                const txt = await res.text();
+                let msg = `Request failed: ${res.status} ${res.statusText}`;
+                try{ const j = JSON.parse(txt); if(j.message) msg += '\n'+j.message; }catch(_) { msg += '\n'+txt; }
+                throw new Error(msg);
+            }
+            const data = await res.json();
+            if(data.html){
+                insertRenderedComment(data);
+            } else {
+                const html = buildFallbackHtml(data);
+                insertRenderedComment({ parent_id: data.parent_id ?? null, html });
+            }
+            form.remove();
+        }catch(err){
+            console.error(err);
+            alert('Failed to post reply:\n' + (err.message || err));
+        }finally{ btn.disabled = false; }
+    });
+
+    document.addEventListener('click', function(e){
+        const btn = e.target.closest('.btn-cancel-reply');
+        if(!btn) return;
+        const form = btn.closest('.inline-reply-form');
+        if(form) form.remove();
+    });
+
+    
+})();
 </script>
 @endsection

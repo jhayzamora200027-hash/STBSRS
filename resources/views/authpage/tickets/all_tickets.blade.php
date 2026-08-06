@@ -300,7 +300,6 @@
 
             </div>
 
-            {{-- PRIORITY --}}
             <div class="col-md-2">
 
                 <label class="form-label fw-semibold">
@@ -598,7 +597,6 @@
 
                 </td>
 
-                {{-- Priority --}}
                 <td>
 
                     @php
@@ -625,6 +623,11 @@
                             </span>
                         @break
 
+                        @case('low')
+                            <span class="badge rounded-pill bg-success px-3 py-2">
+                                Low
+                            </span>
+                        @break
                         @default
                             <span class="badge rounded-pill bg-success px-3 py-2">
                                 -
