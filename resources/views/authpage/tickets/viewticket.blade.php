@@ -789,7 +789,6 @@ hr{
         .comment-node + .comment-node {
             margin-top: 1rem;
         }
-        .comment-node:hover { background: var(--bg-hover); }
 
         .comment-node .rail {
             position: relative;
@@ -1485,109 +1484,213 @@ hr{
                         </div>
 
                     </div>
+                    <div class="col-xl-12 col-lg-5 pt-4">
 
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
-    <div class="col-xl-4 col-lg-5">
-
-        <div class="card request-card border-0 shadow-sm">
+                        <div class="card request-card border-0 shadow-sm">
 
 
-            <div class="request-header">
+                            <div class="request-header">
 
-                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center">
 
-                    <div class="request-icon">
+                                    <div class="request-icon">
 
-                        <i class="bi bi-file-earmark-text-fill"></i>
+                                        <i class="bi bi-file-earmark-text-fill"></i>
 
-                    </div>
+                                    </div>
 
-                    <div class="ms-3">
+                                    <div class="ms-3">
 
-                        <h4 class="mb-1 fw-bold">
-                            Request Information
-                        </h4>
+                                        <h4 class="mb-1 fw-bold">
+                                            Request Information
+                                        </h4>
 
-                        <small class="mb-1">
-                            Details submitted by the requester
-                        </small>
+                                        <small class="mb-1">
+                                            Details submitted by the requester
+                                        </small>
 
-                    </div>
+                                    </div>
 
-                </div>
-
-            </div>
-
-            <div class="card-body p-4">
-
-
-                <div class="info-box mb-4">
-
-                    <div class="info-title">
-
-                        <i class="bi bi-chat-left-text"></i>
-
-                        Purpose of Request
-
-                    </div>
-
-                    <div class="info-content">
-
-                        {{ $ticket->purpose_of_request }}
-
-                    </div>
-
-                </div>
-
-                @if($ticket->ticket_category === 'knowledge')
-
-                <div class="row g-4">
-
-
-                    <div class="col-md-12">
-
-                        <div class="info-box h-100">
-
-                            <div class="info-title">
-
-                                <i class="bi bi-journal-bookmark"></i>
-
-                                Knowledge Product Requested
+                                </div>
 
                             </div>
 
-                            <div class="info-content">
-                                @php
-                                    $kp = $ticket->type_of_knowledge_product ?? null;
-                                    $kpItems = [];
-                                    if($kp) {
-                                        if(is_array($kp)) {
-                                            $kpItems = $kp;
-                                        } else {
-                                            $decoded = json_decode($kp, true);
-                                            if(is_array($decoded)) {
-                                                $kpItems = $decoded;
-                                            } else {
-                                                $kpItems = array_filter(array_map('trim', explode(',', $kp)));
-                                            }
-                                        }
-                                    }
-                                @endphp
+                            <div class="card-body p-4">
 
-                                @if(empty($kpItems))
-                                    -
-                                @else
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach($kpItems as $item)
-                                            <span class="badge bg-light text-dark">{{ e($item) }}</span>
-                                        @endforeach
+
+                                <div class="info-box mb-4">
+
+                                    <div class="info-title">
+
+                                        <i class="bi bi-chat-left-text"></i>
+
+                                        Purpose of Request
+
                                     </div>
+
+                                    <div class="info-content">
+
+                                        {{ $ticket->purpose_of_request }}
+
+                                    </div>
+
+                                </div>
+
+                                @if($ticket->ticket_category === 'knowledge')
+
+                                <div class="row g-4">
+
+
+                                    <div class="col-md-12">
+
+                                        <div class="info-box h-100">
+
+                                            <div class="info-title">
+
+                                                <i class="bi bi-journal-bookmark"></i>
+
+                                                Knowledge Product Requested
+
+                                            </div>
+
+                                            <div class="info-content">
+                                                @php
+                                                    $kp = $ticket->type_of_knowledge_product ?? null;
+                                                    $kpItems = [];
+                                                    if($kp) {
+                                                        if(is_array($kp)) {
+                                                            $kpItems = $kp;
+                                                        } else {
+                                                            $decoded = json_decode($kp, true);
+                                                            if(is_array($decoded)) {
+                                                                $kpItems = $decoded;
+                                                            } else {
+                                                                $kpItems = array_filter(array_map('trim', explode(',', $kp)));
+                                                            }
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                @if(empty($kpItems))
+                                                    -
+                                                @else
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        @foreach($kpItems as $item)
+                                                            <span class="badge bg-light text-dark">{{ e($item) }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                @endif
+
+                                @if($ticket->ticket_category === 'resource')
+                                <div class=row>
+                                    <div class="col-md-6">
+                                        <div class="info-box">
+
+                                            <div class="info-title">
+
+                                                <i class="bi bi-geo-alt-fill"></i>
+
+                                                Venue
+
+                                            </div>
+
+                                            <div class="info-content">
+
+                                                {{ $ticket->venue }}
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="info-box">
+
+                                            <div class="info-title">
+
+                                                <i class="bi bi-calendar-event"></i>
+
+                                                Type of activity
+
+                                            </div>
+
+                                            <div class="info-content">
+
+                                                {{$ticket->type_of_activity}}
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <div style="background:#f8fafc;
+                                        border:1px solid #e5e7eb;
+                                        border-radius:16px;
+                                        padding:22px;
+                                        transition:.3s;
+                                        min-height:80px;">
+                                            <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6>
+                                                            Start of Acitivty
+
+                                                        </h6>
+
+                                                        <div class="info-content">
+
+                                                            {{ $ticket->date_of_activity }}
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 text-end">
+                                                        <h6 >
+                                                            End of Activity
+
+                                                        </h6>
+
+                                                        <div class="info-content">
+
+                                                            {{ $ticket->date_of_activity_end }}
+
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+
+                                @if($ticket->ticket_category === 'completed')
+
+                                <div class="info-box">
+
+                                    <div class="info-title">
+
+                                        <i class="bi bi-diagram-3"></i>
+
+                                        Program
+
+                                    </div>
+
+                                    <div class="info-content">
+
+                                        {{ optional($ticket->programDetails)->program ?? '-' }}
+
+                                    </div>
+
+                                </div>
+
                                 @endif
 
                             </div>
@@ -1598,115 +1701,11 @@ hr{
 
                 </div>
 
-                @endif
-
-                @if($ticket->ticket_category === 'resource')
-                <div class=row>
-                    <div class="col-md-6">
-                        <div class="info-box">
-
-                            <div class="info-title">
-
-                                <i class="bi bi-geo-alt-fill"></i>
-
-                                Venue
-
-                            </div>
-
-                            <div class="info-content">
-
-                                {{ $ticket->venue }}
-
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="info-box">
-
-                            <div class="info-title">
-
-                                <i class="bi bi-calendar-event"></i>
-
-                                Type of activity
-
-                            </div>
-
-                            <div class="info-content">
-
-                                {{$ticket->type_of_activity}}
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <div style="background:#f8fafc;
-                        border:1px solid #e5e7eb;
-                        border-radius:16px;
-                        padding:22px;
-                        transition:.3s;
-                        min-height:80px;">
-                            <div class="row">
-                                    <div class="col-md-6">
-                                        <h6>
-                                            Start of Acitivty
-
-                                        </h6>
-
-                                        <div class="info-content">
-
-                                            {{ $ticket->date_of_activity }}
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 text-end">
-                                        <h6 >
-                                            End of Activity
-
-                                        </h6>
-
-                                        <div class="info-content">
-
-                                            {{ $ticket->date_of_activity_end }}
-
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
-
-                @if($ticket->ticket_category === 'completed')
-
-                <div class="info-box">
-
-                    <div class="info-title">
-
-                        <i class="bi bi-diagram-3"></i>
-
-                        Program
-
-                    </div>
-
-                    <div class="info-content">
-
-                        {{ optional($ticket->programDetails)->program ?? '-' }}
-
-                    </div>
-
-                </div>
-
-                @endif
-
             </div>
-
         </div>
 
     </div>
+
 </div>
 
     <div id="printBody" class="d-none mt-3">
@@ -1728,30 +1727,28 @@ hr{
         <table width="100%">
             <tr>
 
-                <td style="width:300px; text-align:center; vertical-align:middle; border:none">
-                    <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}"
-                        style="width:250px; max-width:100%; height:auto; display:block; margin:auto;">
+                <td style="width:270px; text-align:center; vertical-align:middle; border:none">
+                    <div class="d-flex justify-content-start align-items-start">
+                        <img src="{{ asset('images/logo/DSWD&BAGONGPIL-LOGO.png') }}"
+                            style="width:270px; max-width:100%;height:auto; display:block; margin:auto;">
+                    </div>
                 </td>
 
-                <td class="text-center" style="border:none">
+                <td class="text-center" style="border:none; padding-top: 30px;">
 
                     
-                    <h5 class="fw-bold mb-0">
+                    <h5 class="fw-bold mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.9rem;">
                         SOCIAL TECHNOLOGY BUREAU
                     </h5>
-                    <h6 class="mb-0">
-                        Republic of the Philippines
-                    </h6>
-                    
-                    <span>
-                        Department of Social Welfare and Development
-                    </span>
+
+                    <h5 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
+                        INNOVATIONS AND PROGRAM DEVELOPMENT GROUP
+                    </h5>
+                    <h6 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
+                        DSWD-STB-GF-007 | REV 01 | 13 MAR 2023
+                    </h6> 
 
                     <br>
-
-                    <small>
-                        iSTAksyon System
-                    </small>
 
                 </td>
 
@@ -1759,31 +1756,41 @@ hr{
         </table>
 
     </div>
-
-    <hr>
-
+<hr style="border-top:1px solid #000; margin-top:-30px;">
 
     <div class="text-center mb-4">
 
         <h3 class="fw-bold">
-            SERVICE REQUEST FORM
+            REQUEST FORM
         </h3>
 
-        <small class="text-muted">
-            Printable Copy
-        </small>
 
     </div>
-
+    <table class="table table-bordered" style="border: 1px solid; border-color:#000">
+        <tr>
+            <td style="border:1px solid #000;">
+                By clicking this, I hereby give my consent and acknowledge that I have read, fully understood, and agree to the
+                <i style="color:#0d6efd; text-decoration:underline;">
+                    DSWD Data Privacy Terms and Condition
+                </i>.
+            </td>        
+        </tr>
+    </table>
     <table class="table table-bordered">
 
         <tr>
-
-            <th width="25%">
+                <th class="text-end" style="border:1px solid #000;">
+                    <i>DATE<i>
+                </th>
+                <td style="border:1px solid #000;">
+                    {{$ticket->created_at->format('F d, Y h:i A')}}
+                </td>
+            {{--
+            <th width="25%" style="border:1px solid #000;">
                 Ticket Number
             </th>
 
-            <td width="25%">
+            <td width="25%" style="border:1px solid #000;">
                 {{ $ticket->ticket_id }}
             </td>
 
@@ -1795,11 +1802,36 @@ hr{
 
                 {{ $ticket->created_at->format('F d, Y h:i A') }}
 
-            </td>
+            </td> --}}
 
+        </tr>
+        <tr>
+                <th class="text-end" style="border:1px solid #000;">
+                    NAME OF THE REQUESTOR
+                </th>
+                <td style="border:1px solid #000;">
+                        {{ $ticket->requestor_last_name }}
+
+                        {{ $ticket->requestor_first_name }}
+
+                        @if(!empty($ticket->requestor_middle_name))
+                        {{ strtoupper(substr($ticket->requestor_middle_name,0,1)) }}.
+                        @endif
+                </td>
         </tr>
 
         <tr>
+                <th class="text-end" style="border:1px solid #000;">
+                    <i>Position / Designation
+                    <div>(Optional)</div></i>
+                </th>
+                <td>
+                    {{$ticket->requestor_position_title}}
+                </td>
+        <tr>
+        
+
+        {{-- <tr>
 
             <th>
                 Status
@@ -1821,7 +1853,7 @@ hr{
 
             </td>
 
-        </tr>
+        </tr> --}}
 
         <tr>
 
@@ -2180,9 +2212,6 @@ hr{
                 @endif
             </div>
 
-            @if(session('success'))
-                <div class="alert alert-success py-2">{{ session('success') }}</div>
-            @endif
 
             @if($errors->any())
                 <div class="alert alert-danger py-2">
@@ -2242,7 +2271,7 @@ hr{
         <div class="thread">
 
             @forelse($ticket->comments as $comment)
-                <div class="comment-node {{ $comment->replies->count() ? 'has-replies comment-node-with-replies' : '' }}" data-comment-id="{{ $comment->id }}">
+                <div class="comment-node {{ $comment->replies->count() ? 'has-replies comment-node-with-replies' : '' }} p-3" data-comment-id="{{ $comment->id }}">
                     <div class="rail">
                         <div class="avatar">
                             {{ strtoupper(substr(optional($comment->user)->name ?? $comment->guest_name, 0, 1)) }}
@@ -2493,6 +2522,8 @@ hr{
             const spinner = document.getElementById('postCommentSpinner');
             if (commentForm) {
                 commentForm.addEventListener('submit', function () {
+                    // ensure page reload will restore comments tab
+                    try{ localStorage.setItem('ticketActiveTab','comment'); }catch(e){}
                     postBtn.disabled = true;
                     spinner.classList.remove('d-none');
                 });
@@ -2528,6 +2559,7 @@ hr{
         document.getElementById('commentBody').classList.add('d-none');
         document.getElementById('historyBody').classList.add('d-none');
         document.getElementById('printBody').classList.add('d-none');
+        try{ localStorage.setItem('ticketActiveTab','request'); }catch(e){}
     });
 
     document.getElementById('btnComment').addEventListener('click', function(){
@@ -2535,6 +2567,7 @@ hr{
         document.getElementById('commentBody').classList.remove('d-none');
         document.getElementById('historyBody').classList.add('d-none');
         document.getElementById('printBody').classList.add('d-none');
+        try{ localStorage.setItem('ticketActiveTab','comment'); }catch(e){}
     });
 
     document.getElementById('btnHistory').addEventListener('click', function(){
@@ -2542,6 +2575,7 @@ hr{
         document.getElementById('commentBody').classList.add('d-none');
         document.getElementById('historyBody').classList.remove('d-none');
         document.getElementById('printBody').classList.add('d-none');
+        try{ localStorage.setItem('ticketActiveTab','history'); }catch(e){}
     });
 
     document.getElementById('btnPrint').addEventListener('click', function(){
@@ -2549,6 +2583,7 @@ hr{
         document.getElementById('commentBody').classList.add('d-none');
         document.getElementById('historyBody').classList.add('d-none');
         document.getElementById('printBody').classList.remove('d-none');
+        try{ localStorage.setItem('ticketActiveTab','print'); }catch(e){}
     });
 
     const tabs = document.querySelectorAll('.ticket-tab');
@@ -2563,6 +2598,7 @@ hr{
             this.classList.add('active');
 
             indicator.style.transform = `translateX(${index * 100}%)`;
+            try{ localStorage.setItem('ticketActiveIndicatorIndex', String(index)); }catch(e){}
 
         });
 
@@ -2587,8 +2623,31 @@ hr{
             textarea.focus();
         }
         // Switch to comments tab
+        try{ localStorage.setItem('ticketActiveTab','comment'); }catch(e){}
         document.getElementById('btnComment').click();
     });
+</script>
+<script>
+(function(){
+    try{
+        const saved = localStorage.getItem('ticketActiveTab');
+        if(saved){
+            switch(saved){
+                case 'comment': if(document.getElementById('btnComment')) document.getElementById('btnComment').click(); break;
+                case 'history': if(document.getElementById('btnHistory')) document.getElementById('btnHistory').click(); break;
+                case 'print': if(document.getElementById('btnPrint')) document.getElementById('btnPrint').click(); break;
+                default: if(document.getElementById('btnRequestInfo')) document.getElementById('btnRequestInfo').click(); break;
+            }
+        } else {
+            // also restore indicator position if previously stored
+            const idx = localStorage.getItem('ticketActiveIndicatorIndex');
+            if(idx !== null){
+                const indicator = document.querySelector('.tab-indicator');
+                if(indicator) indicator.style.transform = `translateX(${Number(idx) * 100}%)`;
+            }
+        }
+    }catch(e){}
+})();
 </script>
 
 <div class="modal fade" id="attachmentModal" tabindex="-1" aria-hidden="true">
@@ -2687,16 +2746,17 @@ document.addEventListener('click', function(e){
         });
     }
 })();
-</script>
-<script>
-// AJAX comment submit and inline reply form
 (function(){
     const token = document.querySelector('input[name="_token"]').value;
 
-    // Submit main comment form via AJAX
+    // Submit main comment form via AJAX (only when form has data-ajax="1")
     const commentForm = document.getElementById('commentForm');
     if(commentForm){
         commentForm.addEventListener('submit', async function(e){
+            // If the form isn't opted-in for AJAX, allow normal submit (page reload)
+            if (!(commentForm.dataset.ajax && commentForm.dataset.ajax === '1')) {
+                return; // don't preventDefault, let the browser submit the form normally
+            }
             e.preventDefault();
             const submitBtn = commentForm.querySelector('button[type="submit"]') || commentForm.querySelector('button');
             submitBtn.disabled = true;

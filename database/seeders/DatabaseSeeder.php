@@ -9,6 +9,7 @@ use Database\Seeders\RegionSeeder;
 use Database\Seeders\ProvinceSeeder;
 use Database\Seeders\CitySeeder;
 use Database\Seeders\ProgramSeeder;
+use Database\Seeders\AgencySeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,7 +31,8 @@ class DatabaseSeeder extends Seeder
             RegionSeeder::class,
             ProvinceSeeder::class,
             CitySeeder::class,
-            ProgramSeeder::class
+            ProgramSeeder::class,
+            AgencySeeder::class,
         ]);
     }
 }
