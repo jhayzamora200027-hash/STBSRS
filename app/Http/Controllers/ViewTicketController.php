@@ -18,8 +18,14 @@ class ViewTicketController extends Controller
                 'requestCity'
                 ])->where('ticket_id', $ticket_id)->firstOrFail();
 
+            $latestResolution = $ticket->resolutions()
+                ->with('attachments')
+                ->latest()
+                ->first();
 
-            return view('authpage.tickets.viewticket', compact('ticket'));
+            $activities = $ticket->activities()->get();
+
+            return view('authpage.tickets.viewticket', compact('ticket', 'latestResolution', 'activities'));
     }
 
     public function delete(string $ticket_id){
@@ -62,6 +68,13 @@ class ViewTicketController extends Controller
                 ]);
             }
         }
+
+        $ticketModel->activities()->create([
+            'event' => $data['parent_id'] ? 'comment_reply' : 'comment_added',
+            'title' => $data['parent_id'] ? 'Replied to a comment' : 'Added a comment',
+            'description' => $data['parent_id'] ? 'A reply was added to the discussion.' : 'A new comment was added to the discussion.',
+            'performed_by' => Auth::user()?->name ?? $comment->guest_name,
+        ]);
 
         // Load attachments for response
         $comment->load('attachments');

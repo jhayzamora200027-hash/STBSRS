@@ -626,7 +626,7 @@
                 How can we help you today?
             </h2>
             <p style="font-size: 1rem;" class="text-muted">
-                Welcome to the STB Service Request System! We make it easy for you to request assistance or get information.
+                Welcome to the iSTaksyon! We make it easy for you to request assistance or get information.
             </p>
             <div class="row g-3">
                 <div class="col-md-3 py-2">
@@ -854,7 +854,7 @@
                         <h4 class="mt-5">Welcome Back!</h4>
 
                         <p class="text-muted" style="font-size:0.8rem;">
-                            Sign in to your account to continue to the STB Service Request System.
+                            Sign in to your account to continue to the iSTakyson.
                         </p>
                         <div class="col-md-5 d-flex justify-content-center align-items-end">
 
@@ -932,6 +932,7 @@
     <div class="modal fade" id="createTicketModal" tabindex="-1" arialabelledby="createTicketLabel" aria-hideen="true">
         <form method="POST" id="ticketForm" action="{{route('tickets.store')}}" enctype="multipart/form-data" novalidate>
         @csrf
+        <input type="hidden" name="_method" id="ticketFormMethod" value="POST">
         @if(session('success'))
             <div class="alert alert-success m-3">{{ session('success') }}</div>
         @endif
@@ -1066,28 +1067,97 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 py-2">
-                                                    <label class="form-label">Region <i style="color:red">*</i></label>
-                                                    <select id="region" name="requestor_region" class="form-select" required>
-                                                            <option value="">Select your Region</option>
-
-                                                            @foreach($regions as $region)
-                                                            <option value="{{$region->region_code}}">
-                                                                {{$region->name}}
-                                                            </option>
-                                                            @endforeach
-                                                    </select>
+                                                    <label class="form-label">
+                                                        Position (Optional)
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <input id="requestor_position_title" name="requestor_position_title" type="text" class="form-control" placeholder="Input your position (optional)">
+                                                    </div>
+                                                </div>
                                                 </div>
                                                 <div class="col-md-4 py-2">
+                                                    <label class="form-label">Organization Type <i class="text-danger">*</i></label>
+                                                    <select class="form-select" id="organization_type" name="organization_type" required>
+                                                        <option value="">Select Organization...</option>
+                                                        <option value="field_office">DSWD Field Office</option>
+                                                        <option value="offices">DSWD Offices, Bureaus, Services Units</option>
+                                                        <option value="lgu">Local Government Unit</option>
+                                                        <option value="cso">Civil Society Organization</option>
+                                                        <option value="ngo">Non-government Organization</option>
+                                                        <option value="po">People's Organization</option>
+                                                        <option value="academe">Academe</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-4 py-2" id="region_col">
+                                                    <label id="region_label" class="form-label">Region <i style="color:red">*</i></label>
+                                                    <select id="region" name="requestor_region" class="form-select">
+                                                        <option value="">Select your Region</option>
+                                                        @foreach($regions as $region)
+                                                            <option value="{{$region->region_code}}">{{$region->name}}</option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <select id="directorate" name="requestor_region" class="form-select d-none py-2">
+                                                        <option value="">Select Directorate</option>
+                                                        @foreach($regions as $region)
+                                                            <option value="{{$region->region_code}}">{{$region->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-4 py-2 organization-section d-none" id="field_office_fields">
+                                                    <label class="form-label">Select Office/Bureau/Section/Unit: <i class="text-danger">*</i></label>
+                                                    <select id="requestor_office_field" class="form-select" name="requestor_office">
+                                                        <option value="">Select Office</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-4 py-2">
                                                     <label class="form-label">Province <i style="color:red">*</i></label>
-                                                    <select id="province" name="requestor_province" type="text" class="form-select"  required>
+                                                    <select id="province" name="requestor_province" class="form-select">
                                                         <option value="">Select Province</option>
                                                     </select>
                                                 </div>
+
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">City/Municipality <i style="color:red">*</i></label>
-                                                    <select id="city" class="form-select" name="requestor_city" required>
+                                                    <select id="city" class="form-select" name="requestor_city">
                                                         <option value="">Select City</option>
                                                     </select>
+                                                </div>
+
+                                                <div class="col-md-12 py-2 organization-section d-none" id="offices_fields">
+                                                    <label class="form-label">Select Office/Bureau/Section/Unit: <i class="text-danger">*</i></label>
+                                                    <select id="requestor_office_offices" class="form-select" name="requestor_office">
+                                                        <option value="">Select Office</option>
+                                                        @foreach($agencies as $agency)
+                                                            <option value="{{ $agency->group_code }}">{{ $agency->group_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-12 py-2 organization-section d-none" id="cso_fields">
+                                                    <label class="form-label">Civil Society Organization - Please specify <i class="text-danger">*</i></label>
+                                                    <input id="cso_input" type="text" class="form-control" name="requestor_specific_office" placeholder="Specify CSO">
+                                                </div>
+
+                                                <div class="col-md-12 py-2 organization-section d-none" id="ngo_fields">
+                                                    <label class="form-label">Non-government Organization - Please specify <i class="text-danger">*</i></label>
+                                                    <input id="ngo_input" type="text" class="form-control" name="requestor_specific_office" placeholder="Specify NGO">
+                                                </div>
+
+                                                <div class="col-md-12 py-2 organization-section d-none" id="po_fields">
+                                                    <label class="form-label">People's Organization - Please specify <i class="text-danger">*</i></label>
+                                                    <input id="po_input" type="text" class="form-control" name="requestor_specific_office" placeholder="Specify People's Organization">
+                                                </div>
+
+                                                <div class="col-md-12 py-2 organization-section d-none" id="academe_fields">
+                                                    <label class="form-label">Academe - Please specify <i class="text-danger">*</i></label>
+                                                    <input id="academe_input" type="text" class="form-control" name="requestor_specific_office" placeholder="Specify Academe">
                                                 </div>
                                             </div>
                                 </div>
@@ -2226,19 +2296,40 @@
                     </div>
 
                     <div class="review-item">
+                        <span>Organization Type</span>
+                        <strong id="reviewOrganization"></strong>
+                    </div>
+
+                    <div class="review-item d-none" id="regionBody">
                         <span>Region</span>
                         <strong id="reviewRegion"></strong>
                     </div>
 
-                    <div class="review-item">
+                    <div class="review-item d-none" id="provinceBody">
                         <span>Province</span>
                         <strong id="reviewProvince"></strong>
                     </div>
 
-                    <div class="review-item">
+                    <div class="review-item d-none" id="cityBody">
                         <span>City / Municipality</span>
                         <strong id="reviewCity"></strong>
                     </div>
+
+                    <div class="review-item d-none" id="directorateBody">
+                        <span>Directorate</span>
+                        <strong id="reviewDirectorate"></strong>
+                    </div>
+
+                    <div class="review-item d-none" id="agencyBody">
+                        <span>Office/Bureau/Section/Unit</span>
+                        <strong id="reviewAgency"></strong>
+                    </div>
+
+                    <div class="review-item d-none" id="specificBody">
+                        <span>Specific Organization</span>
+                        <strong id="reviewSpecific"></strong>
+                    </div>
+
                 </div>
 
                 <!-- Service Details -->
@@ -2248,7 +2339,7 @@
                         <i class="bi bi-briefcase me-2"></i>
                         Service Details
                     </h6>
-
+                    
                     <div class="review-item">
                         <span>Service Category</span>
                         <strong id="reviewCategory"></strong>
@@ -2541,28 +2632,124 @@ if (proceedOtpBtn) {
             document.getElementById('reviewKPSection').style.display = 'none';
             
 
-    // ============================
-    // Common Information
-    // ============================
     document.getElementById('reviewName').textContent =
         `${document.getElementById('first_name').value}
          ${document.getElementById('middle_name').value}
          ${document.getElementById('last_name').value}`;
 
     document.getElementById('reviewEmail').textContent =
-        document.getElementById('email').value;
-
+    document.getElementById('email').value;
+        
     document.getElementById('reviewSex').textContent =
-        document.getElementById('sex').selectedOptions?.[0]?.text || '-';
+    document.getElementById('sex').selectedOptions?.[0]?.text || '-';
+
+
+if(document.getElementById('organization_type').value === 'lgu'){
+    document.getElementById('reviewOrganization').textContent = 'Local Government';
+    document.getElementById('regionBody').classList.remove('d-none');
+    document.getElementById('provinceBody').classList.remove('d-none');
+    document.getElementById('cityBody').classList.remove('d-none');
+    document.getElementById('directorateBody').classList.add('d-none');
+    document.getElementById('agencyBody').classList.add('d-none');
+
 
     document.getElementById('reviewRegion').textContent =
-        document.getElementById('region').selectedOptions?.[0]?.text || '-';
+    document.getElementById('region').selectedOptions?.[0]?.text || '-';
+    
 
     document.getElementById('reviewProvince').textContent =
-        document.getElementById('province').selectedOptions?.[0]?.text || '-';
+    document.getElementById('province').selectedOptions?.[0]?.text || '-';
 
     document.getElementById('reviewCity').textContent =
-        document.getElementById('city').selectedOptions?.[0]?.text || '-';
+    document.getElementById('city').selectedOptions?.[0]?.text || '-';
+}
+
+const organization = document.getElementById('organization_type').value;
+
+const organizationConfig = {
+    cso: {
+        label: 'Civil Society Organization',
+        input: 'cso_input'
+    },
+    ngo: {
+        label: 'Non-government Organization',
+        input: 'ngo_input'
+    },
+    po: {
+        label: "People's Organization",
+        input: 'po_input'
+    },
+    academe: {
+        label: 'Academe',
+        input: 'academe_input'
+    }
+};
+
+if(organization === 'field_office'){
+    document.getElementById('reviewOrganization').textContent = 'DSWD Field Office';
+    document.getElementById('regionBody').classList.add('d-none');
+    document.getElementById('provinceBody').classList.add('d-none');
+    document.getElementById('cityBody').classList.add('d-none');
+    document.getElementById('directorateBody').classList.remove('d-none');
+    document.getElementById('agencyBody').classList.remove('d-none');
+     document.getElementById('specificBody').classList.add('d-none');
+
+    document.getElementById('reviewDirectorate').textContent = 
+    document.getElementById('directorate').selectedOptions?.[0]?.text || '-';
+
+    document.getElementById('reviewAgency').textContent = 
+    document.getElementById('requestor_office_field').selectedOptions?.[0]?.text || '-';
+
+}
+
+if(organization === 'offices'){
+    document.getElementById('reviewOrganization').textContent = 'DSWD Offices, Bureaus, Services Units';
+    document.getElementById('regionBody').classList.add('d-none');
+    document.getElementById('provinceBody').classList.add('d-none');
+    document.getElementById('cityBody').classList.add('d-none');
+    document.getElementById('directorateBody').classList.add('d-none');
+    document.getElementById('agencyBody').classList.remove('d-none');
+    document.getElementById('specificBody').classList.add('d-none');
+
+
+    document.getElementById('reviewAgency').textContent = 
+    document.getElementById('requestor_office_offices').selectedOptions?.[0]?.text || '-';
+
+}
+
+if(organization === 'offices'){
+    document.getElementById('reviewOrganization').textContent = 'DSWD Offices, Bureaus, Services Units';
+    document.getElementById('regionBody').classList.add('d-none');
+    document.getElementById('provinceBody').classList.add('d-none');
+    document.getElementById('cityBody').classList.add('d-none');
+    document.getElementById('directorateBody').classList.add('d-none');
+    document.getElementById('agencyBody').classList.remove('d-none');
+    document.getElementById('specificBody').classList.add('d-none');
+
+
+    document.getElementById('reviewAgency').textContent = 
+    document.getElementById('requestor_office_offices').selectedOptions?.[0]?.text || '-';
+
+}
+
+if (organizationConfig[organization]) {
+
+    document.getElementById('regionBody').classList.add('d-none');
+    document.getElementById('provinceBody').classList.add('d-none');
+    document.getElementById('cityBody').classList.add('d-none');
+    document.getElementById('directorateBody').classList.add('d-none');
+    document.getElementById('agencyBody').classList.add('d-none');
+    document.getElementById('specificBody').classList.remove('d-none');
+
+    const config = organizationConfig[organization];
+    const input = document.getElementById(config.input);
+
+    document.getElementById('reviewOrganization').textContent = config.label;
+
+    document.getElementById('reviewSpecific').textContent =
+        input?.selectedOptions?.[0]?.text || input?.value || '-';
+
+}
 
     const category = document.getElementById('ticket_category').value;
 
@@ -2598,10 +2785,6 @@ if (proceedOtpBtn) {
     kp: "Knowledge Product"
 };
 
-
-    // ============================
-    // Clear Review Fields
-    // ============================
     document.getElementById('reviewProgram').textContent = '-';
     document.getElementById('reviewPurpose').textContent = '-';
     document.getElementById('reviewVenue').textContent = '-';
@@ -2611,10 +2794,6 @@ if (proceedOtpBtn) {
     document.getElementById('reviewAttachment').innerHTML = '-';
     document.getElementById('reviewPriority').textContent = '-';
 
-
-    // ============================
-    // TACP
-    // ============================
     if(category === 'completed'){
         const program = document.getElementById('programSelectTACP');
 
@@ -2634,9 +2813,6 @@ if (proceedOtpBtn) {
 
     }
 
-    // ============================
-    // TAPD
-    // ============================
     else if(category === 'enhancement'){
 
         const program = document.getElementById('programSelectTAPD');
@@ -2657,9 +2833,6 @@ if (proceedOtpBtn) {
 
     }
 
-    // ============================
-    // Resource Person
-    // ============================
     else if(category === 'resource'){
         document.getElementById('reviewRPSection').style.display = 'block';
 
@@ -2696,15 +2869,12 @@ if (proceedOtpBtn) {
 
         showAttachment('supportFileRP');
 
-        // Priority for RP
+     
         const prRP = document.getElementById('prioritySelectRP');
         document.getElementById('reviewPriority').textContent = prRP?.selectedOptions?.[0]?.text || '-';
 
     }
 
-    // ============================
-    // Knowledge Product
-    // ============================
     else if(category === 'knowledge'){
     document.getElementById('reviewKPSection').style.display = 'block';
 
@@ -2860,26 +3030,78 @@ if (proceedOtpBtn) {
                     });
             
             
+            function validateStep1(){
+                const missing = [];
+                const first = document.getElementById('first_name')?.value.trim() || '';
+                const last = document.getElementById('last_name')?.value.trim() || '';
+                const email = document.getElementById('email')?.value.trim() || '';
+                const sex = document.getElementById('sex')?.value.trim() || '';
+                const org = (document.getElementById('organization_type') || document.getElementById('organization_type'))?.value || '';
+
+                if(!first) missing.push('First name');
+                if(!last) missing.push('Last name');
+                if(!email) missing.push('Email address');
+                if(!sex) missing.push('Sex');
+                if(!org) missing.push('Organization Type');
+
+                // Organization-specific requirements
+                if(org === 'lgu'){
+                    const region = document.getElementById('region')?.value.trim() || '';
+                    const province = document.getElementById('province')?.value.trim() || '';
+                    const city = document.getElementById('city')?.value.trim() || '';
+                    if(!region) missing.push('Region');
+                    if(!province) missing.push('Province');
+                    if(!city) missing.push('City/Municipality');
+                } else if(org === 'field_office'){
+                    const directorate = document.getElementById('directorate')?.value.trim() || document.getElementById('region')?.value.trim() || '';
+                    // pick visible/enabled agency select (there may be multiple in DOM)
+                    let agency = '';
+                    Array.from(document.querySelectorAll('select[name="requestor_office"]')).some(s => {
+                        if (!s.disabled && s.offsetParent !== null) { agency = s.value || ''; return true; }
+                        return false;
+                    });
+                    if(!directorate) missing.push('Directorate/Region');
+                    if(!agency) missing.push('Select Office/Bureau/Section/Unit');
+                } else if(org === 'offices'){
+                    let agency = '';
+                    Array.from(document.querySelectorAll('select[name="requestor_office"]')).some(s => {
+                        if (!s.disabled && s.offsetParent !== null) { agency = s.value || ''; return true; }
+                        return false;
+                    });
+                    if(!agency) missing.push('Select Office/Bureau/Section/Unit');
+                } else if(['cso','ngo','po','academe'].includes(org)){
+                    // find the visible/enabled specific-office input
+                    let spec = '';
+                    Array.from(document.querySelectorAll('input[name="requestor_specific_office"]')).some(i => {
+                        if (!i.disabled && i.offsetParent !== null) { spec = i.value.trim() || ''; return true; }
+                        return false;
+                    });
+                    if(!spec) {
+                        const lbl = {
+                            'cso':'Civil Society Organization - specify',
+                            'ngo':'Non-government Organization - specify',
+                            'po':"People's Organization - specify",
+                            'academe':'Academe - specify'
+                        }[org] || 'Specify organization';
+                        missing.push(lbl);
+                    }
+                }
+
+                return { ok: missing.length === 0, missing };
+            }
+
             //Next Button
-            document.getElementById('nextBtn').addEventListener('click', function () { 
-            if(
-                document.getElementById('first_name').value.trim() === '' ||
-                document.getElementById('last_name').value.trim() === '' ||
-                document.getElementById('email').value.trim() === '' ||
-                document.getElementById('sex').value.trim() === '' ||
-                document.getElementById('region').value.trim() === '' ||
-                document.getElementById('province').value.trim() === '' ||
-                document.getElementById('city').value.trim() === ''
-                
-            ){
+            document.getElementById('nextBtn').addEventListener('click', function () {
+            const check = validateStep1();
+            if(!check.ok){
+                const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m=>`<li>${m}</li>`).join('') + '</ul>';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Incomplete Information',
-                    text: 'Please complete all required fields before proceeding.',
+                    html,
                     confirmButtonColor: '#062c52',
                     confirmButtonText: 'OK'
                 });
-
                 return;
             }
             step2Unlocked = true;
@@ -2928,26 +3150,17 @@ if (proceedOtpBtn) {
 
             //Card 2 Body
             document.getElementById('card2').addEventListener('click', function(e){
-                
-                if(
-                document.getElementById('first_name').value.trim() === '' ||
-                document.getElementById('last_name').value.trim() === '' ||
-                document.getElementById('email').value.trim() === '' ||
-                document.getElementById('sex').value.trim() === '' ||
-                document.getElementById('region').value.trim() === '' ||
-                document.getElementById('province').value.trim() === '' ||
-                document.getElementById('city').value.trim() === ''
-            ){
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Incomplete Information',
-                    text: 'Please complete all required fields before proceeding.',
-                    confirmButtonColor: '#062c52',
-                    confirmButtonText: 'OK'
-                });
+                if(!validateStep1()){
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Incomplete Information',
+                        text: 'Please complete all required fields before proceeding.',
+                        confirmButtonColor: '#062c52',
+                        confirmButtonText: 'OK'
+                    });
 
-                return;
-            }
+                    return;
+                }
             
                 if(step2Unlocked){
                     animateCard('card2',e);
@@ -3340,6 +3553,14 @@ async function startOtpFlow(email) {
         } catch (e) { console.warn('Could not hide other modal', e); }
 
         const bsOtpModal = new bootstrap.Modal(otpModalEl, { backdrop: 'static', keyboard: false });
+        // if user closes/cancels OTP modal, remove any pending otp:verified handler to prevent duplicate submissions
+        otpModalEl.addEventListener('hidden.bs.modal', function () {
+            if (ticketForm && ticketForm._otpVerifiedHandler) {
+                try { ticketForm.removeEventListener('otp:verified', ticketForm._otpVerifiedHandler); } catch (e) {}
+                ticketForm._otpVerifiedHandler = null;
+                console.debug('Cleared otp verified handler due to OTP modal close');
+            }
+        }, { once: true });
         otpInputs.forEach(i => { i.value = ''; i.disabled = false; });
         // small delay before showing to let previous modal teardown finish
         setTimeout(() => {
@@ -3556,7 +3777,32 @@ if (ticketEmailInput) {
 }
 
 if (createTicketModalEl) {
-    createTicketModalEl.addEventListener('show.bs.modal', resetOtpVerificationState);
+    createTicketModalEl.addEventListener('show.bs.modal', function () {
+        resetOtpVerificationState();
+        // default to create mode when opening modal
+        resetTicketFormToCreateMode();
+    });
+}
+
+// store create URL for resetting
+const ticketCreateAction = '{{ route('tickets.store') }}';
+
+function setTicketEditMode(ticketId) {
+    if (!ticketForm) return;
+    ticketForm.action = ticketCreateAction.replace(/\/tickets$/, '/tickets/' + ticketId);
+    const methodInput = document.getElementById('ticketFormMethod');
+    if (methodInput) methodInput.value = 'PUT';
+    const modalTitle = document.querySelector('#createTicketModal .modal-title h5');
+    if (modalTitle) modalTitle.textContent = 'Edit Request';
+}
+
+function resetTicketFormToCreateMode() {
+    if (!ticketForm) return;
+    ticketForm.action = ticketCreateAction;
+    const methodInput = document.getElementById('ticketFormMethod');
+    if (methodInput) methodInput.value = 'POST';
+    const modalTitle = document.querySelector('#createTicketModal .modal-title h5');
+    if (modalTitle) modalTitle.textContent = 'Request Ticket';
 }
 
 if (ticketForm) {
@@ -3571,15 +3817,13 @@ if (ticketForm) {
         const region = document.getElementById('region')?.value || '';
         const province = document.getElementById('province')?.value || '';
         const city = document.getElementById('city')?.value || '';
+        const org = (document.getElementById('organization_type') || document.getElementById('organization_type'))?.value || '';
 
         const missing = [];
         if (!first) missing.push('First name');
         if (!last) missing.push('Last name');
         if (!email) missing.push('Email');
         if (!sex) missing.push('Sex');
-        if (!region) missing.push('Region');
-        if (!province) missing.push('Province');
-        if (!city) missing.push('City/Municipality');
         if (!ticketCat) missing.push('Service selection');
 
         const activeProgram = document.querySelector('select[name="program"]');
@@ -3587,9 +3831,57 @@ if (ticketForm) {
             missing.push('Program selection');
         }
 
-        if (missing.length) {
+        // Organization-specific requirements (match validateStep1)
+        if (org === 'lgu') {
+            if (!region) missing.push('Region');
+            if (!province) missing.push('Province');
+            if (!city) missing.push('City/Municipality');
+        } else if (org === 'field_office') {
+            const directorate = document.getElementById('directorate')?.value.trim() || document.getElementById('region')?.value.trim() || '';
+            let agency = '';
+            // accept a visible, enabled select OR any enabled select that already has a value (filled earlier)
+            Array.from(document.querySelectorAll('select[name="requestor_office"]')).some(s => {
+                if (s.disabled) return false;
+                if (s.offsetParent !== null || (s.value && s.value !== '')) { agency = s.value || ''; return true; }
+                return false;
+            });
+            if (!directorate) missing.push('Directorate/Region');
+            if (!agency) missing.push('Select Office/Bureau/Section/Unit');
+        } else if (org === 'offices') {
+            let agency = '';
+            Array.from(document.querySelectorAll('select[name="requestor_office"]')).some(s => {
+                if (s.disabled) return false;
+                if (s.offsetParent !== null || (s.value && s.value !== '')) { agency = s.value || ''; return true; }
+                return false;
+            });
+            if (!agency) missing.push('Select Office/Bureau/Section/Unit');
+        } else if (['cso','ngo','po','academe'].includes(org)) {
+            let spec = '';
+            Array.from(document.querySelectorAll('input[name="requestor_specific_office"]')).some(i => {
+                if (i.disabled) return false;
+                // accept if visible or if it contains a value filled earlier on step1
+                if (i.offsetParent !== null || (i.value && i.value.trim() !== '')) { spec = i.value.trim() || ''; return true; }
+                return false;
+            });
+            if (!spec) {
+                const lbl = {
+                    'cso':'Civil Society Organization - specify',
+                    'ngo':'Non-government Organization - specify',
+                    'po':"People's Organization - specify",
+                    'academe':'Academe - specify'
+                }[org] || 'Specify organization';
+                missing.push(lbl);
+            }
+        }
 
-            Swal.fire({
+        if (missing.length) {
+                // if office missing, focus the visible office select
+                if (missing.includes('Select Office/Bureau/Section/Unit')) {
+                    const visOffice = Array.from(document.querySelectorAll('select[name="requestor_office"]')).find(s => !s.disabled && s.offsetParent !== null);
+                    if (visOffice) { try { visOffice.focus(); visOffice.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){} }
+                }
+
+                Swal.fire({
                     icon: 'warning',
                     title: 'Incomplete Information',
                     text: 'Please complete required fields: ' + missing.join(', '),
@@ -3821,13 +4113,25 @@ if (ticketForm) {
 
         if (ticketForm.dataset.otpVerified !== 'true') {
             ticketForm.dataset.otpVerified = 'false';
-            ticketForm.addEventListener('otp:verified', async function onOtpVerified() {
+
+            // ensure a single otp:verified listener exists (avoid duplicates when cancelling OTP and retrying)
+            if (ticketForm._otpVerifiedHandler) {
+                try { ticketForm.removeEventListener('otp:verified', ticketForm._otpVerifiedHandler); } catch (e) {}
+                ticketForm._otpVerifiedHandler = null;
+            }
+
+            ticketForm._otpVerifiedHandler = async function onOtpVerified() {
                 try {
                     await submitAndShowResult();
                 } catch (e) {
                     console.error('Post-OTP submission failed', e);
+                } finally {
+                    ticketForm._otpVerifiedHandler = null;
                 }
-            }, { once: true });
+            };
+
+            ticketForm.addEventListener('otp:verified', ticketForm._otpVerifiedHandler, { once: true });
+
             const reviewModalEl = document.getElementById('reviewModal');
             const reviewModal = new bootstrap.Modal(reviewModalEl);
 
@@ -4080,12 +4384,6 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 });
 
-
-
-        
-    
-</script>
-<script>
     (function(){
         const MAX = 200;
         document.querySelectorAll('textarea[name="purpose_of_request"]').forEach(function(el){
@@ -4109,6 +4407,215 @@ document.addEventListener('DOMContentLoaded', function(){
             el.addEventListener('input', update);
             update();
         });
+    })();
+
+    (function () {
+        const orgSelect = document.getElementById('organization_type') || document.getElementById('organization_type');
+        if (!orgSelect) return;
+
+        const clearOrgSections = () => {
+            document.querySelectorAll('.organization-section').forEach(section => {
+                section.classList.add('d-none');
+                section.style.opacity = '';
+                section.querySelectorAll('input, select, textarea').forEach(i => {
+                    i.disabled = true;
+                    i.required = false;
+                });
+            });
+        };
+
+        function clearOrgInputs(){
+            // clear any specific office text inputs (visible or hidden)
+            document.querySelectorAll('input[name="requestor_specific_office"]').forEach(i=>{
+                try{
+                    i.value = '';
+                    if(i.removeAttribute) i.removeAttribute('value');
+                    i.required = false;
+                    i.disabled = true;
+                    i.readOnly = false;
+                    i.dispatchEvent(new Event('input', { bubbles: true }));
+                }catch(e){console.warn('clear specific input failed', e)}
+            });
+            // clear agency selects (any matching name)
+            document.querySelectorAll('select[name="requestor_office"]').forEach(s=>{
+                try{
+                    s.selectedIndex = 0;
+                    s.value = '';
+                    if(s.removeAttribute) s.removeAttribute('value');
+                    s.required = false;
+                    s.disabled = true;
+                    s.dispatchEvent(new Event('change', { bubbles: true }));
+                }catch(e){console.warn('clear office select failed', e)}
+            });
+            // clear directorate select
+            const dir = document.getElementById('directorate'); if(dir){ try{ dir.value = ''; if(dir.removeAttribute) dir.removeAttribute('value'); dir.disabled = true; dir.required = false; dir.classList.add('d-none'); dir.dispatchEvent(new Event('change', { bubbles: true })); }catch(e){console.warn(e)} }
+        }
+
+        async function populateAgenciesForRegion(regionCode, targetSelectId) {
+            const sel = document.getElementById(targetSelectId);
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Loading...</option>';
+            try {
+                const url = regionCode ? `/agencies/${regionCode}` : '/agencies';
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Failed to load agencies');
+                const list = await res.json();
+                sel.innerHTML = '<option value="">Select agency</option>' + list.map(a => `<option value="${a.group_code}">${a.group_name}</option>`).join('');
+                sel.disabled = false;
+                sel.required = true;
+                // auto-select if only one agency returned
+                if (Array.isArray(list) && list.length === 1) {
+                    sel.selectedIndex = 1;
+                    sel.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            } catch (e) {
+                sel.innerHTML = '<option value="">(failed to load agencies)</option>';
+                console.error(e);
+            }
+        }
+
+        function setFieldOfficeState(enabled, message) {
+            const sel = document.getElementById('requestor_office_field');
+            if (!sel) return;
+            if (!enabled) {
+                sel.innerHTML = `<option value="">${message || 'Select Region/Directorate first'}</option>`;
+                sel.disabled = true;
+                sel.required = false;
+            } else {
+                sel.disabled = false;
+                sel.required = true;
+            }
+        }
+
+        // initialize visibility for location fields based on current org selection
+        (function initLocationVisibility(){
+            const regionCol = document.getElementById('region_col');
+            const provinceEl = document.getElementById('province');
+            const cityEl = document.getElementById('city');
+            const provinceCol = provinceEl ? provinceEl.closest('.col-md-4') : null;
+            const cityCol = cityEl ? cityEl.closest('.col-md-4') : null;
+            const dir = document.getElementById('directorate');
+
+            const hasOrg = !!(orgSelect.value);
+            if (!hasOrg) {
+                if (regionCol) regionCol.classList.add('d-none');
+                if (provinceCol) provinceCol.classList.add('d-none');
+                if (cityCol) cityCol.classList.add('d-none');
+                if (document.getElementById('region')) { document.getElementById('region').disabled = true; document.getElementById('region').required = false; }
+                if (provinceEl) { provinceEl.disabled = true; provinceEl.required = false; }
+                if (cityEl) { cityEl.disabled = true; cityEl.required = false; }
+                if (dir) { dir.classList.add('d-none'); dir.disabled = true; dir.required = false; }
+            } else {
+                // if org already selected, trigger change to setup proper visibility
+                const ev = new Event('change', { bubbles: true });
+                orgSelect.dispatchEvent(ev);
+            }
+        })();
+
+        orgSelect.addEventListener('change', function () {
+            clearOrgSections();
+            clearOrgInputs();
+
+            const selected = this.value;
+
+            // DOM elements for location columns
+            const regionCol = document.getElementById('region_col');
+            const provinceCol = document.getElementById('province')?.closest('.col-md-4');
+            const cityCol = document.getElementById('city')?.closest('.col-md-4');
+
+            // hide all location cols by default
+            if (regionCol) regionCol.classList.add('d-none');
+            if (provinceCol) provinceCol.classList.add('d-none');
+            if (cityCol) cityCol.classList.add('d-none');
+
+            // ensure organization-specific section is shown
+            if (selected) {
+                const target = document.getElementById(selected + '_fields');
+                if (target) {
+                    target.classList.remove('d-none');
+                    target.style.opacity = 0;
+                    target.querySelectorAll('input, select, textarea').forEach(i => { i.disabled = false; if (i.name === 'requestor_office' || i.name === 'requestor_specific_office') i.required = true; });
+                    let op = 0; const iv = setInterval(() => { op += 0.08; target.style.opacity = op; if (op >= 1) clearInterval(iv); }, 16);
+                }
+            }
+
+            // Behavior per org type
+            if (!selected) {
+                // nothing selected — keep all location inputs hidden and disabled
+                ['region','province','city'].forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; el.disabled = true; el.required = false; } });
+                // hide directorate if present
+                const dir = document.getElementById('directorate'); if (dir) { dir.classList.add('d-none'); dir.disabled = true; dir.required = false; }
+                return;
+            }
+
+            if (selected === 'lgu') {
+                // show region/province/city
+                if (regionCol) regionCol.classList.remove('d-none');
+                if (provinceCol) provinceCol.classList.remove('d-none');
+                if (cityCol) cityCol.classList.remove('d-none');
+                ['region','province','city'].forEach(id => { const el = document.getElementById(id); if (el) { el.disabled = false; el.required = true; } });
+                // ensure directorate hidden
+                const dir = document.getElementById('directorate'); if (dir) { dir.classList.add('d-none'); dir.disabled = true; dir.required = false; }
+            }
+
+                if (selected === 'field_office') {
+                // show region column but display directorate select instead of region
+                if (regionCol) regionCol.classList.remove('d-none');
+                // hide province/city
+                if (provinceCol) provinceCol.classList.add('d-none');
+                if (cityCol) cityCol.classList.add('d-none');
+
+                // swap: hide region select and show directorate
+                const regionSel = document.getElementById('region');
+                const dirSel = document.getElementById('directorate');
+                if (regionSel) { regionSel.classList.add('d-none'); regionSel.disabled = true; }
+                if (dirSel) { dirSel.classList.remove('d-none'); dirSel.disabled = false; dirSel.required = true; }
+
+                // change label to Directorate
+                const regionLabel = document.getElementById('region_label');
+                if (regionLabel) regionLabel.innerHTML = 'Directorate <i style="color:red">*</i>';
+
+                // If no directorate/region selected yet, keep Field Office select disabled with hint
+                const dirCode = dirSel?.value || '';
+                if (!dirCode) {
+                    setFieldOfficeState(false, 'Select Directorate first');
+                } else {
+                    populateAgenciesForRegion(dirCode, 'requestor_office_field');
+                }
+                } else {
+                    // ensure region select visible when not field_office
+                    const regionSel = document.getElementById('region');
+                    const dirSel = document.getElementById('directorate');
+                    if (regionSel) { regionSel.classList.remove('d-none'); regionSel.disabled = false; }
+                    if (dirSel) dirSel.classList.add('d-none');
+
+                    // restore label to Region
+                    const regionLabel = document.getElementById('region_label');
+                    if (regionLabel) regionLabel.innerHTML = 'Region <i style="color:red">*</i>';
+            }
+
+            if (selected === 'offices') {
+                // show offices agency select (unfiltered)
+                populateAgenciesForRegion('', 'requestor_office_offices');
+            }
+        });
+
+        // When region/directorate changes and field_office is active, reload filtered agencies
+        const regionSelect = document.getElementById('region');
+        const directorateSelect = document.getElementById('directorate');
+        const reloadIfField = (val) => {
+            const current = (orgSelect.value || '');
+            if (current === 'field_office') {
+                if (!val) {
+                    setFieldOfficeState(false, 'Select Directorate first');
+                } else {
+                    populateAgenciesForRegion(val || '', 'requestor_office_field');
+                }
+            }
+        };
+
+        if (regionSelect) regionSelect.addEventListener('change', function () { reloadIfField(this.value); });
+        if (directorateSelect) directorateSelect.addEventListener('change', function () { reloadIfField(this.value); });
     })();
 </script>
 @endpush

@@ -5,32 +5,27 @@
 @section('content')
 <style>
     .metric-title{
-    height:20px;                 
-    display:flex;
-    justify-content:center;
-    align-items:start;
-
-    text-align:start;
-
-    font-size:12px;
+    display:block;
+    line-height:1.2;
+    white-space: normal;
+    font-size:10px;
     font-weight:600;
     color:#34495e;
-
     margin:0;
+    padding-right:0.25rem;
+    letter-spacing: .01em;
+    text-transform: none;
 }
 .filter-title{
-    height:20px;                 
-    display:flex;
-    justify-content:start;
-    align-items:start;
-
-    text-align:start;
-
+    display:block;
+    line-height:1.2;
+    white-space: normal;
     font-size:12px;
     font-weight:600;
     color:#34495e;
-
     margin:0;
+    padding-right:0.25rem;
+    word-break: break-word;
 }
 
 .metric-number{
@@ -40,13 +35,32 @@
     line-height:1;
 }
 
-.drag-scroll{
-    overflow-x: auto;
-    overflow-y: hidden;
-    cursor: grab;
-    user-select: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+
+.card.metric-card {
+    border: 1px solid rgba(108,117,125,0.16);
+    overflow: hidden;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.card.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(13,110,253,0.08);
+}
+
+.card.metric-card .card-body {
+    min-height: 110px;
+}
+
+.card.metric-card .card-body .ps-3 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 72px;
+}
+
+.metric-title {
+    margin-bottom: 0.35rem;
 }
 
 .drag-scroll.dragging{
@@ -74,6 +88,99 @@
     animation: fadeIn .15s ease;
 }
 
+/* Table and row improvements */
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background-color: #fff;
+}
+
+.table tbody tr.ticket-row {
+    transition: background-color .12s ease, transform .08s ease;
+}
+
+.table tbody tr.ticket-row:hover {
+    background-color: rgba(13,110,253,0.04);
+    transform: translateY(-1px);
+}
+
+.table tbody tr.ticket-row td {
+    vertical-align: middle;
+}
+
+.table td .fw-semibold,
+.table td .fw-bold {
+    word-break: break-word;
+}
+
+/* Card-style table on smaller screens */
+.ticket-card-table table,
+.ticket-card-table thead,
+.ticket-card-table tbody,
+.ticket-card-table th,
+.ticket-card-table td,
+.ticket-card-table tr {
+    border: none;
+}
+
+@media (max-width: 930px) {
+    .ticket-card-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .ticket-card-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(108,117,125,0.16);
+        border-radius: .85rem;
+        padding: 1rem;
+        background: #fff;
+    }
+
+    .ticket-card-table td {
+        display: block;
+        text-align: left;
+        padding: .9rem 1rem .9rem 0;
+        position: relative;
+        border: none;
+    }
+
+    .ticket-card-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        top: .5rem;
+        width: 45%;
+        font-weight: 700;
+        color: #495057;
+        white-space: nowrap;
+    }
+
+    .ticket-card-table td.text-end {
+        text-align: left !important;
+    }
+
+    .ticket-card-table td .badge {
+        margin-top: .4rem;
+        display: inline-flex;
+    }
+
+    .ticket-card-table td:first-child {
+        padding-top: 1.25rem;
+    }
+
+    .ticket-card-table tr {
+        box-shadow: 0 16px 40px rgba(0,0,0,0.04);
+    }
+}
+
+/* Metric card tweaks */
+.card .rounded-circle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+.metric-number{ font-size:28px; }
+
 @keyframes fadeIn{
     from{
         opacity:0;
@@ -85,9 +192,9 @@
     }
 }
 </style>
-<div class="row mb-4">
-    <div class="col-md-2">
-        <div class="card">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#e9ebff">
@@ -105,8 +212,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#e9ffec">
@@ -124,8 +231,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#f8ffe9">
@@ -143,8 +250,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#f2e9ff">
@@ -162,8 +269,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#e9ebff">
@@ -181,8 +288,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card">
+    <div class="col">
+        <div class="card metric-card h-100">
             <div class="card-body">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="rounded-circle" style="background-color:#ffe9e9">
@@ -219,10 +326,10 @@
 
         </div>
 
-        <div class="row g-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
 
             {{-- STATUS --}}
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     Status
@@ -264,7 +371,7 @@
             </div>
 
             {{-- CATEGORY --}}
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     Category
@@ -300,7 +407,7 @@
 
             </div>
 
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     Priority
@@ -321,7 +428,7 @@
             </div>
 
             {{-- REQUESTOR --}}
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     Requestor
@@ -353,7 +460,7 @@
             </div>
 
             {{-- PROGRAM --}}
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     Program
@@ -367,7 +474,7 @@
             </div>
 
             {{-- DATE FROM --}}
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     From
@@ -382,7 +489,7 @@
             </div>
 
             {{-- DATE TO --}}
-            <div class="col-md-2">
+            <div class="col-12 col-sm-6 col-lg-4">
 
                 <label class="form-label fw-semibold">
                     To
@@ -396,25 +503,16 @@
 
             </div>
 
-            <div class="col-md-8 d-flex align-items-end justify-content-end">
+            <div class="col-12 d-flex flex-column flex-sm-row align-items-stretch align-items-sm-end justify-content-end gap-2">
 
-                <button
-                    class="btn btn-primary me-2">
-
+                <button type="submit" class="btn btn-primary w-100 w-sm-auto">
                     <i class="bi bi-search"></i>
-
                     Apply Filters
-
                 </button>
 
-                <a
-                    href="{{ route('tickets') }}"
-                    class="btn btn-outline-secondary">
-
+                <a href="{{ route('tickets') }}" class="btn btn-outline-secondary w-100 w-sm-auto text-center">
                     <i class="bi bi-arrow-clockwise"></i>
-
                     Clear
-
                 </a>
 
             </div>
@@ -427,7 +525,7 @@
 </form>
 {{-- Table --}}
 <div id="tickets-container">
-<div class="table-responsive drag-scroll" id="dragScroll">
+<div class="table-responsive ticket-card-table drag-scroll" id="dragScroll">
     <table class="table align-middle table-hover mb-0">
 
         <thead class="table-light">
@@ -440,6 +538,7 @@
                 <th style="min-width:140px;">Status</th>
                 <th style="min-width:130px;">Priority</th>
                 <th style="min-width:170px;">Last Updated</th>
+                <th style="min-width:110px;">Actions</th>
             </tr>
         </thead>
 
@@ -447,11 +546,11 @@
 
             @forelse($tickets as $ticket)
 
-            <tr class="ticket-row" data-url="{{ route('ticket.view', $ticket->ticket_id) }}">
+            <tr class="ticket-row" data-url="{{ route('ticket.view', $ticket->ticket_id) }}" tabindex="0" aria-label="Ticket {{ $ticket->ticket_id }}">
                 
 
                 {{-- Ticket Number --}}
-                <td>
+                <td data-label="Ticket Number">
                     <div class="fw-bold text-primary">
                         {{ $ticket->ticket_id }}
                     </div>
@@ -462,14 +561,14 @@
                 </td>
 
                 {{-- Purpose --}}
-                <td>
+                <td data-label="Purpose">
                     <div class="fw-semibold">
                         {{ Str::limit($ticket->purpose_of_request, 55) }}
                     </div>
                 </td>
 
                 {{-- Category --}}
-                <td>
+                <td data-label="Category">
 
                     @switch($ticket->ticket_category)
 
@@ -516,7 +615,7 @@
                 </td>
 
                 {{-- Program --}}
-                <td>
+                <td data-label="Program">
 
                     <div class="fw-semibold">
                         {{ Str::limit($ticket->programDetails->program ?? '-',25) }}
@@ -525,7 +624,7 @@
                 </td>
 
                 {{-- Requestor --}}
-                <td>
+                <td data-label="Requestor">
 
                     <div class="fw-semibold">
 
@@ -543,7 +642,7 @@
                 </td>
 
                 {{-- Status --}}
-                <td>
+                <td data-label="Status">
 
                     @switch($ticket->ticket_status)
 
@@ -597,7 +696,7 @@
 
                 </td>
 
-                <td>
+                <td data-label="Priority">
 
                     @php
                         $priority = strtolower($ticket->ticket_priority ?? 'low');
@@ -638,7 +737,7 @@
                 </td>
 
                 {{-- Last Updated --}}
-                <td>
+                <td data-label="Last Updated">
 
                     <div class="fw-semibold">
                         {{ $ticket->updated_at->format('M d, Y') }}
@@ -650,24 +749,30 @@
 
                 </td>
 
-                {{-- Actions --}}
-                <div id="ticketMenu" class="dropdown-menu shadow">
-                    <a class="dropdown-item view-ticket" href="{{route('ticket.view', $ticket->ticket_id)}}">
-                        <i class="bi bi-eye me-2"></i> View Ticket
-                    </a>
-
-                    <div class="dropdown-divider"></div>
-
-                    <form method="POST" action={{route('ticket.delete', $ticket->ticket_id)}} class="delete-form">
-                    @csrf
-                    @method('DELETE')
-
-                        <button type="submit" class="dropdown-item text-danger delete-button" >
-                            <i class="bi bi-trash me-2"></i>
-                            Delete
+                <td data-label="Actions" class="text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions for ticket {{ $ticket->ticket_id }}">
+                            <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                    </form>
-                </div>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <a class="dropdown-item" href="{{route('ticket.view', $ticket->ticket_id)}}">
+                                    <i class="bi bi-eye me-2"></i> View Ticket
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{route('ticket.delete', $ticket->ticket_id)}}" class="delete-form m-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-trash me-2"></i> Delete
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
 
             </tr>
 
@@ -792,116 +897,73 @@ let isDragging = false;
 let startX;
 let scrollLeft;
 
-// Drag to scroll
-slider.addEventListener("mousedown", (e) => {
-    isDown = true;
-    isDragging = false;
-    startX = e.pageX - slider.offsetLeft;
-    scrollLeft = slider.scrollLeft;
-    slider.classList.add("dragging");
-});
+if (slider) {
+    // Drag to scroll
+    slider.addEventListener("mousedown", (e) => {
+        isDown = true;
+        isDragging = false;
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+        slider.classList.add("dragging");
+    });
 
-document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = x - startX;
+        if (Math.abs(walk) > 5) {
+            isDragging = true;
+        }
+        slider.scrollLeft = scrollLeft - walk;
+    });
 
-    if (!isDown) return;
-
-    e.preventDefault();
-
-    const x = e.pageX - slider.offsetLeft;
-    const walk = x - startX;
-
-    if (Math.abs(walk) > 5) {
-        isDragging = true;
-    }
-
-    slider.scrollLeft = scrollLeft - walk;
-});
-
-document.addEventListener("mouseup", () => {
-    isDown = false;
-    slider.classList.remove("dragging");
-});
-
-function getTicketMenu(){
-    return document.getElementById('ticketMenu');
+    document.addEventListener("mouseup", () => {
+        isDown = false;
+        if (slider) slider.classList.remove("dragging");
+    });
 }
 
 // Use event delegation so newly loaded rows work after AJAX replaces content
 document.addEventListener('click', function(e){
-
+    // If clicking on a ticket row (but not on an actionable child like a link/button)
     const row = e.target.closest('.ticket-row');
-
-    // If clicking on a row (but not on an actionable child like a link/button)
     if(row && !e.target.closest('a, button')){
 
-        if (isDragging) {
-            isDragging = false;
-            return;
+        if (isDragging) { isDragging = false; return; }
+
+        const url = row.dataset.url;
+        if(url) {
+            window.location.href = url;
         }
-
-        const menu = getTicketMenu();
-        if(!menu) return;
-
-        const viewLink = menu.querySelector('.view-ticket');
-        if(viewLink) viewLink.href = row.dataset.url;
-
-        menu.style.position = 'fixed';
-        const menuWidth = menu.offsetWidth;
-        const menuHeight = menu.offsetHeight;
-
-        let left = e.clientX;
-        let top = e.clientY;
-
-        if (left + menuWidth > window.innerWidth) {
-            left = window.innerWidth - menuWidth - 10;
-        }
-
-        if (top + menuHeight > window.innerHeight) {
-            top = window.innerHeight - menuHeight - 10;
-        }
-
-        left = Math.max(10, left);
-        top = Math.max(10, top);
-
-        menu.style.left = `${left}px`;
-        menu.style.top = `${top}px`;
-        menu.classList.add('show');
-
         return;
     }
 
-    // If click outside any row and outside the menu, hide the menu
-    const menu = getTicketMenu();
-    if(menu && !menu.contains(e.target) && !e.target.closest('.ticket-row')){
-        menu.classList.remove('show');
+    // Close any open dropdowns when clicking outside
+    if(!e.target.closest('.dropdown-menu') && !e.target.closest('.dropdown-toggle')){
+        document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
     }
 
 });
 
-document.querySelectorAll('.delete-button').forEach(btn => {
-    btn.addEventListener('click', function(){
-        menu.classList.remove('show');
-    })
-})
+document.addEventListener('submit', function(e){
+    const form = e.target.closest('.delete-form');
+    if(!form) return;
 
-document.querySelectorAll('.delete-form').forEach(form => {
-    form.addEventListener('submit', function(e){
+    e.preventDefault();
 
-        e.preventDefault();
-
-        Swal.fire({
-            title: 'Delete Ticket?',
-            text: "This action cannot be undone.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if(result.isConfirmed){
-                form.submit();
-            }
-        });
+    Swal.fire({
+        title: 'Delete Ticket?',
+        text: "This action cannot be undone.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if(result.isConfirmed){
+            form.submit();
+        }
     });
 });
 

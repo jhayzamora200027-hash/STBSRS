@@ -4,6 +4,50 @@
 
 @section('content')
 <style>
+.resolution-panel {
+    border: 1px solid #e6e9ee;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+}
+
+.resolution-panel .card-header {
+    background: #fff;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.resolution-panel .form-label {
+    color: #334155;
+    font-size: .78rem;
+    font-weight: 700;
+    margin-bottom: .4rem;
+}
+
+.resolution-panel .form-control,
+.resolution-panel .form-select {
+    border-color: #d9dee7;
+    box-shadow: none;
+}
+
+.resolution-panel .form-control:focus,
+.resolution-panel .form-select:focus {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 .2rem rgba(100, 116, 139, .12);
+}
+
+.resolution-panel textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+.resolution-attachments a {
+    color: #475569;
+    text-decoration: none;
+}
+
+.resolution-attachments a:hover {
+    color: #0f172a;
+    text-decoration: underline;
+}
+
 .back-btn{
     display: inline-flex;
     align-items: center;
@@ -1106,6 +1150,18 @@ hr{
         .empty-state i { font-size: 2.2rem; opacity: 0.5; }
         .empty-state h6 { margin-top: 0.75rem; color: #4b5563; font-weight: 600; }
 
+        .history-card { border-radius: 12px; }
+        .history-item { position: relative; display: flex; gap: 0.85rem; padding: 0 0 1.25rem; }
+        .history-item:last-child { padding-bottom: 0; }
+        .history-rail { display: flex; flex-direction: column; align-items: center; }
+        .history-dot { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #f3f4f6; color: #4b5563; flex: 0 0 auto; }
+        .history-item:not(:last-child) .history-rail::after { content: ''; width: 2px; flex: 1; background: #e5e7eb; margin-top: 0.45rem; }
+        .history-content { min-width: 0; flex: 1; padding-top: 0.15rem; }
+        .history-title { color: #1f2937; font-size: 0.92rem; font-weight: 700; }
+        .history-description { color: #6b7280; font-size: 0.83rem; margin-top: 0.2rem; }
+        .history-meta { color: #9ca3af; font-size: 0.75rem; margin-top: 0.35rem; }
+        @media (max-width: 576px) { .history-card .card-body { padding: 1rem; } }
+
         #attachmentModal .modal-body{
         display:flex;
         align-items:center;
@@ -1162,7 +1218,7 @@ hr{
     </div>
 </div>
 <div class="row" id="requestInformationBody">
-    <div class="col-xl-8 col-lg-7">
+    <div class="col-8">
 
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">
@@ -1455,9 +1511,9 @@ hr{
 
                                         <i class="bi bi-geo-alt text-danger me-2"></i>
 
-                                        {{ $ticket->requestRegion->name }},
-                                        {{ $ticket->requestProvince->name }},
-                                        {{ $ticket->requestCity->name }}
+                                        {{ data_get($ticket, 'requestRegion.name', '-') }},
+                                        {{ data_get($ticket, 'requestProvince.name', '-') }},
+                                        {{ data_get($ticket, 'requestCity.name', '-') }}
 
                                     </div>
 
@@ -1484,7 +1540,7 @@ hr{
                         </div>
 
                     </div>
-                    <div class="col-xl-12 col-lg-5 pt-4">
+                    <div class="col-12 pt-4">
 
                         <div class="card request-card border-0 shadow-sm">
 
@@ -1706,6 +1762,71 @@ hr{
 
     </div>
 
+    <div class="col-4 pt-1">
+        <div class="card resolution-panel">
+            <div class="card-header d-flex align-items-center justify-content-between py-3 px-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check2-square"></i>
+                    <h6 class="mb-0 fw-bold">Resolution</h6>
+                </div>
+                @if($latestResolution)
+                    <small class="text-muted">Updated {{ $latestResolution->updated_at->format('M d, Y') }}</small>
+                @endif
+            </div>
+
+            <div class="card-body p-3">
+                <form method="POST" action="{{ route('ticket.resolve', $ticket->ticket_id) }}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label for="resolution_text" class="form-label">Resolution details</label>
+                        <textarea id="resolution_text" name="resolution_text" class="form-control" placeholder="Describe the action taken or the final resolution.">{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
+                        @error('resolution_text')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="attachments" class="form-label">Resolution attachments</label>
+                        <input id="attachments" type="file" name="attachments[]" class="form-control" multiple>
+                        <div class="form-text">You can select multiple supporting files.</div>
+                        @error('attachments.*')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+
+                        @if($latestResolution?->attachments->isNotEmpty())
+                            <div class="resolution-attachments mt-2 small">
+                                @foreach($latestResolution->attachments as $attachment)
+                                    <div class="d-flex align-items-center gap-2 py-1">
+                                        <i class="bi bi-paperclip"></i>
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}" target="_blank" rel="noopener">{{ $attachment->attachment }}</a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="ticket_status" class="form-label">Update ticket status</label>
+                        <select id="ticket_status" name="ticket_status" class="form-select">
+                            <option value="review" @selected(old('ticket_status', $ticket->ticket_status) === 'review')>For Review</option>
+                            <option value="inprogress" @selected(old('ticket_status', $ticket->ticket_status) === 'inprogress')>In Progress</option>
+                            <option value="resolved" @selected(old('ticket_status', $ticket->ticket_status) === 'resolved')>Resolved</option>
+                            <option value="completed" @selected(old('ticket_status', $ticket->ticket_status) === 'completed')>Completed</option>
+                        </select>
+                        @error('ticket_status')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">
+                        <i class="bi bi-check2-circle me-2"></i>
+                        {{ $latestResolution ? 'Update Resolution' : 'Save Resolution' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
     <div id="printBody" class="d-none mt-3">
@@ -1966,7 +2087,7 @@ hr{
 
             <td>
 
-                {{ $ticket->requestRegion->name }}
+                {{ data_get($ticket, 'requestRegion.name', '-') }}
 
             </td>
 
@@ -1982,7 +2103,7 @@ hr{
 
             <td>
 
-                {{ $ticket->requestProvince->name }}
+                {{ data_get($ticket, 'requestProvince.name', '-') }}
 
             </td>
 
@@ -1998,7 +2119,7 @@ hr{
 
             <td>
 
-                {{ $ticket->requestCity->name }}
+                {{ data_get($ticket, 'requestCity.name', '-') }}
 
             </td>
 
@@ -2192,7 +2313,6 @@ hr{
             </div>
         </div>
     </div>
-
 </div>
 
     
@@ -2427,7 +2547,46 @@ hr{
     </div>
 
 </div>
-    <div id="historyBody" class="d-none mt-3">historyBody</div>
+    <div id="historyBody" class="d-none mt-3">
+        <div class="card history-card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 d-flex align-items-center justify-content-between p-4 pb-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">Ticket history</h5>
+                    <small class="text-muted">A record of all ticket updates and communication.</small>
+                </div>
+                <span class="badge bg-light text-dark border">{{ $activities->count() + 1 }} events</span>
+            </div>
+            <div class="card-body p-4 pt-2">
+                <div class="history-item">
+                    <div class="history-rail"><span class="history-dot"><i class="bi bi-plus-circle"></i></span></div>
+                    <div class="history-content">
+                        <div class="history-title">Ticket submitted</div>
+                        <div class="history-description">The request was submitted and is waiting for review.</div>
+                        <div class="history-meta">{{ trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name) ?: 'Requester' }} &middot; {{ $ticket->created_at->format('M d, Y h:i A') }}</div>
+                    </div>
+                </div>
+
+                @foreach($activities->where('event', '!=', 'ticket_created')->sortBy('created_at') as $activity)
+                    @php
+                        $icon = match($activity->event) {
+                            'status_changed' => 'bi-arrow-left-right',
+                            'comment_added', 'comment_reply' => 'bi-chat-dots',
+                            'attachment_added', 'resolution_attachment_added' => 'bi-paperclip',
+                            default => 'bi-check2-square',
+                        };
+                    @endphp
+                    <div class="history-item">
+                        <div class="history-rail"><span class="history-dot"><i class="bi {{ $icon }}"></i></span></div>
+                        <div class="history-content">
+                            <div class="history-title">{{ $activity->title }}</div>
+                            @if($activity->description)<div class="history-description">{{ $activity->description }}</div>@endif
+                            <div class="history-meta">{{ $activity->performed_by ?: 'System' }} &middot; {{ $activity->created_at->format('M d, Y h:i A') }}</div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     (function () {

@@ -8,12 +8,15 @@ use App\Models\Province;
 use App\Models\City;
 use App\Models\TicketComment;
 use App\Models\TicketAttachment;
+use App\Models\Agency;
 
 class Ticket extends Model
 {
     protected $fillable = [
 
     'ticket_id',
+    'ticket_status',
+    'ticket_resolved_at',
 
     'requestor_first_name',
     'requestor_middle_name',
@@ -26,6 +29,9 @@ class Ticket extends Model
     'requestor_region',
     'requestor_province',
     'requestor_city',
+    'requestor_organization',
+    'requestor_office',
+    'requestor_specific_office',
 
     'ticket_category',
 
@@ -74,6 +80,20 @@ class Ticket extends Model
         return $this->hasMany(TicketComment::class)
                     ->whereNull('parent_id')
                     ->latest();
+    }
+
+    public function resolutions()
+    {
+        return $this->hasMany(Resolution::class, 'ticket_id');
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(TicketActivity::class)->latest();
+    }
+
+    public function agency(){
+        return $this->belongsTo(Agency::class, 'directorate_code');
     }
 
 }

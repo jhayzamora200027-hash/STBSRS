@@ -27,7 +27,17 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
     Route::post('/tickets/{ticket}/comments',[ViewTicketController::class, 'storeComment'])->name('tickets.comments.store');
+    Route::post('/tickets/{ticket_id}/resolution', [\App\Http\Controllers\ResolutionController::class, 'store'])->name('ticket.resolve');
 });
+
+// Public signed links for requestor to confirm or return a resolution
+Route::get('/tickets/{ticket_id}/resolution/{resolution_id}/confirm', [\App\Http\Controllers\ResolutionResponseController::class, 'confirm'])
+    ->name('tickets.resolution.confirm')
+    ->middleware('signed');
+
+Route::get('/tickets/{ticket_id}/resolution/{resolution_id}/return', [\App\Http\Controllers\ResolutionResponseController::class, 'returned'])
+    ->name('tickets.resolution.return')
+    ->middleware('signed');
 
 
 
@@ -44,8 +54,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/regions',[LocationController::class, 'regions']);
 Route::get('/provinces/{regionCode}', [LocationController::class, 'provinces']);
 Route::get('/cities/{provinceCode}',[LocationController::class, 'cities']);
+Route::get('/agencies/{regionCode?}', [LocationController::class, 'agencies']);
 
 Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+Route::match(['put','patch'], '/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
 Route::post('/tickets/send-otp', [TicketController::class, 'sendOtp'])->name('tickets.sendOtp');
 Route::post('/tickets/verify-otp', [TicketController::class, 'verifyOtp'])->name('tickets.verifyOtp');
 Route::get('/tickets/otp-status', [TicketController::class, 'otpStatus'])->name('tickets.otpStatus');

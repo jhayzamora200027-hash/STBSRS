@@ -88,7 +88,7 @@
 
         <div>
 
-            <h6>STB Service Request System</h6>
+            <h6>iSTaksyon</h6>
 
             <small>
                 Department of Social Welfare and Development

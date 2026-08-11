@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -23,16 +24,37 @@ class TicketController extends Controller
         Log::info('TicketController: content-length', ['CONTENT_LENGTH' => $_SERVER['CONTENT_LENGTH'] ?? null]);
 
 
-        $request->validate([
+        $rules = [
             'requestor_first_name' => 'required',
             'requestor_last_name' => 'required',
             'requestor_email' => 'required|email',
+            'requestor_position_title' => 'nullable|string|max:255',
             'ticket_category' => 'required',
             'purpose_of_request' => 'required',
             'ticket_priority' => 'nullable',
-
+            'organization_type' => 'required',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
-        ]);
+        ];
+
+        // conditional rules
+        if ($request->input('organization_type') === 'lgu') {
+            $rules['requestor_region'] = 'required';
+            $rules['requestor_province'] = 'required';
+            $rules['requestor_city'] = 'required';
+        } elseif ($request->input('organization_type') === 'field_office') {
+            // directorate is posted as requestor_region (directorate select uses same name)
+            $rules['requestor_region'] = 'required';
+            $rules['requestor_office'] = 'required';
+        } elseif ($request->input('organization_type') === 'offices') {
+            $rules['requestor_office'] = 'required';
+        } elseif (in_array($request->input('organization_type'), ['cso','ngo','po','academe'])) {
+            $rules['requestor_specific_office'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
         DB::beginTransaction();
 
@@ -49,10 +71,16 @@ class TicketController extends Controller
 
                 'requestor_sex' => $request->requestor_sex,
                 'requestor_email' => $request->requestor_email,
+                'requestor_position_title' => $request->requestor_position_title ?? null,
+                'requestor_position_title' => $request->requestor_position_title ?? null,
 
-                'requestor_region' => $request->requestor_region,
-                'requestor_province' => $request->requestor_province,
-                'requestor_city' => $request->requestor_city,
+                'requestor_region' => $request->requestor_region ?? '',
+                'requestor_province' => $request->requestor_province ?? '',
+                'requestor_city' => $request->requestor_city ?? '',
+                // organization fields
+                'requestor_organization' => $request->organization_type ?? null,
+                'requestor_office' => $request->requestor_office ?? null,
+                'requestor_specific_office' => $request->requestor_specific_office ?? null,
 
                 'ticket_category' => $request->ticket_category,
 
@@ -79,7 +107,6 @@ class TicketController extends Controller
 
                 'date_of_activity_end' => $request->date_of_activity_end
                 ,
-                // Normalize ticket_priority: if an array is submitted, pick the first non-empty value.
                 'ticket_priority' => (function($val){
                     if (is_array($val)) {
                         $first = collect($val)->filter(function($v){ return $v !== null && $v !== ''; })->first();
@@ -97,6 +124,13 @@ class TicketController extends Controller
             }
 
             Log::info('TicketController: ticket created', ['id' => $ticket->id, 'ticket_id' => $ticket->ticket_id]);
+
+            $ticket->activities()->create([
+                'event' => 'ticket_created',
+                'title' => 'Ticket submitted',
+                'description' => 'The request was submitted and is waiting for review.',
+                'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+            ]);
 
 
 
@@ -128,11 +162,17 @@ class TicketController extends Controller
                     'file_type' => $file->getClientMimeType(),
                     'file_size' => $file->getSize(),
                 ]);
+
+                $ticket->activities()->create([
+                    'event' => 'attachment_added',
+                    'title' => 'Attachment added',
+                    'description' => 'Added request attachment: ' . $file->getClientOriginalName(),
+                    'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+                ]);
             }
 
             DB::commit();
 
-            // send confirmation email to requester (non-blocking)
             try {
                 Mail::send('emails.ticket_submitted', ['ticket' => $ticket], function ($m) use ($ticket) {
                     $m->to($ticket->requestor_email)->subject('STBSRS - Request Submitted: ' . $ticket->ticket_id);
@@ -144,10 +184,8 @@ class TicketController extends Controller
                 Log::warning('Failed to send ticket confirmation email', ['error' => $e->getMessage()]);
             }
 
-            // clear OTP verification after successful submission
             Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email']);
 
-            // Prepare response including ticket number
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'title' => 'Request submitted',
@@ -173,6 +211,137 @@ class TicketController extends Controller
         }
     }
 
+    /**
+     * Update existing ticket
+     */
+    public function update(Request $request, Ticket $ticket)
+    {
+        // reuse validation from store
+        $rules = [
+            'requestor_first_name' => 'required',
+            'requestor_last_name' => 'required',
+            'requestor_email' => 'required|email',
+            'ticket_category' => 'required',
+            'purpose_of_request' => 'required',
+            'ticket_priority' => 'nullable',
+            'organization_type' => 'required',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
+        ];
+
+        if ($request->input('organization_type') === 'lgu') {
+            $rules['requestor_region'] = 'required';
+            $rules['requestor_province'] = 'required';
+            $rules['requestor_city'] = 'required';
+        } elseif ($request->input('organization_type') === 'field_office') {
+            $rules['requestor_region'] = 'required';
+            $rules['requestor_office'] = 'required';
+        } elseif ($request->input('organization_type') === 'offices') {
+            $rules['requestor_office'] = 'required';
+        } elseif (in_array($request->input('organization_type'), ['cso','ngo','po','academe'])) {
+            $rules['requestor_specific_office'] = 'required';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            $ticket->update([
+                // do not change ticket_id
+                'requestor_first_name' => $request->requestor_first_name,
+                'requestor_middle_name' => $request->requestor_middle_name,
+                'requestor_last_name' => $request->requestor_last_name,
+                'requestor_extension_name' => $request->requestor_extension_name,
+
+                'requestor_sex' => $request->requestor_sex,
+                'requestor_email' => $request->requestor_email,
+
+                'requestor_region' => $request->requestor_region ?? '',
+                'requestor_province' => $request->requestor_province ?? '',
+                'requestor_city' => $request->requestor_city ?? '',
+                'requestor_organization' => $request->organization_type ?? null,
+                'requestor_office' => $request->requestor_office ?? null,
+                'requestor_specific_office' => $request->requestor_specific_office ?? null,
+
+                'ticket_category' => $request->ticket_category,
+
+                'purpose_of_request' => $request->purpose_of_request,
+
+                'program' => is_array($request->program) ? json_encode($request->program) : $request->program,
+
+                'program_others' => $request->program_others,
+
+                'type_of_knowledge_product' => is_array($request->type_of_knowledge_product) ? json_encode($request->type_of_knowledge_product) : $request->type_of_knowledge_product,
+
+                'type_of_knowledge_product_others' => $request->type_of_knowledge_product_others,
+
+                'venue' => $request->venue,
+                'type_of_activity' => $request->type_of_activity,
+                'date_of_activity' => $request->date_of_activity,
+                'date_of_activity_end' => $request->date_of_activity_end,
+                'ticket_priority' => (function($val){
+                    if (is_array($val)) {
+                        $first = collect($val)->filter(function($v){ return $v !== null && $v !== ''; })->first();
+                        return $first ?? null;
+                    }
+                    if ($val === '') return null;
+                    return $val;
+                })($request->ticket_priority)
+            ]);
+
+            $ticket->activities()->create([
+                'event' => 'ticket_updated',
+                'title' => 'Ticket details updated',
+                'description' => 'The request information was updated.',
+                'performed_by' => auth()->user()?->name ?? trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+            ]);
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('ticket_attachments', $filename, 'public');
+                TicketAttachment::create([
+                    'ticket_id' => $ticket->id,
+                    'attachment' => $file->getClientOriginalName(),
+                    'attachment_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                ]);
+
+                $ticket->activities()->create([
+                    'event' => 'attachment_added',
+                    'title' => 'Attachment added',
+                    'description' => 'Added request attachment: ' . $file->getClientOriginalName(),
+                    'performed_by' => auth()->user()?->name ?? trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+                ]);
+            }
+
+            DB::commit();
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'title' => 'Request updated',
+                    'message' => 'Your ticket was updated successfully.',
+                    'redirect' => url('/'),
+                    'ticket_number' => $ticket->ticket_id,
+                    'ticket' => $ticket->toArray(),
+                ]);
+            }
+
+            return redirect()
+                ->back()
+                ->with('success', 'Ticket updated successfully.')
+                ->with('created_ticket_number', $ticket->ticket_id);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('TicketController update error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return back()->withErrors($e->getMessage());
+        }
+    }
+
     public function sendOtp(Request $request)
     {
         $request->validate([
@@ -181,10 +350,8 @@ class TicketController extends Controller
 
         $email = $request->email;
 
-        // A new OTP request always invalidates any previous verification state.
         Session::forget(['ticket_otp_verified', 'ticket_otp_email']);
 
-        // Generate 6-digit OTP
         $otp = random_int(100000, 999999);
 
         $expires = Carbon::now()->addMinutes(10);
@@ -204,7 +371,6 @@ class TicketController extends Controller
                 $firstName = $firstName ? ucwords($firstName) : null;
             }
 
-            // Send styled HTML email using a blade view
             try {
                 $minutes = 10;
                 Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
