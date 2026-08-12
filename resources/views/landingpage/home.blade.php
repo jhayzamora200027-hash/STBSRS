@@ -1074,6 +1074,14 @@
                                                         <input id="requestor_position_title" name="requestor_position_title" type="text" class="form-control" placeholder="Input your position (optional)">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4 py-2">
+                                                    <label class="form-label">
+                                                        Mobile Number (Optional)
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <input id="requestor_mobile_number" name="requestor_mobile_number" type="text" class="form-control" placeholder="Input your mobile number (optional)">
+                                                    </div>
+                                                </div>
                                                 </div>
                                                 <div class="col-md-4 py-2">
                                                     <label class="form-label">Organization Type <i class="text-danger">*</i></label>
@@ -1159,10 +1167,19 @@
                                                     <label class="form-label">Academe - Please specify <i class="text-danger">*</i></label>
                                                     <input id="academe_input" type="text" class="form-control" name="requestor_specific_office" placeholder="Specify Academe">
                                                 </div>
+
+                                                <div class="col-md-4 py-2">
+                                                    <label class="form-label">
+                                                        Office Address (Optional)
+                                                    </label>
+                                                    <div class="input-group">
+                                                        <input id="requestor_office_address" name="requestor_office_address" type="text" class="form-control" placeholder="Input your office address (optional)">
+                                                    </div>
+                                                </div>
                                             </div>
                                 </div>
                                 <div class="mt-3">
-                                    <div class="card p-3" style="background-color:#ddecff; border-color:#4d7cff">
+                                    <div id="whyInfo" class="card p-3" style="background-color:#ddecff; border-color:#4d7cff">
                                         <div class="d-flex align-items-start"> 
                                             <i class="bi bi-info-circle fs-2 me-3" style="color:#062c52;"></i>
                                             <div class="d-flex flex-column">
@@ -1174,7 +1191,7 @@
                                     
                                 </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
-                                <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+                                <div id="stepFooter1" class="d-flex justify-content-between align-items-center mt-4 mb-4">
                                     <div style="width:320px;"> 
                                         <small class="text-muted" id="stepText">Step 1 of 2</small>
                                     
@@ -1254,14 +1271,14 @@
                                             </div>
                                         </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+                                    <div id="stepFooter2" class="d-flex justify-content-between align-items-center mt-4 mb-4">
                                         <div style="width:320px;"> 
-                                            <small class="text-muted" id="stepText">Step 2 of 2</small>
+                                            <small class="text-muted" id="stepText2">Step 2 of 2</small>
                                             
                                             <div class="progress mt-2" style="height:8px;"> 
                                                 <div 
                                                     class="progress-bar"
-                                                    id="progressBar"
+                                                    id="progressBar2"
                                                     role="progressbar"
                                                     style="width:100%; background-color:#3b82F6"
                                                     aria-valuenow="100"
@@ -3044,7 +3061,6 @@ if (organizationConfig[organization]) {
                 if(!sex) missing.push('Sex');
                 if(!org) missing.push('Organization Type');
 
-                // Organization-specific requirements
                 if(org === 'lgu'){
                     const region = document.getElementById('region')?.value.trim() || '';
                     const province = document.getElementById('province')?.value.trim() || '';
@@ -3054,7 +3070,6 @@ if (organizationConfig[organization]) {
                     if(!city) missing.push('City/Municipality');
                 } else if(org === 'field_office'){
                     const directorate = document.getElementById('directorate')?.value.trim() || document.getElementById('region')?.value.trim() || '';
-                    // pick visible/enabled agency select (there may be multiple in DOM)
                     let agency = '';
                     Array.from(document.querySelectorAll('select[name="requestor_office"]')).some(s => {
                         if (!s.disabled && s.offsetParent !== null) { agency = s.value || ''; return true; }
@@ -3112,6 +3127,9 @@ if (organizationConfig[organization]) {
             document.getElementById('step2').classList.remove('d-none');
             //step 3
             document.getElementById('step3').classList.add('d-none');
+            // footers: hide footer1, show footer2
+            const f1 = document.getElementById('stepFooter1'); if(f1) f1.classList.add('d-none');
+            const f2 = document.getElementById('stepFooter2'); if(f2) f2.classList.remove('d-none');
             
             document.getElementById('card1').style.backgroundColor = '#e4e4e4';
             document.getElementById('card1').style.borderColor = '#dee2e6';
@@ -3125,6 +3143,9 @@ if (organizationConfig[organization]) {
             document.getElementById('card2Rounded').style.backgroundColor = "#062c52";
             document.getElementById('card2Label').style.color = "#062c52";
 
+            // hide the Step 1 info box when moving to Step 2
+            const why = document.getElementById('whyInfo'); if(why) why.classList.add('d-none');
+
             });
             //Card 1 Body
             document.getElementById('card1').addEventListener('click', function(e){
@@ -3135,6 +3156,9 @@ if (organizationConfig[organization]) {
             document.getElementById('step2').classList.add('d-none');
             //Step3
             document.getElementById('step3').classList.add('d-none');
+            // footers: show footer1, hide footer2
+            const f1s = document.getElementById('stepFooter1'); if(f1s) f1s.classList.remove('d-none');
+            const f2s = document.getElementById('stepFooter2'); if(f2s) f2s.classList.add('d-none');
             
             document.getElementById('card1').style.backgroundColor = '#ddecff';
             document.getElementById('card1').style.borderColor = '#062c52';
@@ -3145,6 +3169,9 @@ if (organizationConfig[organization]) {
             document.getElementById('card2').style.borderColor = '#dee2e6';
             document.getElementById('card2Number').style.color = "black";
             document.getElementById('card2Rounded').style.backgroundColor = "#fff";
+
+            // show the Step 1 info box when returning to Step 1
+            const whyShow = document.getElementById('whyInfo'); if(whyShow) whyShow.classList.remove('d-none');
 
             })
 
@@ -3170,6 +3197,9 @@ if (organizationConfig[organization]) {
             document.getElementById('step2').classList.remove('d-none');
             //Step 3
             document.getElementById('step3').classList.add('d-none');
+            // footers: hide footer1, show footer2
+            const f1c = document.getElementById('stepFooter1'); if(f1c) f1c.classList.add('d-none');
+            const f2c = document.getElementById('stepFooter2'); if(f2c) f2c.classList.remove('d-none');
             
             document.getElementById('card1').style.backgroundColor = '#e4e4e4';
             document.getElementById('card1').style.borderColor = '#dee2e6';
@@ -3181,6 +3211,9 @@ if (organizationConfig[organization]) {
             document.getElementById('card2Number').style.color = "#fff";
             document.getElementById('card2Rounded').style.backgroundColor = "#062c52";
             document.getElementById('card2Label').style.color = "#062c52";
+
+            // hide the Step 1 info box when showing Step 2
+            const whyHide2 = document.getElementById('whyInfo'); if(whyHide2) whyHide2.classList.add('d-none');
                 }
                 else {
                     Swal.fire({
@@ -3205,6 +3238,9 @@ if (organizationConfig[organization]) {
                 document.getElementById('step1').classList.add('d-none');
                 document.getElementById('step2').classList.add('d-none');
                 document.getElementById('step3').classList.remove('d-none');
+                // footers: hide both footers when showing step3
+                const f1Hide = document.getElementById('stepFooter1'); if(f1Hide) f1Hide.classList.add('d-none');
+                const f2Hide = document.getElementById('stepFooter2'); if(f2Hide) f2Hide.classList.add('d-none');
 
                 // Hide all service bodies
                 document.getElementById('tacpBody').classList.add('d-none');
@@ -3300,14 +3336,17 @@ if (organizationConfig[organization]) {
 
     });
 
-    document.getElementById('back').addEventListener('click', function(){
+        document.getElementById('back').addEventListener('click', function(){
             //Step 1
             document.getElementById('step1').classList.add('d-none');
             //Step 2
             document.getElementById('step2').classList.remove('d-none');
             //step 3
             document.getElementById('step3').classList.add('d-none');
-    })
+            // footers: show footer2, hide footer1 when going back to step2
+            const f1b = document.getElementById('stepFooter1'); if(f1b) f1b.classList.add('d-none');
+            const f2b = document.getElementById('stepFooter2'); if(f2b) f2b.classList.remove('d-none');
+        })
     startDate.addEventListener('change', function () {
     endDate.min = this.value;
 

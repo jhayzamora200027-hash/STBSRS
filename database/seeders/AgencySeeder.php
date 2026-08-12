@@ -9,18 +9,14 @@ class AgencySeeder extends Seeder
 {
     public function run(): void
     {
-        // Prefer agency2.csv if present (contains full dataset), fallback to agency.csv
-        $path1 = database_path('seeders/data/agency2.csv');
-        $path2 = database_path('seeders/data/agency.csv');
+        $path1 = database_path('seeders/data/agency3.csv');
 
-        if (file_exists($path1)) {
-            $file = $path1;
-        } elseif (file_exists($path2)) {
-            $file = $path2;
-        } else {
-            $this->command->error('agency CSV not found.');
+        if (!file_exists($path1)) {
+            $this->command->error('agency3.csv not found in database/seeders/data.');
             return;
         }
+
+        $file = $path1;
 
         $this->command->info('Using file: ' . $file);
 
@@ -28,12 +24,10 @@ class AgencySeeder extends Seeder
 
         $handle = fopen($file, 'r');
 
-        // Skip the header row
         fgetcsv($handle);
 
         while (($row = fgetcsv($handle, 10000, ",")) !== false) {
 
-            // Skip deleted records
             if ((int)$row[11] === 1) {
                 continue;
             }
@@ -45,7 +39,11 @@ class AgencySeeder extends Seeder
             $directorateCode = $rawDirectorate;
 
             if (is_numeric($rawDirectorate)) {
-                $region = DB::table('regions')->where('id', (int)$rawDirectorate)->first();
+                $padded = str_pad((string)$rawDirectorate, 2, '0', STR_PAD_LEFT);
+                $region = DB::table('regions')->where('region_code', $padded)->first();
+                if (!$region) {
+                    $region = DB::table('regions')->where('id', (int)$rawDirectorate)->first();
+                }
                 if ($region && isset($region->region_code)) {
                     $directorateCode = $region->region_code;
                 }

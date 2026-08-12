@@ -27,7 +27,8 @@ class TicketController extends Controller
         $rules = [
             'requestor_first_name' => 'required',
             'requestor_last_name' => 'required',
-            'requestor_email' => 'required|email',
+            'requestor_email' => 'nullable|email',
+            'requestor_email_address' => 'nullable|email',
             'requestor_position_title' => 'nullable|string|max:255',
             'ticket_category' => 'required',
             'purpose_of_request' => 'required',
@@ -56,6 +57,11 @@ class TicketController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Ensure at least one email field is present
+        if (empty($request->input('requestor_email')) && empty($request->input('requestor_email_address'))) {
+            return back()->withErrors(['requestor_email_address' => 'Email is required'])->withInput();
+        }
+
         DB::beginTransaction();
 
         try {
@@ -70,9 +76,11 @@ class TicketController extends Controller
                 'requestor_extension_name' => $request->requestor_extension_name,
 
                 'requestor_sex' => $request->requestor_sex,
-                'requestor_email' => $request->requestor_email,
+                // prefer new input name when present, fallback to legacy; write only to existing DB column
+                'requestor_email' => $request->requestor_email_address ?? $request->requestor_email,
                 'requestor_position_title' => $request->requestor_position_title ?? null,
-                'requestor_position_title' => $request->requestor_position_title ?? null,
+                'requestor_mobile_number' => $request->requestor_mobile_number ?? null,
+                'requestor_office_address' => $request->requestor_office_address ?? null,
 
                 'requestor_region' => $request->requestor_region ?? '',
                 'requestor_province' => $request->requestor_province ?? '',

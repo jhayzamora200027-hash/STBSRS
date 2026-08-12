@@ -25,6 +25,8 @@ class Ticket extends Model
 
     'requestor_sex',
     'requestor_email',
+    'requestor_mobile_number',
+    'requestor_office_address',
 
     'requestor_region',
     'requestor_province',
@@ -48,7 +50,10 @@ class Ticket extends Model
     'date_of_activity',
     'date_of_activity_end',
     'ticket_priority',
-    'requestor_position_title'
+    'requestor_position_title',
+    'requestor_mobile_number',
+    'requestor_office_address',
+    'received_ticket_to'
 ];
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');
@@ -93,7 +98,7 @@ class Ticket extends Model
     }
 
     public function agency(){
-        return $this->belongsTo(Agency::class, 'directorate_code');
+        return $this->belongsTo(Agency::class, 'requestor_office', 'group_code');
     }
 
 }

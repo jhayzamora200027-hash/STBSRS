@@ -10,6 +10,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AllticketController;
 use App\Http\Controllers\ViewTicketController;
+use App\Http\Controllers\TicketPdfController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
 
@@ -24,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets',[AllticketController::class, 'index'])->name('tickets');
 
     Route::get('/tickets/{ticket_id}',[ViewTicketController::class, 'index'])->name('ticket.view');
+
+    // PDF export
+    Route::get('/tickets/{ticket}/pdf', [TicketPdfController::class, 'pdf'])->name('tickets.pdf');
+    Route::get('/tickets/{ticket}/print-preview', [ViewTicketController::class, 'printPreview'])->name('tickets.print.preview');
 
     Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
     Route::post('/tickets/{ticket}/comments',[ViewTicketController::class, 'storeComment'])->name('tickets.comments.store');

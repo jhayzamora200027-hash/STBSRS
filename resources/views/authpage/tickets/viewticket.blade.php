@@ -4,6 +4,18 @@
 
 @section('content')
 <style>
+.page-break {
+    page-break-before: always;
+    break-before: page;
+}
+@media print {
+    .print-header, .print-footer { display: block; position: fixed; left: 0; right: 0; z-index: 9999; }
+    .print-header { top: 0; }
+    .print-footer { bottom: 0; }
+
+    /* Reserve space so content doesn't overlap header/footer */
+    #printArea { padding-top: 60mm; padding-bottom: 25mm; }
+}
 .resolution-panel {
     border: 1px solid #e6e9ee;
     box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
@@ -331,6 +343,8 @@
     box-shadow:0 15px 40px rgba(0,0,0,.15);
 
     border-radius:8px;
+    position:relative;
+    page-break-after:always;
 
 }
 
@@ -526,7 +540,15 @@ hr{
 
     size:A4 portrait;
 
-    margin:12mm;
+    margin:30px 12mm 25mm 12mm;
+
+}
+
+@page:first{
+
+    size:A4 portrait;
+
+    margin:30px 12mm 25mm 12mm;
 
 }
 
@@ -546,6 +568,18 @@ hr{
         height:297mm;
 
     }
+
+    html,
+    body,
+    #printArea,
+    #printArea * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .page-break {
+    page-break-before: always;
+    break-before: page;
+}
 
     /* Prevent breaking of boxed sections across printed pages */
     #printArea .no-break,
@@ -609,7 +643,7 @@ hr{
 
         border-radius:0;
 
-        background:#fff;
+        backsground:#fff;
 
     }
 
@@ -813,7 +847,6 @@ hr{
         .btn-post:active { transform: scale(0.97); }
         .btn-post:disabled { background: #c4b5fd; cursor: not-allowed; }
 
-        /* ---- Thread ---- */
         .thread {
             position: relative;
         }
@@ -1840,476 +1873,284 @@ hr{
             </div>
         </div>
 
-        <div id="printArea" class="a4-document">
-
-
-    <div class="document-header">
-
-        <table width="100%">
-            <tr>
-
-                <td style="width:270px; text-align:center; vertical-align:middle; border:none">
-                    <div class="d-flex justify-content-start align-items-start">
-                        <img src="{{ asset('images/logo/DSWD&BAGONGPIL-LOGO.png') }}"
-                            style="width:270px; max-width:100%;height:auto; display:block; margin:auto;">
-                    </div>
-                </td>
-
-                <td class="text-center" style="border:none; padding-top: 30px;">
-
-                    
-                    <h5 class="fw-bold mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.9rem;">
-                        SOCIAL TECHNOLOGY BUREAU
-                    </h5>
-
-                    <h5 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
-                        INNOVATIONS AND PROGRAM DEVELOPMENT GROUP
-                    </h5>
-                    <h6 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
-                        DSWD-STB-GF-007 | REV 01 | 13 MAR 2023
-                    </h6> 
-
-                    <br>
-
-                </td>
-
-            </tr>
-        </table>
-
-    </div>
-<hr style="border-top:1px solid #000; margin-top:-30px;">
-
-    <div class="text-center mb-4">
-
-        <h3 class="fw-bold">
-            REQUEST FORM
-        </h3>
-
-
-    </div>
-    <table class="table table-bordered" style="border: 1px solid; border-color:#000">
-        <tr>
-            <td style="border:1px solid #000;">
-                By clicking this, I hereby give my consent and acknowledge that I have read, fully understood, and agree to the
-                <i style="color:#0d6efd; text-decoration:underline;">
-                    DSWD Data Privacy Terms and Condition
-                </i>.
-            </td>        
-        </tr>
-    </table>
-    <table class="table table-bordered">
-
-        <tr>
-                <th class="text-end" style="border:1px solid #000;">
-                    <i>DATE<i>
-                </th>
-                <td style="border:1px solid #000;">
-                    {{$ticket->created_at->format('F d, Y h:i A')}}
-                </td>
-            {{--
-            <th width="25%" style="border:1px solid #000;">
-                Ticket Number
-            </th>
-
-            <td width="25%" style="border:1px solid #000;">
-                {{ $ticket->ticket_id }}
-            </td>
-
-            <th width="25%">
-                Date Submitted
-            </th>
-
-            <td>
-
-                {{ $ticket->created_at->format('F d, Y h:i A') }}
-
-            </td> --}}
-
-        </tr>
-        <tr>
-                <th class="text-end" style="border:1px solid #000;">
-                    NAME OF THE REQUESTOR
-                </th>
-                <td style="border:1px solid #000;">
-                        {{ $ticket->requestor_last_name }}
-
-                        {{ $ticket->requestor_first_name }}
-
-                        @if(!empty($ticket->requestor_middle_name))
-                        {{ strtoupper(substr($ticket->requestor_middle_name,0,1)) }}.
-                        @endif
-                </td>
-        </tr>
-
-        <tr>
-                <th class="text-end" style="border:1px solid #000;">
-                    <i>Position / Designation
-                    <div>(Optional)</div></i>
-                </th>
-                <td>
-                    {{$ticket->requestor_position_title}}
-                </td>
-        <tr>
-        
-
-        {{-- <tr>
-
-            <th>
-                Status
-            </th>
-
-            <td>
-
-                {{ ucwords($ticket->ticket_status) }}
-
-            </td>
-
-            <th>
-                Priority
-            </th>
-
-            <td>
-
-                {{ ucfirst($ticket->ticket_priority) }}
-
-            </td>
-
-        </tr> --}}
-
-        <tr>
-
-            <th>
-                Category
-            </th>
-
-            <td colspan="3">
-
-                @switch($ticket->ticket_category)
-
-                    @case('enhance')
-
-                        Technical Assistance on Program Development
-
-                    @break
-
-                    @case('completed')
-
-                        Technical Assistance on Completed Program
-
-                    @break
-
-                    @case('resource')
-
-                        Resource Person
-
-                    @break
-
-                    @case('knowledge')
-
-                        Knowledge Product
-
-                    @break
-
-                @endswitch
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <th>
-
-                Program
-
-            </th>
-
-            <td colspan="3">
-
-                {{ optional($ticket->programDetails)->program ?? '-' }}
-
-            </td>
-
-        </tr>
-
-    </table>
-    <h5 class="section-title">
-
-        Requester Information
-
-    </h5>
-
-    <table class="table table-bordered">
-
-        <tr>
-
-            <th width="25%">
-                Full Name
-            </th>
-
-            <td>
-
-                {{ $ticket->requestor_first_name }}
-
-                @if(!empty($ticket->requestor_middle_name))
-                    {{ strtoupper(substr($ticket->requestor_middle_name,0,1)) }}.
-                @endif
-
-                {{ $ticket->requestor_last_name }}
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <th>
-
-                Email Address
-
-            </th>
-
-            <td>
-
-                {{ $ticket->requestor_email }}
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <th>
-
-                Region
-
-            </th>
-
-            <td>
-
-                {{ data_get($ticket, 'requestRegion.name', '-') }}
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <th>
-
-                Province
-
-            </th>
-
-            <td>
-
-                {{ data_get($ticket, 'requestProvince.name', '-') }}
-
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <th>
-
-                City / Municipality
-
-            </th>
-
-            <td>
-
-                {{ data_get($ticket, 'requestCity.name', '-') }}
-
-            </td>
-
-        </tr>
-
-    </table>
-
-    <h5 class="section-title">
-
-        Request Details
-
-    </h5>
-
-    <table class="table table-bordered">
-        @if($ticket->ticket_category === "resource")
-        <tr>
-            
-            <th>Venue</th>
-
-            <td style="height:50px;">
-                {{$ticket->venue}}
-            </td>
-
-        </tr>
-        <tr>
-            <th>Type of Activity</th>
-            <td style="height:50px;">
-                {{$ticket->type_of_activity}}
-            </td>
-        </tr>
-        <tr>
-            <th>Activity Schedule</th>
-            <td style="height:50px;">{{$ticket->date_of_activity}} - {{$ticket->date_of_activity_end}}</td>
-        </tr>
-        @endif
-        <tr>
-
-            <th width="25%">
-                Purpose of Request
-            </th>
-
-            <td style="height:120px;">
-
-                {!! nl2br(e($ticket->purpose_of_request)) !!}
-
-            </td>
-
-        </tr>
-        <tr>
-            <th>With Attachment?</th>
-            <td>
-                @if($ticket->attachments && $ticket->attachments->count() > 0)
-                    Yes
-                    <div class="mt-2">
-                        @foreach($ticket->attachments as $attachment)
-                            <a href="{{ asset('storage/' . $attachment->attachment_path) }}"
-                               class="d-block attachment-link"
-                               data-filetype="{{ $attachment->file_type }}"
-                               data-name="{{ $attachment->attachment }}">
-                                {{ $attachment->attachment }}
-                            </a>
-                        @endforeach
-                    </div>
-                @else
-                    No
-                @endif
-            </td>
-        </tr>
-            @if($ticket->ticket_category == 'knowledge')
-
-            <th>
-
-                Knowledge Product Requested
-
-            </th>
-
-            <td>
-
-                @php
-                    $kpPrint = $ticket->type_of_knowledge_product ?? null;
-                    $kpPrintItems = [];
-                    if($kpPrint) {
-                        if(is_array($kpPrint)) {
-                            $kpPrintItems = $kpPrint;
-                        } else {
-                            $decodedPrint = json_decode($kpPrint, true);
-                            if(is_array($decodedPrint)) {
-                                $kpPrintItems = $decodedPrint;
-                            } else {
-                                $kpPrintItems = array_filter(array_map('trim', explode(',', $kpPrint)));
-                            }
-                        }
-                    }
-                @endphp
-
-                @if(empty($kpPrintItems))
-                    -
-                @else
-                    @foreach($kpPrintItems as $item)
-                        {{ e($item) }}@if(!$loop->last), @endif
-                    @endforeach
-                @endif
-
-            </td>
-            @endif
-    </table>
-
-    <h5 class="section-title">
-
-        Remarks
-
-    </h5>
-
-    <table class="table table-bordered no-break">
-
-        <tr>
-
-            <td style="height:120px;"></td>
-
-        </tr>
-
-    </table>
-
-    <br><br>
-
-    <table width="100%" class="no-break"  style=" height:100px">
-
-        <tr >
-
-            <td width="45%" align="center" style="padding-top:40px;">
-
-                _______________________________
-
-                <br>
-                <strong>iSTAksyon Personnel</strong>
-
-            </td>
-
-
-            <td width="45%" align="center" height:100px style="padding-top:40px;">
-
-                _______________________________
-
-                <br>
-
-                <strong>Receiving Personnel</strong>
-
-            </td>
-
-        </tr>
-
-    </table>
-
-
-
-
-    <div class="document-footer">
-
-        <hr>
-
-        <table width="100%">
-
-            <tr>
-
-                <td>
-
-                    Generated by
-
-                    <strong>
-
-                        STB Service Request System
-
-                    </strong>
-
-                </td>
-
-                <td align="right">
-
-                    Printed on
-
-                    {{ now()->format('F d, Y h:i A') }}
-
-                </td>
-
-            </tr>
-
-        </table>
-
-    </div>
-
+            <div id="printArea" class="a4-document">
+                                    @include('partials.print_header')
+
+                        <div class="text-end mb-4" style="padding-top:70px;">
+                            <small>DRN: <span class="fw-bold text-decoration-underline">{{$ticket->ticket_id}}</span></small>
+                        </div>
+                        <div class="text-center mb-4">
+
+                            <h3 class="fw-bold">
+                                REQUEST FORM
+                            </h3>
+
+
+                        </div>
+                        <table class="table table-bordered" style="border: 1px solid; border-color:#000">
+                            <tr>
+                                <td style="border:1px solid #000;">
+                                    <span style="font-size:0.91rem;">
+                                    By clicking this, I hereby give my consent and acknowledge that I have read, fully understood, and agree to the
+                                    <a href="/privacy-policy" style="color:#0d6efd; text-decoration:underline;">
+                                        DSWD Data Privacy Terms and Condition</i>.
+                                    </a>
+                                </td>        
+                            </tr>
+                        </table>
+                        <table class="table table-bordered">
+
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>DATE<i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{$ticket->created_at->format('F d, Y h:i A')}}
+                                    </td>
+                            </tr>
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>NAME OF THE REQUESTOR
+                                            <div>(Last Name, First Name, M.I.)</div>
+                                        </i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                            {{ $ticket->requestor_last_name }}
+
+                                            {{ $ticket->requestor_first_name }}
+
+                                            @if(!empty($ticket->requestor_middle_name))
+                                            {{ strtoupper(substr($ticket->requestor_middle_name,0,1)) }}.
+                                            @endif
+                                    </td>
+                            </tr>
+
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>Position / Designation
+                                        <div>(Optional)</div></i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{$ticket->requestor_position_title}}
+                                    </td>
+                            </tr>
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>From what Organization or office do you belong?
+                                        <div>(Optional)</div></i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        @switch($ticket->requestor_organization)
+                                            @case('offices')
+                                                DSWD Offices, Bureaus, Services Units
+                                            @break
+
+                                            @case('field_office')
+                                                DSWD Field Office
+                                            @break
+
+                                            @case('lgu')
+                                                Local Government Unit
+                                            @break
+
+                                            @case('cso')
+                                                Civil Society Organization
+                                            @break
+
+                                            @case('ngo')
+                                                Non-government Organization
+                                            @break
+
+                                            @case('po')
+                                                People's Organization
+                                            @break
+
+                                            @case('academe')
+                                                Academe
+                                            @break
+                                        @endswitch
+                                    </td>
+                            </tr>
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>NAME OF OFFICE <br>
+                                        <small>(if from LGU, CSO, NGO, PO or Academe)</small></i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{$ticket->requestor_specific_office ?? 'N/A'}}
+                                    </td>
+                            </tr>   
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>DIVISION / SECTION <br>
+                                        <small>(if from the DSWD Central or Field Office)</small></i>
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{$ticket->agency->group_name ?? 'N/A'}}
+                                    </td>
+                            </tr>  
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>SEX
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{ucfirst($ticket->requestor_sex ?? 'N/A')}}
+                                    </td>
+                            </tr> 
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>OFFICE ADDRESS
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{ucfirst($ticket->requestor_office_address ?? 'N/A')}}
+                                    </td>
+                            </tr>       
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
+                                        <i>EMAIL ADDRESS
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{ucfirst($ticket->requestor_email ?? 'N/A')}}
+                                    </td>
+                            </tr>   
+                            <tr>
+                                    <th class="text-end" style="border:1px solid #000; border-bottom:1px solid #000; background-color:#d8eaff">
+                                        <i>MOBILE NUMBER
+                                    </th>
+                                    <td style="border:1px solid #000;">
+                                        {{ucfirst($ticket->requestor_mobile_number ?? 'N/A')}}
+                                    </td>
+                            </tr>         
+                        </table>
+
+                            @include('partials.print_footer')
+            </div>
+                        <div class="page-break"></div>
+            <div class="a4-document">
+                        @include('partials.print_header')
+                        <div style="padding-top:150px;">
+                            <table class="table table-bordered">
+                                <h5><i>TYPE OF TECHNICAL ASSISTANCE(TA) REQUESTED:</i></h5> 
+                                @if($ticket->ticket_category === 'completed')
+                                <i class="bi bi-check-square-fill fs-5"></i> <i class="ml-6">TA on STB-developed Programs/Projects</i>
+                                @else
+                                <i class="bi bi-square fs-5"></i> <i class="ml-6">TA on STB-developed Programs/Projects</i>
+                                @endif
+
+                                <div  class="p-3">
+                                    <span>_____________________________________</span>
+                                </div>
+                                <div>
+                                    <span>For Request Forms received from external offices (e.g. LGUs or other intermediaries), this may be left blank and the DRN will be inputted once the Form is received by the DSWD Central Office or Field Office.</span>
+                                </div>
+                                <div>
+                                    <i>(includes sharing of knowledge products on ST programs / projects and TA on ongoing and completed social technologies)</i>
+                                </div>
+                                <div class="pt-2"></div>
+                                @if($ticket->ticket_category === 'enhancement')
+                                <i class="bi bi-check-square-fill fs-5"></i> <i class="ml-6">TA on Program Development and Enhancement</i>
+                                @else
+                                <i class="bi bi-square fs-5"></i> <i class="ml-6">TA on Program Development and Enhancement</i>
+                                @endif
+
+                                <div>
+                                    <i>(includes TA on the conduct of research, analysis, pilot implementation, evaluation, manualization, and social marketing)</i>
+                                </div>
+
+                            </table>
+                        </div>
+                        <table class="table table-bordered">
+                                <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">Purpose of the request</th>
+                                    <td style="border:1px solid #000;">{{$ticket->purpose_of_request}}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">STB Developed Program / Project Requested for Technical Assistance: </th>
+                                    <td style="border:1px solid #000;">{{$ticket->programDetails->program}}</td>
+                                </tr>
+                        </table>
+                        <table class="table-table-bordered" style="margin-top: -20px;">
+                                 <tr>
+                                <!-- Left blue column spanning 5 rows -->
+                                <th rowspan="5"
+                                    style="width:28%; background:#d8eaff; border:1px solid #000; vertical-align:top; font-style:italic; text-align:left; padding:10px;">
+
+                                    <i>For activities that require an actual TA session / meeting / activity:</i>
+
+                                    <br><br>
+
+                                    <strong>Note:</strong><br>
+                                    For requests that require a resource person for two (2) or more days,
+                                    the request form must be signed by the Head of Office of the Requesting Party.
+                                </th>
+
+                                <!-- Label -->
+                                <td style="width:20%; background:#d8eaff; border:1px solid #000;">
+                                    Title of the activity
+                                </td>
+
+                                <!-- Value -->
+                                <td style="border:1px solid #000;">
+                                    NO INPUT YET
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#d8eaff; border:1px solid #000;">
+                                    Date/s of conduct
+                                </td>
+                                <td style="border:1px solid #000;">
+                                    {{
+                                        ($ticket->date_of_activity && $ticket->date_of_activity_end)
+                                            ? \Carbon\Carbon::parse($ticket->date_of_activity)->format('F d, Y')
+                                                . ' - ' .
+                                            \Carbon\Carbon::parse($ticket->date_of_activity_end)->format('F d, Y')
+                                            : 'N/A'
+                                    }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#d8eaff; border:1px solid #000;">
+                                    Venue
+                                </td>
+                                <td style="border:1px solid #000;">
+                                    {{ ($ticket->venue)?? 'N/A' }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#d8eaff; border:1px solid #000;">
+                                    Type of Activity
+                                </td>
+                                <td style="border:1px solid #000;">
+                                    {{($ticket->type_of_activity)?? 'N/A'}}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="background:#d8eaff; border:1px solid #000;">
+                                    Target Participants
+                                </td>
+                                <td style="border:1px solid #000;">
+                                    NO INPUT YET
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table-table-bordered" style="margin-top: -20px;">
+                            <tr>
+                                <th rowspan="1" style="background:#d8eaff; border:1px solid #000; vertical-align:top; font-style:italic; text-align:left; padding:10px;">
+                                    For Requests on sharing knowledge products
+                                </th>
+                                <td style="background:#d8eaff; border:1px solid #000; width:20%">Type of knowledge product requested:</td>
+                                <td style="border:1px solid #000;">
+                                    @foreach(json_decode($ticket->type_of_knowledge_product, true) ?? [] as $item)
+                                        • {{ $item }}<br>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        </table>
+                        @include('partials.print_footer2')    
             </div>
         </div>
     </div>
@@ -2321,7 +2162,6 @@ hr{
 
     <div class="comments-wrap">
 
-        <!-- ===== Composer ===== -->
         <div class="composer-card">
 
             <div class="composer-title">

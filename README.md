@@ -63,3 +63,5 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > npm install chart.js
 > npm install jquery
 > npm install sweetalert2
+> composer require spatie/browsershot
+> npm install puppeteer

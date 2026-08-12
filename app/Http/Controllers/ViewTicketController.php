@@ -97,4 +97,24 @@ class ViewTicketController extends Controller
 
         return redirect()->back()->with('success', 'Comment posted');
     }
+
+    public function printPreview(string $ticket_id)
+    {
+        $ticket = Ticket::with([
+            'programDetails',
+            'requestRegion',
+            'requestProvince',
+            'requestCity'
+        ])->where('ticket_id', $ticket_id)->firstOrFail();
+
+        $latestResolution = $ticket->resolutions()
+            ->with('attachments')
+            ->latest()
+            ->first();
+
+        $activities = $ticket->activities()->get();
+
+        // Render the same view; Browsershot will load this route to produce PDF.
+        return view('authpage.tickets.viewticket', compact('ticket', 'latestResolution', 'activities'));
+    }
 }
