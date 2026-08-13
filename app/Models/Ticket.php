@@ -44,6 +44,8 @@ class Ticket extends Model
 
     'type_of_knowledge_product',
     'type_of_knowledge_product_others',
+    'title_of_activity',
+    'target_participants',
 
     'venue',
     'type_of_activity',
@@ -53,7 +55,10 @@ class Ticket extends Model
     'requestor_position_title',
     'requestor_mobile_number',
     'requestor_office_address',
-    'received_ticket_to'
+    'received_ticket_to',
+    'received_ticket_to_office',
+    'title_of_the_activity',
+    'target_participants'
 ];
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');

@@ -95,6 +95,26 @@
     background-color:#ddecff;
 }
 
+.receiving-office-panel{
+    padding:16px;
+    border:1px solid #dbe5f0;
+    border-radius:10px;
+    background:#f8fbff;
+}
+
+.receiving-office-panel .form-select{
+    min-height:42px;
+}
+
+#fieldOfficeSelection{
+    animation: fieldOfficeReveal .2s ease-out;
+}
+
+@keyframes fieldOfficeReveal{
+    from{ opacity:0; transform:translateY(-6px); }
+    to{ opacity:1; transform:translateY(0); }
+}
+
 .upload-card{
     border-radius:12px;
 }
@@ -1231,6 +1251,30 @@
                     {{-- Step 2 Body--}}
                             <div id="step2" class="d-none">
                                 <div class="row g-3 mt-3">
+                                    <div class="col-md-12">
+                                        <div class="receiving-office-panel">
+                                            <div class="row g-3 align-items-end">
+                                                <div class="col-12 col-md-6" id="receiveToColumn">
+                                                    <label for="receiveToSelect" class="form-label fw-semibold mb-1">Where should this request be sent? <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="receiveToSelect" name="received_ticket_to" required>
+                                                        <option value="">Select a receiving office</option>
+                                                        <option value="CO">DSWD Central Office</option>
+                                                        <option value="FO">DSWD Field Office</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 col-md-6 d-none" id="fieldOfficeSelection">
+                                                    <label for="receivedTicketToOffice" class="form-label fw-semibold mb-1">Select Field Office <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="receivedTicketToOffice" name="received_ticket_to_office" disabled>
+                                                        <option value="">Select a Field Office</option>
+                                                        @foreach($regions as $region)
+                                                            <option value="{{$region->region_code}}">{{$region->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <h5>What assistance do you need?</h5>
                                         <div class="col-md-6">
                                             <div id="tacp" class="card service-card h-100" data-service="completed" style="cursor: pointer;">
@@ -1547,6 +1591,48 @@
                                 </div>
                         {{-- Resource Person --}}
                                 <div id="rpBody" class="d-none">
+                                    <div class="mb-3 mt-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="p-2">
+                                                    <div class="d-flex align-items-start p-3">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px">
+                                                            <i class="bi bi-card-heading fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">Title of the activity <i class="text-danger">*</i></h6>
+                                                            <small class="text-muted">Input the title of the acitvity of this request.</small>
+                                                        </div>
+                                                    </div>
+                                                    <textarea
+                                                        id="titleOfActivity"
+                                                        name="title_of_activity"
+                                                        class="form-control"
+                                                        placeholder="Input the title of the activity"
+                                                        required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="p-2">
+                                                    <div class="d-flex align-items-start p-3">
+                                                        <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px">
+                                                            <i class="bi bi-person-fill fs-5 text-primary"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="me-1">Target participants <i class="text-danger">*</i></h6>
+                                                            <small class="text-muted">Input the participants needed for this activity.</small>
+                                                        </div>
+                                                    </div>
+                                                    <textarea
+                                                        id="targetParticipants"
+                                                        name="target_participants"
+                                                        class="form-control"
+                                                        placeholder="Input the target participants"
+                                                        required></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="mb-3 mt-3">
                                         <div class="row">
                                             <div class="col-md" style="flex: 0 0 31%; max width:31px;">
@@ -3177,18 +3263,24 @@ if (organizationConfig[organization]) {
 
             //Card 2 Body
             document.getElementById('card2').addEventListener('click', function(e){
-                if(!validateStep1()){
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Incomplete Information',
-                        text: 'Please complete all required fields before proceeding.',
-                        confirmButtonColor: '#062c52',
-                        confirmButtonText: 'OK'
-                    });
+                if (!step2Unlocked) {
+                    const check = validateStep1();
+                    if(!check.ok){
+                        const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m => `<li>${m}</li>`).join('') + '</ul>';
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Incomplete Information',
+                            html,
+                            confirmButtonColor: '#062c52',
+                            confirmButtonText: 'OK'
+                        });
 
-                    return;
+                        return;
+                    }
+
+                    step2Unlocked = true;
                 }
-            
+
                 if(step2Unlocked){
                     animateCard('card2',e);
             //Step 1
@@ -3215,24 +3307,47 @@ if (organizationConfig[organization]) {
             // hide the Step 1 info box when showing Step 2
             const whyHide2 = document.getElementById('whyInfo'); if(whyHide2) whyHide2.classList.add('d-none');
                 }
-                else {
-                    Swal.fire({
-                    icon: 'warning',
-                    title: 'Incomplete Information',
-                    text: 'Please complete all required fields before proceeding.',
-                    confirmButtonColor: '#062c52',
-                    confirmButtonText: 'OK'
-                });
-
-                return;
-                }
             
             })
+
+            const receiveToSelect = document.getElementById('receiveToSelect');
+            const fieldOfficeSelection = document.getElementById('fieldOfficeSelection');
+            const receivedTicketToOffice = document.getElementById('receivedTicketToOffice');
+
+            receiveToSelect?.addEventListener('change', function () {
+                const isFieldOffice = this.value === 'FO';
+                fieldOfficeSelection?.classList.toggle('d-none', !isFieldOffice);
+                if (receivedTicketToOffice) {
+                    receivedTicketToOffice.disabled = !isFieldOffice;
+                    receivedTicketToOffice.required = isFieldOffice;
+                    if (!isFieldOffice) receivedTicketToOffice.value = '';
+                }
+            });
 
             // Service Cards body
         serviceCards.forEach(service => {
 
         document.getElementById(service).addEventListener('click', function () {
+
+                const receivedTicketTo = receiveToSelect?.value || '';
+                const receivingFieldOffice = receivedTicketToOffice?.value || '';
+
+                if (!receivedTicketTo || (receivedTicketTo === 'FO' && !receivingFieldOffice)) {
+                    const field = !receivedTicketTo ? receiveToSelect : receivedTicketToOffice;
+                    const message = !receivedTicketTo
+                        ? 'Please select where this request should be sent before choosing a service.'
+                        : 'Please select the receiving Field Office before choosing a service.';
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Receiving Office Required',
+                        text: message,
+                        confirmButtonColor: '#062c52',
+                        confirmButtonText: 'OK'
+                    }).then(() => field?.focus());
+
+                    return;
+                }
 
                 // Hide previous steps
                 document.getElementById('step1').classList.add('d-none');
@@ -3272,6 +3387,15 @@ if (organizationConfig[organization]) {
                         ta.removeAttribute('name');
                         ta.removeAttribute('required');
                     }
+                });
+
+                const resourcePersonFields = [
+                    document.getElementById('titleOfActivity'),
+                    document.getElementById('targetParticipants')
+                ];
+                resourcePersonFields.forEach(field => {
+                    if (!field) return;
+                    field.required = service === 'rp';
                 });
 
                 const progMap = {
@@ -4399,6 +4523,29 @@ document.addEventListener('DOMContentLoaded', function(){
         for(var i=0;i<bodies.length;i++){
             var body = document.getElementById(bodies[i].id);
             if(body && body.classList && !body.classList.contains('d-none')){
+                if (bodies[i].id === 'rpBody') {
+                    var resourcePersonFields = [
+                        {element: document.getElementById('titleOfActivity'), label: 'the title of the activity'},
+                        {element: document.getElementById('targetParticipants'), label: 'the target participants'}
+                    ];
+
+                    for (var fieldIndex = 0; fieldIndex < resourcePersonFields.length; fieldIndex++) {
+                        var field = resourcePersonFields[fieldIndex];
+                        if (field.element && !field.element.value.trim()) {
+                            e.preventDefault();
+                            showInvalid(field.element, 'This field is required.');
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Incomplete Information',
+                                text: 'Please enter ' + field.label + ' before proceeding.',
+                                confirmButtonColor: '#062c52',
+                                confirmButtonText: 'OK'
+                            });
+                            return false;
+                        }
+                    }
+                }
+
                 var select = document.getElementById(bodies[i].select);
                 if(select && (!select.value || select.value.trim() === '')){
                     e.preventDefault();

@@ -9,12 +9,29 @@
     break-before: page;
 }
 @media print {
-    .print-header, .print-footer { display: block; position: fixed; left: 0; right: 0; z-index: 9999; }
-    .print-header { top: 0; }
-    .print-footer { bottom: 0; }
+    .print-header { display: block; position: static; }
+    .print-footer { display: block; position: static; }
 
-    /* Reserve space so content doesn't overlap header/footer */
-    #printArea { padding-top: 60mm; padding-bottom: 25mm; }
+    .print-page {
+        min-height: 264mm;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .print-page > .print-footer { margin-top: auto; }
+
+    #printArea > section.print-page:last-of-type > .print-footer {
+        margin-top: auto;
+    }
+
+    #printArea > section.print-page:last-of-type {
+        min-height: 280mm;
+    }
+
+    #printArea { padding-top: 0; padding-bottom: 0; }
 }
 .resolution-panel {
     border: 1px solid #e6e9ee;
@@ -1207,11 +1224,18 @@ hr{
         max-height:70vh;
     }
 </style>
-<div class="p-2">
-    <a href="{{ route('tickets') }}" class="btn back-btn border shadow-sm rounded-pill px-4">
-        <i class="bi bi-arrow-left me-2"></i>
-        Back to tickets
-    </a>
+<div class="row">
+    <div class="d-flex justify-content-between align-items-center w-100">
+        <div class="p-2">
+            <a href="{{ route('tickets') }}" class="btn back-btn border shadow-sm rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to tickets
+            </a>
+        </div>
+        <div class="p-2">
+            <button class="form-control">Acknowledge Ticket</button>
+        </div>
+    </div>
 </div>
 <div class="p-2">
     
@@ -1480,6 +1504,11 @@ hr{
                             </div>
 
                         </div>
+                        <row class="row pt-3">
+                            <div class="col-6">
+                                HELLO WORLD!
+                            </div>
+                        </row>
 
                     </div>
 
@@ -1874,9 +1903,10 @@ hr{
         </div>
 
             <div id="printArea" class="a4-document">
-                                    @include('partials.print_header')
+                <section class="print-page">
+                    @include('partials.print_header')
 
-                        <div class="text-end mb-4" style="padding-top:70px;">
+                        <div class="text-end mb-4">
                             <small>DRN: <span class="fw-bold text-decoration-underline">{{$ticket->ticket_id}}</span></small>
                         </div>
                         <div class="text-center mb-4">
@@ -1931,13 +1961,12 @@ hr{
                                         <div>(Optional)</div></i>
                                     </th>
                                     <td style="border:1px solid #000;">
-                                        {{$ticket->requestor_position_title}}
+                                        {{$ticket->requestor_position_title ?? 'N/A'}}
                                     </td>
                             </tr>
                             <tr>
                                     <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">
-                                        <i>From what Organization or office do you belong?
-                                        <div>(Optional)</div></i>
+                                        <i>From what Organization or office do you belong?</i>
                                     </th>
                                     <td style="border:1px solid #000;">
                                         @switch($ticket->requestor_organization)
@@ -1977,7 +2006,13 @@ hr{
                                         <small>(if from LGU, CSO, NGO, PO or Academe)</small></i>
                                     </th>
                                     <td style="border:1px solid #000;">
+                                        @if($ticket->requestor_organization === 'lgu')
+                                        {{($ticket->requestRegion->name)}}, {{($ticket->requestProvince->name)}}, {{($ticket->requestCity->name)}}
+
+                                        @else
                                         {{$ticket->requestor_specific_office ?? 'N/A'}}
+
+                                        @endif
                                     </td>
                             </tr>   
                             <tr>
@@ -1986,7 +2021,16 @@ hr{
                                         <small>(if from the DSWD Central or Field Office)</small></i>
                                     </th>
                                     <td style="border:1px solid #000;">
+                                        @if($ticket->requestor_organization === 'field_office')
+                                        {{$ticket->requestRegion->name ?? 'N/A'}},
+                                        <div>
+                                            {{$ticket->agency->group_name ?? 'N/A'}}
+                                        </div>
+
+                                        @else
                                         {{$ticket->agency->group_name ?? 'N/A'}}
+
+                                        @endif
                                     </td>
                             </tr>  
                             <tr>
@@ -2023,13 +2067,15 @@ hr{
                             </tr>         
                         </table>
 
-                            @include('partials.print_footer')
-            </div>
+                        @include('partials.print_footer')
+                    </section>
                         <div class="page-break"></div>
-            <div class="a4-document">
-                        @include('partials.print_header')
-                        <div style="padding-top:150px;">
-                            <table class="table table-bordered">
+                    <section class="print-page">
+                        <div style="padding-top: 80px;">
+                            @include('partials.print_header')
+                        </div>
+                        <div style="margin-top: -30px;">
+                            <table class="table table-bordered" >
                                 <h5><i>TYPE OF TECHNICAL ASSISTANCE(TA) REQUESTED:</i></h5> 
                                 @if($ticket->ticket_category === 'completed')
                                 <i class="bi bi-check-square-fill fs-5"></i> <i class="ml-6">TA on STB-developed Programs/Projects</i>
@@ -2059,10 +2105,10 @@ hr{
 
                             </table>
                         </div>
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" style="padding-top: 30px;">
                                 <tr>
                                     <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">Purpose of the request</th>
-                                    <td style="border:1px solid #000;">{{$ticket->purpose_of_request}}</td>
+                                    <td height= '100' style="border:1px solid #000;">{{$ticket->purpose_of_request}}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">STB Developed Program / Project Requested for Technical Assistance: </th>
@@ -2091,7 +2137,7 @@ hr{
 
                                 <!-- Value -->
                                 <td style="border:1px solid #000;">
-                                    NO INPUT YET
+                                    {{($ticket->title_of_activity) ?? 'N/A'}}
                                 </td>
                             </tr>
 
@@ -2133,24 +2179,80 @@ hr{
                                     Target Participants
                                 </td>
                                 <td style="border:1px solid #000;">
-                                    NO INPUT YET
+                                    {{($ticket->target_participants)?? 'N/A'}}
                                 </td>
                             </tr>
                         </table>
-                        <table class="table-table-bordered" style="margin-top: -20px;">
+                        <table class="table-table-bordered" style="margin-top: -25px;">
                             <tr>
-                                <th rowspan="1" style="background:#d8eaff; border:1px solid #000; vertical-align:top; font-style:italic; text-align:left; padding:10px;">
+                                <th width=30% rowspan="1" style="background:#d8eaff; border:1px solid #000; vertical-align:top; font-style:italic; text-align:left; padding:10px;">
                                     For Requests on sharing knowledge products
                                 </th>
                                 <td style="background:#d8eaff; border:1px solid #000; width:20%">Type of knowledge product requested:</td>
-                                <td style="border:1px solid #000;">
-                                    @foreach(json_decode($ticket->type_of_knowledge_product, true) ?? [] as $item)
-                                        • {{ $item }}<br>
-                                    @endforeach
+                                <td style="border:1px solid #000; padding:2px 6px;">
+                                    <div style="
+                                        display:grid;
+                                        grid-template-columns:repeat(2, 1fr);
+                                        column-gap:8px;
+                                        row-gap:0;
+                                        font-size:11px;
+                                        line-height:1.15;
+                                    ">
+                                        @forelse(json_decode($ticket->type_of_knowledge_product, true) ?? [] as $item)
+                                            @if($item === 'Others')
+                                                <div style="white-space:nowrap;">
+                                                    • {{ Str::limit($ticket->type_of_knowledge_product_others, 18, '...') }}
+                                                </div>
+                                            @else
+                                                <div style="white-space:nowrap;">
+                                                    • {{ $item }}
+                                                </div>
+                                            @endif
+                                        @empty
+                                            <div style="grid-column:1 / -1;padding-top: 10px;"><span style="font-size: 13px; padding:5px;">N/A</span></div>
+                                        @endforelse
+                                    </div>
                                 </td>
                             </tr>
                         </table>
-                        @include('partials.print_footer2')    
+                        <div>
+                        @include('partials.print_footer2')
+                        </div>
+                    </section>
+
+                    <div class="page-break"></div>
+                    <section class="print-page">
+                        <div style="padding-top: 80px;">
+                            @include('partials.print_header')
+                        </div>
+                        <h5><i>REMARKS / OTHER CONCERNS</i></h5> 
+                        <table>
+                            <tr>
+                                <td style="border:1px solid #000;" width="100%" height="80"></td>
+                            </tr>
+                        </table>
+
+                        <table>
+                            <tr>
+                                <th style="background:#d8eaff; border:1px solid #000;"><i>TO WHOM WOULD YOU LIKE TO SUBMIT THE REQUEST?</i></th>
+                                <td style="border:1px solid #000;">
+                                    @if($ticket->received_ticket_to === '')
+                                    DSWD {{$ticket->received_ticket_to_office}}
+
+                                    @else
+                                    DSWD Central Office
+                                    
+                                    @endif
+
+                                </td>
+                            </tr> 
+                        </table>
+                        <div style="padding-top:30px;">
+                            <span>Requested by: ________________________________</span>
+                                    <div style="margin-left:110px;"><span>Signature over Printed Name</span></div>
+                        </div>
+                        @include('partials.print_footer3')
+                    </section>
             </div>
         </div>
     </div>
@@ -2410,6 +2512,7 @@ hr{
                     @php
                         $icon = match($activity->event) {
                             'status_changed' => 'bi-arrow-left-right',
+                            'document_printed' => 'bi-printer',
                             'comment_added', 'comment_reply' => 'bi-chat-dots',
                             'attachment_added', 'resolution_attachment_added' => 'bi-paperclip',
                             default => 'bi-check2-square',
@@ -2605,7 +2708,19 @@ hr{
 
     const printBtn = document.getElementById('printBtn');
     if(printBtn){
-        printBtn.addEventListener('click', function(){
+        printBtn.addEventListener('click', async function(){
+            try {
+                await fetch('{{ route('tickets.print.record', $ticket->ticket_id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+            } catch (error) {
+                console.error('Unable to record ticket print activity.', error);
+            }
+
             window.print();
         });
     }

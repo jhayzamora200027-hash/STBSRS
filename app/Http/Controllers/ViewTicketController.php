@@ -98,6 +98,20 @@ class ViewTicketController extends Controller
         return redirect()->back()->with('success', 'Comment posted');
     }
 
+    public function recordPrint(string $ticket_id)
+    {
+        $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+
+        $ticket->activities()->create([
+            'event' => 'document_printed',
+            'title' => 'Document printed',
+            'description' => 'The ticket request form was opened for printing.',
+            'performed_by' => Auth::user()?->name,
+        ]);
+
+        return response()->noContent();
+    }
+
     public function printPreview(string $ticket_id)
     {
         $ticket = Ticket::with([

@@ -1,7 +1,13 @@
 
 <div class="print-footer">
-    <div style="width:100%; text-align:center; font-family: 'Times New Roman', Times, serif; font-size:0.8125rem; font-weight: bold;">
-        PAGE 2 of 3
+
+    <span>________________________________</span>
+    <div>
+        <span>For requests that require a resource person for two (2) or more days, the request form must be signed by the Head of Office of the Requesting Party.</span>
+    </div>
+
+    <div style="width:100%; text-align:center; font-family: 'Times New Roman', Times, serif; font-size:0.8125rem; font-weight: bold; padding-top:30px;">
+        PAGE 3 of 3
     </div>
 
     <div style="width:100%; text-align:center; font-family: 'Times New Roman', Times, serif; font-size:0.8125rem; margin-top:-5px; ">

@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     // PDF export
     Route::get('/tickets/{ticket}/pdf', [TicketPdfController::class, 'pdf'])->name('tickets.pdf');
     Route::get('/tickets/{ticket}/print-preview', [ViewTicketController::class, 'printPreview'])->name('tickets.print.preview');
+    Route::post('/tickets/{ticket_id}/print', [ViewTicketController::class, 'recordPrint'])->name('tickets.print.record');
 
     Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
     Route::post('/tickets/{ticket}/comments',[ViewTicketController::class, 'storeComment'])->name('tickets.comments.store');

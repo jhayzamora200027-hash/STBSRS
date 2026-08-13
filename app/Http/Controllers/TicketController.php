@@ -34,6 +34,8 @@ class TicketController extends Controller
             'purpose_of_request' => 'required',
             'ticket_priority' => 'nullable',
             'organization_type' => 'required',
+            'received_ticket_to' => 'required|in:CO,FO',
+            'received_ticket_to_office' => 'nullable',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
         ];
 
@@ -50,6 +52,15 @@ class TicketController extends Controller
             $rules['requestor_office'] = 'required';
         } elseif (in_array($request->input('organization_type'), ['cso','ngo','po','academe'])) {
             $rules['requestor_specific_office'] = 'required';
+        }
+
+        if ($request->input('ticket_category') === 'resource') {
+            $rules['title_of_activity'] = 'required|string|max:255';
+            $rules['target_participants'] = 'required|string|max:255';
+        }
+
+        if ($request->input('received_ticket_to') === 'FO') {
+            $rules['received_ticket_to_office'] = 'required|string|max:255';
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -89,6 +100,10 @@ class TicketController extends Controller
                 'requestor_organization' => $request->organization_type ?? null,
                 'requestor_office' => $request->requestor_office ?? null,
                 'requestor_specific_office' => $request->requestor_specific_office ?? null,
+                'received_ticket_to' => $request->received_ticket_to,
+                'received_ticket_to_office' => $request->received_ticket_to === 'FO'
+                    ? $request->received_ticket_to_office
+                    : null,
 
                 'ticket_category' => $request->ticket_category,
 
@@ -106,6 +121,9 @@ class TicketController extends Controller
 
                 'type_of_knowledge_product_others'
                     => $request->type_of_knowledge_product_others,
+
+                'title_of_activity' => $request->title_of_activity,
+                'target_participants' => $request->target_participants,
 
                 'venue' => $request->venue,
 
@@ -233,6 +251,8 @@ class TicketController extends Controller
             'purpose_of_request' => 'required',
             'ticket_priority' => 'nullable',
             'organization_type' => 'required',
+            'received_ticket_to' => 'required|in:CO,FO',
+            'received_ticket_to_office' => 'nullable',
             'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:51200',
         ];
 
@@ -247,6 +267,15 @@ class TicketController extends Controller
             $rules['requestor_office'] = 'required';
         } elseif (in_array($request->input('organization_type'), ['cso','ngo','po','academe'])) {
             $rules['requestor_specific_office'] = 'required';
+        }
+
+        if ($request->input('ticket_category') === 'resource') {
+            $rules['title_of_activity'] = 'required|string|max:255';
+            $rules['target_participants'] = 'required|string|max:255';
+        }
+
+        if ($request->input('received_ticket_to') === 'FO') {
+            $rules['received_ticket_to_office'] = 'required|string|max:255';
         }
 
         $validator = Validator::make($request->all(), $rules);
@@ -272,6 +301,10 @@ class TicketController extends Controller
                 'requestor_organization' => $request->organization_type ?? null,
                 'requestor_office' => $request->requestor_office ?? null,
                 'requestor_specific_office' => $request->requestor_specific_office ?? null,
+                'received_ticket_to' => $request->received_ticket_to,
+                'received_ticket_to_office' => $request->received_ticket_to === 'FO'
+                    ? $request->received_ticket_to_office
+                    : null,
 
                 'ticket_category' => $request->ticket_category,
 
@@ -284,6 +317,9 @@ class TicketController extends Controller
                 'type_of_knowledge_product' => is_array($request->type_of_knowledge_product) ? json_encode($request->type_of_knowledge_product) : $request->type_of_knowledge_product,
 
                 'type_of_knowledge_product_others' => $request->type_of_knowledge_product_others,
+
+                'title_of_activity' => $request->title_of_activity,
+                'target_participants' => $request->target_participants,
 
                 'venue' => $request->venue,
                 'type_of_activity' => $request->type_of_activity,

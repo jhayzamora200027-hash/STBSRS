@@ -14,9 +14,6 @@
                 <h5 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
                     INNOVATIONS AND PROGRAM DEVELOPMENT GROUP
                 </h5>
-                <h6 class="mb-0" style="font-family: 'Times New Roman', Times, serif; font-size:0.8rem;">
-                    DSWD-STB-GF-007 | REV 01 | 13 MAR 2023
-                </h6>
             </td>
         </tr>
     </table>
