@@ -234,7 +234,6 @@
     border-color:#0d6efd;
 }
 
-/* OTP modal stacking and blur styles */
 .otp-modal{ border-radius:18px; }
 .otp-label{ color:#0b3ea9; font-weight:600; letter-spacing:.5px; }
 .otp-title{ color:#0b3ea9; font-weight:500; }
@@ -246,10 +245,11 @@
 .btn-primary.otp-btn{ background:#123c90; border:none; }
 .btn-outline-secondary.otp-btn{ border:1px solid #ddd; }
 
-/* Ensure OTP modal is above other modals */
-#otpModal { z-index: 2050 !important; }
-.modal-backdrop.otp-backdrop { z-index: 2040 !important; background: rgba(255,255,255,0.08) !important; backdrop-filter: blur(1000px); }
-/* Ensure SweetAlert2 appears above the OTP modal */
+#otpModal, #guestOtpModal { z-index: 2050 !important; }
+.modal-backdrop { background-color: #000 !important; backdrop-filter: blur(3px); }
+.modal-backdrop.show { opacity: 0.55 !important; }
+.modal-backdrop.otp-backdrop { z-index: 2040 !important; }
+#guestOtpBackdrop { position:fixed; inset:0; z-index:2040; background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
 .swal2-container { z-index: 99999 !important; }
 .swal2-popup { z-index: 100000 !important; }
 
@@ -804,15 +804,413 @@
                                     <img src="{{asset('images/icons/magnifying.png')}}" width="20" height="20">
                                 </span>
                                 <input
+                                    id="guestTicketRef"
                                     type="text"
                                     class="form-control"
                                     placeholder="Enter your ticket reference no..." 
                                     aria-label="Ticket Reference Number">
                                     
-                                <button class="btn btn-primary" type="button">
+                                <button id="guestTicketSearchBtn" class="btn btn-primary" type="button">
                                     <i class="bi bi-search"></i> Search
                                 </button>
                     </div>
+
+                    <!-- Guest search OTP Modal (styled like main OTP modal) -->
+                    <div class="modal fade" id="guestOtpModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content otp-modal border-0">
+
+                                <div class="modal-header border-0 pb-0">
+                                    <div>
+                                        <small class="text-uppercase otp-label">Secure Sign-In</small>
+                                        <h2 class="otp-title mb-0">Two-step verification</h2>
+                                    </div>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <!-- Information Card -->
+                                    <div class="otp-info-card">
+                                        <div class="otp-icon">2FA</div>
+                                        <div class="ms-3">
+                                            <p class="mb-0 text-muted">
+                                                Verification code has been sent to
+                                                <strong id="guestOtpEmailMasked"></strong>.
+                                                Confirm the request first, complete the verification to proceed with your request.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- OTP Card -->
+                                    <div class="otp-code-card">
+                                        <h2 class="text-center text-primary mb-4">Verification Code</h2>
+                                        <div class="d-flex justify-content-center gap-2 mb-3">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-1">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-2">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-3">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-4">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-5">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-6">
+                                        </div>
+                                        <p class="text-center text-muted mb-0">Enter the 6-digit code you received by email.</p>
+                                    </div>
+
+                                    <div id="otpError" class="text-danger small mt-2" style="display:none;"></div>
+                                </div>
+
+                                <div class="modal-footer border-0 d-block">
+                                    <button class="btn btn-primary w-100 mb-3 otp-btn" id="guestVerifyOtpBtn">Verify</button>
+                                    <button class="btn btn-outline-secondary w-100 otp-btn" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inline OTP fallback (shown when modal unavailable) -->
+                    <div id="guestOtpInline" class="mt-3" style="display:none;">
+                        <div class="card p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="flex-grow-1">
+                                    <label class="small mb-1">Enter OTP sent to the requestor's email</label>
+                                    <input id="guestOtpInputInline" type="text" class="form-control" placeholder="Enter OTP" />
+                                    <div id="guestOtpInlineError" class="text-danger small mt-1" style="display:none;"></div>
+                                </div>
+                                <div>
+                                    <button id="verifyOtpInlineBtn" class="btn btn-primary">Verify</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function(){
+                            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+                            const token = tokenMeta ? tokenMeta.getAttribute('content') : '';
+                            const searchBtn = document.getElementById('guestTicketSearchBtn');
+                            const ticketInput = document.getElementById('guestTicketRef');
+                            const otpModalEl = document.getElementById('guestOtpModal');
+                            const guestVerifyBtn = document.getElementById('guestVerifyOtpBtn');
+                            const otpError = document.getElementById('otpError');
+                            const otpInlineEl = document.getElementById('guestOtpInline');
+                            const otpInlineInput = document.getElementById('guestOtpInputInline');
+                            const otpInlineError = document.getElementById('guestOtpInlineError');
+                            const verifyInlineBtn = document.getElementById('verifyOtpInlineBtn');
+
+                            let bsModal = null;
+                            if (otpModalEl) {
+                                try {
+                                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                                        bsModal = new bootstrap.Modal(otpModalEl);
+                                    }
+                                } catch (e) {
+                                    console.warn('Bootstrap Modal not available:', e);
+                                    bsModal = null;
+                                }
+                            }
+                            let procBsGlobal = null;
+                            let procSeqGlobal = null;
+
+                            function showGuestOtpBackdrop() {
+                                if (document.getElementById('guestOtpBackdrop')) return;
+                                const backdrop = document.createElement('div');
+                                backdrop.id = 'guestOtpBackdrop';
+                                backdrop.setAttribute('aria-hidden', 'true');
+                                document.body.appendChild(backdrop);
+                            }
+
+                            function removeGuestOtpBackdrop() {
+                                const backdrop = document.getElementById('guestOtpBackdrop');
+                                if (backdrop) backdrop.remove();
+                            }
+
+                            if (otpModalEl) {
+                                otpModalEl.addEventListener('hidden.bs.modal', removeGuestOtpBackdrop);
+                            }
+
+                            function hideProcessingModal() {
+                                try {
+                                    if (procSeqGlobal && typeof procSeqGlobal.stop === 'function') {
+                                        procSeqGlobal.stop();
+                                    }
+                                } catch (e) { console.debug('procSeq stop failed', e); }
+                                try {
+                                    if (procBsGlobal && typeof procBsGlobal.hide === 'function') {
+                                        procBsGlobal.hide();
+                                    } else if (procBsGlobal && procBsGlobal._element) {
+                                        // fallback for older bootstrap instances
+                                        procBsGlobal._element.classList.remove('show');
+                                    }
+                                } catch (e) { console.debug('procBs hide failed', e); }
+                                // Do not remove the guest OTP modal backdrop after it is shown.
+                                const guestOtpIsOpen = otpModalEl && otpModalEl.classList.contains('show');
+                                if (!guestOtpIsOpen) {
+                                    try {
+                                        document.querySelectorAll('.modal-backdrop').forEach(function(el){ el.parentNode && el.parentNode.removeChild(el); });
+                                        document.body.classList.remove('modal-open');
+                                    } catch (e) { console.debug('cleanup backdrop failed', e); }
+                                }
+
+                                // also forcibly hide the processing modal element in case bootstrap instance was lost
+                                try {
+                                    const modalEl = document.getElementById('processingModal');
+                                    if (modalEl) {
+                                        modalEl.classList.remove('show');
+                                        modalEl.style.display = 'none';
+                                        modalEl.setAttribute('aria-hidden', 'true');
+                                        modalEl.removeAttribute('aria-modal');
+                                    }
+                                } catch (e) { console.debug('force hide modal failed', e); }
+
+                                procSeqGlobal = null;
+                                procBsGlobal = null;
+                            }
+
+                            // allow emergency close button to dismiss the processing modal
+                            try {
+                                const procCloseBtn = document.getElementById('processingCloseBtn');
+                                if (procCloseBtn) procCloseBtn.addEventListener('click', function(){ hideProcessingModal(); });
+                            } catch (e) { console.debug('attach procCloseBtn failed', e); }
+
+                            function showError(msg){
+                                // always hide processing modal before showing an error
+                                try { hideProcessingModal(); } catch (e) { console.debug('hideProcessingModal failed', e); }
+                                try {
+                                    if (typeof Swal !== 'undefined' && Swal.fire) {
+                                        Swal.fire({ icon: 'error', title: 'Error', text: msg });
+                                        return;
+                                    }
+                                } catch (e) { console.debug('Swal unavailable', e); }
+
+                                if (otpError) {
+                                    otpError.style.display = 'block';
+                                    otpError.textContent = msg;
+                                } else if (ticketInput) {
+                                    let inline = document.getElementById('guestTicketRefError');
+                                    if (!inline) {
+                                        inline = document.createElement('div');
+                                        inline.id = 'guestTicketRefError';
+                                        inline.className = 'text-danger small mt-2';
+                                        ticketInput.parentNode.insertBefore(inline, ticketInput.nextSibling);
+                                    }
+                                    inline.textContent = msg;
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+                            function clearError(){
+                                if (otpError) { otpError.style.display = 'none'; otpError.textContent = ''; }
+                                const inline = document.getElementById('guestTicketRefError');
+                                if (inline) inline.parentNode.removeChild(inline);
+                            }
+
+                            if (searchBtn) {
+                                searchBtn.addEventListener('click', function(){
+                                    clearError();
+                                    const ticketId = (ticketInput?.value || '').trim();
+                                    if (!ticketId) return showError('Please enter a ticket reference number.');
+
+                                    // enforce expected ticket id format to avoid random input
+                                    const ticketPattern = /^STBSRS-\d{6,}$/; // STBSRS- followed by at least 6 digits
+                                    if (!ticketPattern.test(ticketId)) {
+                                        return showError('Ticket reference must be in the format STBSRS-YYYYMMDDHHMMSS');
+                                    }
+
+                                    // show processing modal (same one used for create flow)
+                                    const procModalElGuest = document.getElementById('processingModal');
+                                    let procBsGuest = null;
+                                    try {
+                                        if (procModalElGuest && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                                            procBsGuest = new bootstrap.Modal(procModalElGuest, { backdrop: 'static', keyboard: false });
+                                            procBsGuest.show();
+                                            procBsGlobal = procBsGuest;
+                                        }
+                                    } catch (e) { console.debug('Could not show processing modal', e); }
+
+                                    // show loading state on the search button
+                                    const origHtml = searchBtn.innerHTML;
+                                    searchBtn.disabled = true;
+                                    searchBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Sending...`;
+
+                                    const sendStart = (performance && performance.now) ? performance.now() : Date.now();
+                                    // start animated processing sequence
+                                    let procSeqGuest = null;
+                                    try { procSeqGuest = startProcessingSequence(procModalElGuest); procSeqGlobal = procSeqGuest; } catch (e) { console.debug('procSeq start failed', e); }
+
+                                    fetch('/guest/tickets/send-otp-by-ticket', {
+                                        method: 'POST',
+                                        credentials: 'same-origin',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': token,
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({ ticket_id: ticketId })
+                                    }).then(async res => {
+                                        // parse JSON only when response is JSON
+                                        let data = {};
+                                        const ct = res.headers.get('content-type') || '';
+                                        if (ct.indexOf('application/json') !== -1) {
+                                            data = await res.json().catch(()=>({}));
+                                        } else {
+                                            data = { message: res.statusText || 'Failed to send OTP.' };
+                                        }
+
+                                        const sendEnd = (performance && performance.now) ? performance.now() : Date.now();
+                                        const sendDurationMs = Math.round(sendEnd - sendStart);
+                                        console.debug('Guest OTP send duration (ms):', sendDurationMs, data);
+
+                                        if (!res.ok) {
+                                            hideProcessingModal();
+                                            return showError(data.message || 'Failed to send OTP.');
+                                        }
+
+                                        // show OTP modal and populate masked email if provided
+                                        if (bsModal) {
+                                            const emailMaskedEl = document.getElementById('guestOtpEmailMasked');
+                                            if (emailMaskedEl) emailMaskedEl.innerText = data.masked_email || data.email_masked || '';
+                                            // reset inputs and attach keyboard/paste handlers
+                                            try {
+                                                const inputs = otpModalEl.querySelectorAll('.otp-input');
+                                                if (inputs && inputs.length) {
+                                                    inputs.forEach((i) => { i.value = ''; i.disabled = false; });
+                                                    setTimeout(() => { try { inputs[0].focus(); } catch (e) {} }, 80);
+                                                    inputs.forEach((input, idx) => {
+                                                        input.addEventListener('input', (e) => {
+                                                            const v = input.value.trim();
+                                                            if (v.length > 1) {
+                                                                const paste = v.split('');
+                                                                for (let j = 0; j < inputs.length; j++) inputs[j].value = paste[j] || '';
+                                                                inputs[Math.min(inputs.length-1, paste.length-1)].focus();
+                                                            } else if (v.length === 1) {
+                                                                if (idx < inputs.length - 1) inputs[idx + 1].focus();
+                                                            }
+                                                        });
+                                                        input.addEventListener('keydown', (e) => {
+                                                            if (e.key === 'Backspace' && !input.value && idx > 0) inputs[idx - 1].focus();
+                                                        });
+                                                        input.addEventListener('paste', function(e){
+                                                            e.preventDefault();
+                                                            const paste = (e.clipboardData || window.clipboardData).getData('text').trim().slice(0,6);
+                                                            for (let k = 0; k < paste.length && k < inputs.length; k++) inputs[k].value = paste[k];
+                                                        });
+                                                    });
+                                                }
+                                            } catch (e) { console.debug('attach guest otp inputs failed', e); }
+                                            showGuestOtpBackdrop();
+                                            bsModal.show();
+                                            // Add custom backdrop class so OTP modal gets intended blur/dim styling
+                                            try {
+                                                setTimeout(() => {
+                                                    const found = document.querySelectorAll('.modal-backdrop');
+                                                    if (found && found.length) {
+                                                        // pick the last backdrop added
+                                                        const el = found[found.length - 1];
+                                                        el.classList.add('otp-backdrop');
+                                                    }
+                                                }, 10);
+                                            } catch (e) { console.debug('adding otp-backdrop failed', e); }
+                                        } else {
+                                            // show inline fallback
+                                            if (otpInlineEl) otpInlineEl.style.display = 'block';
+                                            alert('OTP sent. Please check your email and enter the code below.');
+                                        }
+
+                                        // stop animated sequence
+                                        try { if (procSeqGuest) procSeqGuest.stop(); } catch (e) {}
+                                        procSeqGlobal = null;
+
+                                    }).catch(err => {
+                                        hideProcessingModal();
+                                        showError('Unable to send request.');
+                                    }).finally(() => {
+                                        // hide processing modal when done
+                                        hideProcessingModal();
+                                        searchBtn.disabled = false;
+                                        searchBtn.innerHTML = origHtml;
+                                    });
+                                });
+                            }
+
+                            // verify using modal button
+                            if (guestVerifyBtn) {
+                                guestVerifyBtn.addEventListener('click', async function(){
+                                    clearError();
+                                    const ticketId = (ticketInput?.value || '').trim();
+                                    const otpInputs = otpModalEl ? otpModalEl.querySelectorAll('.otp-input') : [];
+                                    const otp = Array.from(otpInputs).map(i => i.value.trim()).join('');
+                                    if (!otp || otp.length < 6) return showError('Please enter the 6-digit OTP code.');
+
+                                    guestVerifyBtn.disabled = true;
+                                    const origText = guestVerifyBtn.innerText;
+                                    guestVerifyBtn.innerText = 'Verifying...';
+
+                                    try {
+                                        const res = await fetch('/guest/tickets/verify-otp-by-ticket', {
+                                            method: 'POST',
+                                            credentials: 'same-origin',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': token,
+                                                'Accept': 'application/json'
+                                            },
+                                            body: JSON.stringify({ ticket_id: ticketId, otp: otp })
+                                        });
+                                        const data = await res.json().catch(()=>({}));
+                                        if (!res.ok) {
+                                            showError(data.message || 'Invalid code.');
+                                            return;
+                                        }
+                                        // verified -> redirect to guest view
+                                        window.location = '/guest/tickets/' + encodeURIComponent(ticketId);
+                                    } catch (e) {
+                                        showError('Unable to verify OTP.');
+                                    } finally {
+                                        guestVerifyBtn.disabled = false;
+                                        guestVerifyBtn.innerText = origText;
+                                    }
+                                });
+                            }
+
+                            // verify using inline fallback button
+                            if (verifyInlineBtn) {
+                                verifyInlineBtn.addEventListener('click', function(){
+                                    if (!otpInlineError) {
+                                        // fallback
+                                    }
+                                    const ticketId = (ticketInput?.value || '').trim();
+                                    const otp = (otpInlineInput?.value || '').trim();
+                                    if (!otp) {
+                                        if (otpInlineError) { otpInlineError.style.display = 'block'; otpInlineError.textContent = 'Please enter the OTP code.'; }
+                                        return;
+                                    }
+
+                                    fetch('/guest/tickets/verify-otp-by-ticket', {
+                                        method: 'POST',
+                                        credentials: 'same-origin',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': token,
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({ ticket_id: ticketId, otp: otp })
+                                    }).then(async res => {
+                                        const data = await res.json().catch(()=>({}));
+                                        if (!res.ok) {
+                                            if (otpInlineError) { otpInlineError.style.display = 'block'; otpInlineError.textContent = data.message || 'Invalid code.'; }
+                                            return;
+                                        }
+                                        // verified
+                                        window.location = '/guest/tickets/' + encodeURIComponent(ticketId);
+                                    }).catch(err => {
+                                        if (otpInlineError) { otpInlineError.style.display = 'block'; otpInlineError.textContent = 'Unable to verify OTP.'; }
+                                    });
+                                });
+                            }
+                        });
+                    </script>
                                 <div class="d-flex align-items-center my-4">
                                     <div class="flex-grow-1 border-top"> </div>
                                         <span class="mx-3 text-secondary fw-medium">
@@ -2255,7 +2653,6 @@
 
 </style>
 
-<!-- Processing modal shown when submitting until OTP is sent -->
 <div class="modal fade" id="processingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -2279,7 +2676,9 @@
                     <div id="procStep5" class="process-step"><span class="step-icon"></span> Finalizing Progress</div>
                 </div>
 
-                <small class="text-muted d-block mt-4">Please do not refresh or close this window.</small>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <small class="text-muted">Please do not refresh or close this window.</small>
+                </div>
             </div>
         </div>
     </div>
@@ -3573,6 +3972,56 @@ function setStepActive(el){
     }
 }
 
+function startProcessingSequence(modalEl) {
+    if (!modalEl) return { stop: () => {} };
+    const progressEl = document.getElementById('processProgress');
+    const steps = [
+        document.getElementById('procStep1'),
+        document.getElementById('procStep2'),
+        document.getElementById('procStep3'),
+        document.getElementById('procStep4'),
+        document.getElementById('procStep5')
+    ].filter(Boolean);
+
+    // reset
+    if (progressEl) progressEl.style.width = '8%';
+    steps.forEach((s) => { s.classList.remove('active','completed'); const si = s.querySelector('.step-icon'); if (si) si.innerHTML = '<i class="bi bi-circle"></i>'; });
+
+    // Initial state
+    if (steps[0]) markStepCompleted(steps[0]);
+    if (steps[1]) setStepActive(steps[1]);
+
+    let pct = 8;
+    let idx = 1;
+    const iv = setInterval(() => {
+        try {
+            pct = Math.min(88, pct + Math.floor(Math.random() * 12) + 6);
+            if (progressEl) progressEl.style.width = pct + '%';
+            steps.forEach((s, i) => {
+                if (i < idx) {
+                    markStepCompleted(s);
+                } else if (i === idx) {
+                    setStepActive(s);
+                } else {
+                    const icon = s.querySelector('.step-icon'); if (icon) icon.innerHTML = '<i class="bi bi-circle"></i>';
+                    s.classList.remove('active','completed');
+                }
+            });
+            idx = Math.min(steps.length - 1, idx + 1);
+        } catch (e) {
+            console.debug('processing seq error', e);
+        }
+    }, 650);
+
+    return {
+        stop: () => {
+            try { clearInterval(iv); } catch (e) {}
+            try { if (progressEl) progressEl.style.width = '100%'; } catch (e) {}
+            steps.forEach(s => markStepCompleted(s));
+        }
+    };
+}
+
 function showSuccessProcessing() {
     const el = document.getElementById('successProcessingModal');
     if (!el) return null;
@@ -3665,6 +4114,7 @@ async function startOtpFlow(email) {
             }, 700);
         }
 
+        const sendStart = (performance && performance.now) ? performance.now() : Date.now();
         const res = await fetch('{{ route('tickets.sendOtp') }}', {
             method: 'POST',
             credentials: 'same-origin',
@@ -3677,6 +4127,9 @@ async function startOtpFlow(email) {
         });
 
         const data = await res.json();
+        const sendEnd = (performance && performance.now) ? performance.now() : Date.now();
+        const sendDurationMs = Math.round(sendEnd - sendStart);
+        console.debug('OTP send duration (ms):', sendDurationMs);
         if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
 
             if (procInterval) clearInterval(procInterval);
@@ -3787,6 +4240,7 @@ async function startOtpFlow(email) {
             return;
         }
         const onVerify = async () => {
+            console.debug('onVerify triggered');
             const otp = gatherCode();
             if (!otp || otp.length < 6) {
                 Swal.fire({ icon: 'warning', title: 'Invalid code', text: 'Please enter the 6-digit code.', confirmButtonColor: '#062c52' });
@@ -3797,6 +4251,7 @@ async function startOtpFlow(email) {
             verifyBtn.innerText = 'Verifying...';
 
                 try {
+                console.debug('Sending verify POST', { email, otp });
                 const verifyRes = await fetch('{{ route('tickets.verifyOtp') }}', {
                     method: 'POST',
                     credentials: 'same-origin',
@@ -3828,7 +4283,8 @@ async function startOtpFlow(email) {
                         } catch (e) { /* ignore */ }
                     }
                 })();
-            } catch (err) {
+                } catch (err) {
+                console.error('onVerify error', err);
                 Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
                 try { otpInputs[0].focus(); } catch (e) {}
                 verifyBtn.disabled = false;
@@ -3836,8 +4292,25 @@ async function startOtpFlow(email) {
             }
         };
 
+        // Attach click handler and a delegated fallback while modal is open
         verifyBtn.removeEventListener('click', onVerify);
         verifyBtn.addEventListener('click', onVerify);
+
+        const docVerifyHandler = (e) => {
+            const btn = e.target.closest && e.target.closest('#verifyOtpBtn');
+            if (btn) {
+                console.debug('Delegated verify click detected');
+                try { onVerify(); } catch (e) { console.error('Delegated onVerify failed', e); }
+            }
+        };
+
+        // Add delegated listener (capture) to ensure clicks reach handler even if Bootstrap focus trap interferes
+        document.addEventListener('click', docVerifyHandler, true);
+
+        // Remove delegated listener when modal hidden
+        otpModalEl.addEventListener('hidden.bs.modal', function () {
+            try { document.removeEventListener('click', docVerifyHandler, true); } catch (e) {}
+        }, { once: true });
 
     } catch (err) {
         if (procInterval) clearInterval(procInterval);

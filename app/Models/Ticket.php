@@ -57,8 +57,8 @@ class Ticket extends Model
     'requestor_office_address',
     'received_ticket_to',
     'received_ticket_to_office',
-    'title_of_the_activity',
-    'target_participants'
+    'title_of_the_activity'
+    ,'acknowledged'
 ];
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');
@@ -70,6 +70,10 @@ class Ticket extends Model
 
     public function requestRegion(){
         return $this->belongsTo(Region::class, 'requestor_region', 'region_code');
+    }
+
+    public function requestForRegion(){
+        return $this->belongsTo(Region::class, 'received_ticket_to_office', 'region_code');
     }
 
     public function requestProvince(){

@@ -143,7 +143,6 @@ class TicketController extends Controller
                 })($request->ticket_priority)
             ]);
 
-            // Defensive check and logging to aid debugging if ticket isn't persisted
             if (!$ticket || !$ticket->id) {
                 Log::error('TicketController: Ticket::create returned null or missing id', ['ticket_object' => $ticket]);
                 throw new \Exception('Failed to create ticket record');
@@ -446,6 +445,7 @@ class TicketController extends Controller
 
     public function verifyOtp(Request $request)
     {
+        Log::info('verifyOtp called', ['email' => $request->email ?? null, 'ip' => $request->ip()]);
         $request->validate([
             'email' => 'required|email',
             'otp' => 'required'
@@ -490,5 +490,146 @@ class TicketController extends Controller
             'verified' => (bool)$verified,
             'verifiedEmail' => $verifiedEmail,
         ]);
+    }
+
+    /**
+     * Send OTP to the requestor email associated with a ticket reference.
+     */
+    public function sendOtpForTicket(Request $request)
+    {
+        Log::info('sendOtpForTicket called', ['ticket_id' => $request->ticket_id, 'ip' => $request->ip()]);
+        $request->validate([
+            'ticket_id' => 'required|string'
+        ]);
+
+        $ticket = Ticket::where('ticket_id', $request->ticket_id)->first();
+        if (!$ticket) {
+            return response()->json(['message' => 'Ticket not found.'], 404);
+        }
+
+        if (empty($ticket->requestor_email)) {
+            return response()->json(['message' => 'No email associated with this ticket.'], 422);
+        }
+
+        $email = $ticket->requestor_email;
+
+        // reuse session structure used by sendOtp
+        Session::forget(['ticket_otp_verified', 'ticket_otp_email']);
+
+        $otp = random_int(100000, 999999);
+        $expires = Carbon::now()->addMinutes(10);
+
+        Session::put('ticket_otp', [
+            'email' => $email,
+            'otp' => (string)$otp,
+            'expires_at' => $expires->toDateTimeString(),
+            'ticket_id' => $ticket->ticket_id,
+        ]);
+
+        // Prepare first name fallback from email local part
+        $firstName = null;
+        if (strpos($email, '@') !== false) {
+            $firstName = explode('@', $email)[0];
+            $firstName = preg_replace('/[._\-\d]+/', ' ', $firstName);
+            $firstName = trim($firstName);
+            $firstName = $firstName ? ucwords($firstName) : null;
+        }
+
+        try {
+            $minutes = 10;
+            Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
+                $m->to($email)->subject('OTP Verification');
+                if (config('mail.from.address')) {
+                    $m->from(config('mail.from.address'), config('mail.from.name'));
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error('Failed to send OTP email for ticket', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['message' => 'Failed to send OTP.'], 500);
+        }
+
+        [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, '');
+        $visibleCharacters = min(2, strlen($localPart));
+        $maskedEmail = substr($localPart, 0, $visibleCharacters)
+            . str_repeat('*', max(0, strlen($localPart) - $visibleCharacters));
+
+        if ($domain !== '') {
+            $maskedEmail .= '@' . $domain;
+        }
+
+        return response()->json([
+            'message' => 'OTP sent to the ticket requestor.',
+            'masked_email' => $maskedEmail,
+        ]);
+    }
+
+    /**
+     * Verify OTP for a ticket flow.
+     */
+    public function verifyOtpForTicket(Request $request)
+    {
+        Log::info('verifyOtpForTicket called', ['ticket_id' => $request->ticket_id, 'ip' => $request->ip()]);
+        $request->validate([
+            'ticket_id' => 'required|string',
+            'otp' => 'required'
+        ]);
+
+        $payload = Session::get('ticket_otp');
+        if (!$payload) {
+            return response()->json(['message' => 'No OTP found. Please request a new code.'], 422);
+        }
+
+        if (($payload['ticket_id'] ?? null) !== $request->ticket_id) {
+            return response()->json(['message' => 'OTP does not match this ticket.'], 422);
+        }
+
+        if (Carbon::now()->gt(Carbon::parse($payload['expires_at']))) {
+            return response()->json(['message' => 'OTP expired. Please request a new code.'], 422);
+        }
+
+        if ((string)$payload['otp'] !== (string)$request->otp) {
+            return response()->json(['message' => 'Invalid OTP code.'], 422);
+        }
+
+        // mark verified and associate with ticket
+        Session::put('ticket_otp_verified', true);
+        Session::put('ticket_otp_email', $payload['email']);
+        Session::put('ticket_otp_ticket', $payload['ticket_id']);
+        // record verification timestamp so we can expire the authorization after a short window
+        Session::put('ticket_otp_verified_at', Carbon::now()->toDateTimeString());
+
+        return response()->json(['message' => 'Ticket verified.']);
+    }
+
+    /**
+     * Show guest view for a ticket after OTP verification.
+     */
+    public function guestView(string $ticket_id)
+    {
+        $verified = Session::get('ticket_otp_verified', false);
+        $sessionTicket = Session::get('ticket_otp_ticket', null);
+        $verifiedAt = Session::get('ticket_otp_verified_at', null);
+
+        if (!$verified || $sessionTicket !== $ticket_id || !$verifiedAt) {
+            abort(403, 'Unauthorized to view this ticket.');
+        }
+
+        $expiresAfterMinutes = 30;
+        if (Carbon::parse($verifiedAt)->addMinutes($expiresAfterMinutes)->lt(Carbon::now())) {
+            Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email', 'ticket_otp_ticket', 'ticket_otp_verified_at']);
+            abort(403, 'Unauthorized to view this ticket.');
+        }
+
+        $ticket = Ticket::with([
+            'programDetails',
+            'requestRegion',
+            'requestForRegion',
+            'requestProvince',
+            'requestCity',
+            'agency'
+        ])->where('ticket_id', $ticket_id)->firstOrFail();
+
+        // render existing guest ticket view (file is nested under guestviewpage.php folder)
+        return view()->file(resource_path('views/guestpage/guestviewpage.php/guestticketview.blade.php'), compact('ticket'));
     }
 }

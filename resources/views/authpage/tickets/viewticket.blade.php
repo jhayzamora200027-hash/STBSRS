@@ -1223,6 +1223,21 @@ hr{
         max-width:100%;
         max-height:70vh;
     }
+    .premium-btn{
+    transition: all .2s ease;
+    border: 1px solid transparent;
+    }
+
+    .premium-btn:hover{
+        transform: translateY(-1px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.12) !important;
+    }
+
+    .premium-btn:active{
+        transform: translateY(0);
+    }
+
+    
 </style>
 <div class="row">
     <div class="d-flex justify-content-between align-items-center w-100">
@@ -1233,7 +1248,21 @@ hr{
             </a>
         </div>
         <div class="p-2">
-            <button class="form-control">Acknowledge Ticket</button>
+            @if(empty($ticket->acknowledged))
+                <form method="POST" action="{{ route('tickets.acknowledge', $ticket->ticket_id) }}">
+                    @csrf
+
+                    <button type="submit" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm premium-btn">
+                        <i class="bi bi-check2-circle me-2"></i>
+                        Acknowledge Ticket
+                    </button>
+                </form>
+            @else
+                <button type="button" class="btn btn-light border rounded-pill px-4 py-2 shadow-sm" disabled>
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span class="text-secondary fw-medium">Ticket Acknowledged</span>
+                </button>
+            @endif
         </div>
     </div>
 </div>
@@ -1263,8 +1292,8 @@ hr{
                 <i class="bi bi-clock-history"></i>
                 <span>History</span>
             </button>
-
-            <button class="ticket-tab" id="btnPrint">
+            
+            <button class="ticket-tab" id="btnPrint" data-acknowledged="{{ empty($ticket->acknowledged) ? '0' : '1' }}" {{ empty($ticket->acknowledged) ? 'aria-disabled="true"' : '' }}>
                 <i class="bi bi-printer"></i>
                 <span>Print</span>
             </button>
@@ -1506,7 +1535,30 @@ hr{
                         </div>
                         <row class="row pt-3">
                             <div class="col-6">
-                                HELLO WORLD!
+                                <small class="text-muted">
+                                    <i class="bi bi-inbox me-1"></i>
+                                    Request For
+                                </small>
+                                <div class="mt-2">
+                                    <small>
+                                    @switch($ticket->received_ticket_to)
+                                    @case('CO')
+                                    Central Office
+                                    @break
+
+                                    @case('FO')
+                                    Field Office
+                                    @break
+
+                                    @endswitch
+
+                                    @if(!empty($ticket->received_ticket_to_office))
+                                    , {{$ticket->requestForRegion->name}}
+                                    @else
+                                    
+                                    @endif
+                                    </small>
+                                </div>
                             </div>
                         </row>
 
@@ -1572,10 +1624,27 @@ hr{
                                     <div>
 
                                         <i class="bi bi-geo-alt text-danger me-2"></i>
+                                        @switch($ticket->requestor_organization)
+                                        @case('field_office')
+                                        {{ data_get($ticket, 'requestRegion.name', '-')}},
+                                        {{ data_get($ticket, 'agency.group_name')}}
+                                        @break
 
+                                        @case('offices')
+                                        {{ data_get($ticket, 'agency.group_name')}}
+                                        @break
+
+                                        @case('lgu')
                                         {{ data_get($ticket, 'requestRegion.name', '-') }},
                                         {{ data_get($ticket, 'requestProvince.name', '-') }},
                                         {{ data_get($ticket, 'requestCity.name', '-') }}
+                                        @break
+                                        
+                                        @default
+                                        {{ $ticket->requestor_specific_office}}
+                                        @break
+                                        
+                                        @endswitch
 
                                     </div>
 
@@ -1872,7 +1941,6 @@ hr{
                         <label for="ticket_status" class="form-label">Update ticket status</label>
                         <select id="ticket_status" name="ticket_status" class="form-select">
                             <option value="review" @selected(old('ticket_status', $ticket->ticket_status) === 'review')>For Review</option>
-                            <option value="inprogress" @selected(old('ticket_status', $ticket->ticket_status) === 'inprogress')>In Progress</option>
                             <option value="resolved" @selected(old('ticket_status', $ticket->ticket_status) === 'resolved')>Resolved</option>
                             <option value="completed" @selected(old('ticket_status', $ticket->ticket_status) === 'completed')>Completed</option>
                         </select>
@@ -2130,12 +2198,10 @@ hr{
                                     the request form must be signed by the Head of Office of the Requesting Party.
                                 </th>
 
-                                <!-- Label -->
                                 <td style="width:20%; background:#d8eaff; border:1px solid #000;">
                                     Title of the activity
                                 </td>
 
-                                <!-- Value -->
                                 <td style="border:1px solid #000;">
                                     {{($ticket->title_of_activity) ?? 'N/A'}}
                                 </td>
@@ -2553,7 +2619,6 @@ hr{
                 });
             }
 
-            // ---- File chips preview for main composer ----
             const fileInput = document.getElementById('main_attachments');
             const chipRow = document.getElementById('main_file_chips');
             if (fileInput) {
@@ -2568,14 +2633,12 @@ hr{
                 });
             }
 
-            // ---- Toggle reply form ----
             document.querySelectorAll('.replyToggleBtn').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const target = document.getElementById(this.dataset.target);
                     if (!target) return;
                     const isOpen = target.classList.contains('open');
 
-                    // close any other open reply forms
                     document.querySelectorAll('.reply-form-wrap.open').forEach(function (f) {
                         if (f !== target) f.classList.remove('open');
                     });
@@ -2609,7 +2672,6 @@ hr{
                 if (fileName) fileName.textContent = 'No file chosen';
             });
 
-            // ---- Toggle replies list ----
             document.querySelectorAll('.replies-toggle').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const target = document.getElementById(this.dataset.target);
@@ -2619,12 +2681,10 @@ hr{
                 });
             });
 
-            // ---- Submit spinner on main form ----
             const commentForm = document.getElementById('commentForm');
             const spinner = document.getElementById('postCommentSpinner');
             if (commentForm) {
                 commentForm.addEventListener('submit', function () {
-                    // ensure page reload will restore comments tab
                     try{ localStorage.setItem('ticketActiveTab','comment'); }catch(e){}
                     postBtn.disabled = true;
                     spinner.classList.remove('d-none');
@@ -2680,8 +2740,25 @@ hr{
         try{ localStorage.setItem('ticketActiveTab','history'); }catch(e){}
     });
 
-    document.getElementById('btnPrint').addEventListener('click', function(){
-        document.getElementById('requestInformationBody').classList.add('d-none')
+    document.getElementById('btnPrint').addEventListener('click', function(e){
+        const btn = this;
+        const acknowledged = btn.getAttribute('data-acknowledged') === '1';
+        if(!acknowledged){
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            if(window.Swal){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Ticket not acknowledged',
+                    text: 'Please acknowledge this ticket before printing or exporting.',
+                });
+            } else {
+                alert('Please acknowledge this ticket before printing.');
+            }
+            return;
+        }
+
+        document.getElementById('requestInformationBody').classList.add('d-none');
         document.getElementById('commentBody').classList.add('d-none');
         document.getElementById('historyBody').classList.add('d-none');
         document.getElementById('printBody').classList.remove('d-none');
@@ -2706,6 +2783,7 @@ hr{
 
     });
 
+    // Print button inside printBody: record and trigger native print
     const printBtn = document.getElementById('printBtn');
     if(printBtn){
         printBtn.addEventListener('click', async function(){
@@ -2760,6 +2838,45 @@ hr{
                 if(indicator) indicator.style.transform = `translateX(${Number(idx) * 100}%)`;
             }
         }
+const flashSuccess = {!! json_encode(session('success')) !!};
+
+if (flashSuccess) {
+    const showFlash = () => {
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Ticket Acknowledged',
+                text: flashSuccess,
+                confirmButtonText: 'Continue',
+                confirmButtonColor: '#212529',
+                background: '#fff',
+                color: '#212529',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg',
+                    confirmButton: 'rounded-pill px-4'
+                }
+            });
+        } else {
+            alert(flashSuccess);
+        }
+    };
+
+    if (window.Swal) {
+        showFlash();
+    } else {
+        // Poll briefly for Swal to become available (5s max)
+        let waited = 0;
+        const iv = setInterval(() => {
+            if (window.Swal) {
+                clearInterval(iv);
+                showFlash();
+                return;
+            }
+            waited += 100;
+            if (waited >= 5000) clearInterval(iv);
+        }, 100);
+    }
+}
     }catch(e){}
 })();
 </script>
@@ -2852,7 +2969,6 @@ document.addEventListener('click', function(e){
         });
     }
 
-    // show spinner when AJAX main submit in progress
     const commentForm = document.getElementById('commentForm');
     if(commentForm){
         commentForm.addEventListener('submit', function(){

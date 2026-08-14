@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/ticket/{ticket_id}',[ViewTicketController::class, 'delete'])->name('ticket.delete');
     Route::post('/tickets/{ticket}/comments',[ViewTicketController::class, 'storeComment'])->name('tickets.comments.store');
     Route::post('/tickets/{ticket_id}/resolution', [\App\Http\Controllers\ResolutionController::class, 'store'])->name('ticket.resolve');
+    Route::post('/tickets/{ticket_id}/acknowledge', [\App\Http\Controllers\ViewTicketController::class, 'acknowledge'])->name('tickets.acknowledge');
 });
 
 // Public signed links for requestor to confirm or return a resolution
@@ -67,5 +68,10 @@ Route::match(['put','patch'], '/tickets/{ticket}', [TicketController::class, 'up
 Route::post('/tickets/send-otp', [TicketController::class, 'sendOtp'])->name('tickets.sendOtp');
 Route::post('/tickets/verify-otp', [TicketController::class, 'verifyOtp'])->name('tickets.verifyOtp');
 Route::get('/tickets/otp-status', [TicketController::class, 'otpStatus'])->name('tickets.otpStatus');
+
+// Guest access: send OTP by ticket reference, verify, and view as guest
+Route::post('/guest/tickets/send-otp-by-ticket', [TicketController::class, 'sendOtpForTicket'])->name('guest.tickets.sendOtpByTicket');
+Route::post('/guest/tickets/verify-otp-by-ticket', [TicketController::class, 'verifyOtpForTicket'])->name('guest.tickets.verifyOtpByTicket');
+Route::get('/guest/tickets/{ticket_id}', [TicketController::class, 'guestView'])->name('guest.ticket.view');
 
 

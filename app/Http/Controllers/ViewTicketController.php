@@ -7,6 +7,8 @@ use App\Models\TicketComment;
 use App\Models\TicketCommentAttachment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketAcknowledgedMail;
 
 class ViewTicketController extends Controller
 {
@@ -14,8 +16,10 @@ class ViewTicketController extends Controller
             $ticket = Ticket::with([
                 'programDetails',
                 'requestRegion',
+                'requestForRegion',
                 'requestProvince',
-                'requestCity'
+                'requestCity',
+                'agency'
                 ])->where('ticket_id', $ticket_id)->firstOrFail();
 
             $latestResolution = $ticket->resolutions()
@@ -117,6 +121,7 @@ class ViewTicketController extends Controller
         $ticket = Ticket::with([
             'programDetails',
             'requestRegion',
+            'requestForRegion',
             'requestProvince',
             'requestCity'
         ])->where('ticket_id', $ticket_id)->firstOrFail();
@@ -130,5 +135,34 @@ class ViewTicketController extends Controller
 
         // Render the same view; Browsershot will load this route to produce PDF.
         return view('authpage.tickets.viewticket', compact('ticket', 'latestResolution', 'activities'));
+    }
+
+    public function acknowledge(Request $request, string $ticket_id)
+    {
+        $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+
+        $ticket->update([
+            'ticket_status' => 'inprogress',
+            'acknowledged' => true,
+        ]);
+
+        $ticket->activities()->create([
+            'event' => 'status_changed',
+            'title' => 'Ticket acknowledged',
+            'description' => 'Ticket acknowledged and assigned to team.',
+            'performed_by' => Auth::user()?->name,
+        ]);
+
+        // Send notification to requester if email exists
+        if (!empty($ticket->requestor_email)) {
+            try {
+                Mail::to($ticket->requestor_email)->send(new TicketAcknowledgedMail($ticket));
+            } catch (\Exception $e) {
+                // Log but continue
+                //
+            }
+        }
+
+        return redirect()->back()->with('success', 'Ticket acknowledged and requester notified.');
     }
 }
