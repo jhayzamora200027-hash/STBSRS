@@ -177,6 +177,74 @@
     }
 }
 
+/* Additional mobile tweaks: force card-style table and remove min-width constraints */
+@media (max-width: 767.98px) {
+    .table-responsive.ticket-card-table {
+        overflow: visible;
+    }
+
+    .ticket-card-table thead tr,
+    .ticket-card-table thead th {
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        display: none !important;
+    }
+
+    .ticket-card-table table,
+    .ticket-card-table tbody,
+    .ticket-card-table tr,
+    .ticket-card-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .ticket-card-table td {
+        padding: .9rem 1rem !important;
+        border: none !important;
+        text-align: left !important;
+        position: relative !important;
+        padding-left: 48% !important; /* reserve space for the label */
+        box-sizing: border-box !important;
+    }
+
+    .ticket-card-table td::before {
+        content: attr(data-label);
+        position: absolute !important;
+        left: 12px !important;
+        top: 12px !important;
+        width: calc(48% - 24px) !important;
+        font-weight: 700;
+        color: #495057;
+        white-space: normal !important;
+        display: block !important;
+    }
+
+    .ticket-card-table td.text-end {
+        text-align: left !important;
+    }
+
+    /* override inline min-widths on small screens */
+    .ticket-card-table th,
+    .ticket-card-table td,
+    .table thead th {
+        min-width: auto !important;
+        white-space: normal !important;
+    }
+
+    .ticket-card-table tr {
+        margin-bottom: 1rem;
+        border: 1px solid rgba(108,117,125,0.12);
+        border-radius: 10px;
+        padding: .75rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+        background: #fff;
+    }
+
+    .ticket-card-table td .fw-semibold,
+    .ticket-card-table td .fw-bold { font-size: 0.98rem; }
+}
+
 /* Metric card tweaks */
 .card .rounded-circle { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
 .metric-number{ font-size:28px; }

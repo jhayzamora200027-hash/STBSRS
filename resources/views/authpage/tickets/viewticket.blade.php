@@ -237,6 +237,23 @@
 
 }
 
+@media (max-width: 767.98px) {
+    .ticket-tabs {
+        padding: 6px;
+    }
+
+    .ticket-tab{
+        justify-content:flex-start;
+        padding:10px 12px;
+        gap:8px;
+        border-radius:10px;
+    }
+
+    .ticket-tab i{ margin-right:8px; }
+
+    .tab-indicator{ display:none; }
+}
+
 .request-card{
 
     border-radius:20px;
@@ -727,6 +744,34 @@ hr{
 
     }
 
+}
+
+/* Mobile-friendly print preview: show phone-sized preview instead of full A4 scale */
+@media (max-width: 575.98px) {
+    .print-preview {
+        display: block;
+        padding: 8px;
+        background: transparent;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .print-preview .a4-document {
+        transform: none !important;
+        width: min(360px, 100%) !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        margin: 0 auto 1rem !important;
+        padding: 8px !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06) !important;
+        border-radius: 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    #printArea { overflow-x: visible; width: 100%; }
+    .a4-document { max-width: none; }
+
+    #printBtn { position: sticky; top: 8px; z-index: 30; }
 }
 
 .comments-wrap {
@@ -1237,9 +1282,178 @@ hr{
         transform: translateY(0);
     }
 
+    .request-info-box {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    padding: 1.5rem;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.request-info-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+}
+
+.request-info-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border-color: #d9d9d9;
+}
+
+.request-info-box .category-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.request-info-box .category-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: .5rem;
+}
+
+.request-info-box .category-description {
+    color: #6c757d;
+    font-size: .92rem;
+    line-height: 1.6;
+}
+
+.request-info-box .category-count {
+    margin-top: 1rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+/* Acknowledge loader */
+.ack-loader { 
+    position: fixed; 
+    inset: 0; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 2000; 
+}
+.ack-loader.d-none { display: none; }
+.ack-loader-backdrop { 
+    position: absolute; 
+    inset: 0; 
+    background: rgba(15,23,42,0.45);
+    backdrop-filter: blur(3px);
+}
+.ack-loader-panel { 
+    position: relative; 
+    padding: 18px 20px; 
+    background: #fff; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(2,6,23,0.3); 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+}
+.ack-spinner { 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    border: 4px solid #eef2ff; 
+    border-top-color: #2563eb; 
+    animation: ack-spin 1s linear infinite; 
+}
+@keyframes ack-spin { to { transform: rotate(360deg); } }
+.ack-loader-text { 
+    font-weight: 700; 
+    color: #111827; 
+}
+
+/* Full Screen Loader */
+.ack-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+/* Hide Loader */
+.ack-loader.d-none {
+    display: none;
+}
+
+/* Loader Card */
+.ack-loader-box {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 16px;
+    text-align: center;
+
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.12),
+        0 2px 8px rgba(0,0,0,0.05);
+
+    min-width: 280px;
+}
+
+/* Default Bootstrap Spinner */
+.ack-spinner {
+    width: 45px;
+    height: 45px;
+}
+
+/* Main Text */
+.ack-loader-title {
+    margin-top: 18px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #212529;
+}
+
+/* Supporting Text */
+.ack-loader-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6c757d;
+}
     
 </style>
 <div class="row">
+    <!-- Loading Overlay -->
+<div id="ackLoader" class="ack-loader d-none">
+    <div class="ack-loader-box">
+        <div class="spinner-border text-primary ack-spinner" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <div class="ack-loader-title">
+            Processing request...
+        </div>
+
+        <div class="ack-loader-subtitle">
+            Please wait while we complete the action.
+        </div>
+    </div>
+</div>
     <div class="d-flex justify-content-between align-items-center w-100">
         <div class="p-2">
             <a href="{{ route('tickets') }}" class="btn back-btn border shadow-sm rounded-pill px-4">
@@ -1249,10 +1463,9 @@ hr{
         </div>
         <div class="p-2">
             @if(empty($ticket->acknowledged))
-                <form method="POST" action="{{ route('tickets.acknowledge', $ticket->ticket_id) }}">
+                <form id="ackForm" method="POST" action="{{ route('tickets.acknowledge', $ticket->ticket_id) }}">
                     @csrf
-
-                    <button type="submit" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm premium-btn">
+                    <button id="ackBtn" type="submit" class="btn btn-dark rounded-pill px-4 py-2 shadow-sm premium-btn">
                         <i class="bi bi-check2-circle me-2"></i>
                         Acknowledge Ticket
                     </button>
@@ -1276,7 +1489,7 @@ hr{
     </div>
     <div class="row">
     <div class="col-md-12 mb-3">
-        <div class="ticket-tabs mt-4">
+        <div class="ticket-tabs mt-4 d-flex flex-column flex-md-row">
 
             <button class="ticket-tab active" id="btnRequestInfo">
                 <i class="bi bi-file-earmark-text"></i>
@@ -1304,7 +1517,7 @@ hr{
     </div>
 </div>
 <div class="row" id="requestInformationBody">
-    <div class="col-8">
+    <div class="col-12 col-md-8">
 
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">
@@ -1394,7 +1607,7 @@ hr{
                 <div class="row mt-4">
 
                     <!-- LEFT -->
-                    <div class="col-md-6 border-end">
+                    <div class="col-12 col-md-6 border-md-end">
 
                         <div class="mb-4">
 
@@ -1533,7 +1746,7 @@ hr{
                             </div>
 
                         </div>
-                        <row class="row pt-3">
+                        <div class="row pt-3">
                             <div class="col-6">
                                 <small class="text-muted">
                                     <i class="bi bi-inbox me-1"></i>
@@ -1560,12 +1773,12 @@ hr{
                                     </small>
                                 </div>
                             </div>
-                        </row>
+                        </div>
 
                     </div>
 
                     <!-- RIGHT -->
-                    <div class="col-md-6 ps-md-4">
+                    <div class="col-12 col-md-6 ps-md-4">
 
                         <div class="card bg-light border-0 rounded-4">
 
@@ -1638,8 +1851,7 @@ hr{
                                         {{ data_get($ticket, 'requestRegion.name', '-') }},
                                         {{ data_get($ticket, 'requestProvince.name', '-') }},
                                         {{ data_get($ticket, 'requestCity.name', '-') }}
-                                        @break
-                                        
+                                        @break                                        
                                         @default
                                         {{ $ticket->requestor_specific_office}}
                                         @break
@@ -1671,221 +1883,8 @@ hr{
                         </div>
 
                     </div>
-                    <div class="col-12 pt-4">
 
-                        <div class="card request-card border-0 shadow-sm">
-
-
-                            <div class="request-header">
-
-                                <div class="d-flex align-items-center">
-
-                                    <div class="request-icon">
-
-                                        <i class="bi bi-file-earmark-text-fill"></i>
-
-                                    </div>
-
-                                    <div class="ms-3">
-
-                                        <h4 class="mb-1 fw-bold">
-                                            Request Information
-                                        </h4>
-
-                                        <small class="mb-1">
-                                            Details submitted by the requester
-                                        </small>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="card-body p-4">
-
-
-                                <div class="info-box mb-4">
-
-                                    <div class="info-title">
-
-                                        <i class="bi bi-chat-left-text"></i>
-
-                                        Purpose of Request
-
-                                    </div>
-
-                                    <div class="info-content">
-
-                                        {{ $ticket->purpose_of_request }}
-
-                                    </div>
-
-                                </div>
-
-                                @if($ticket->ticket_category === 'knowledge')
-
-                                <div class="row g-4">
-
-
-                                    <div class="col-md-12">
-
-                                        <div class="info-box h-100">
-
-                                            <div class="info-title">
-
-                                                <i class="bi bi-journal-bookmark"></i>
-
-                                                Knowledge Product Requested
-
-                                            </div>
-
-                                            <div class="info-content">
-                                                @php
-                                                    $kp = $ticket->type_of_knowledge_product ?? null;
-                                                    $kpItems = [];
-                                                    if($kp) {
-                                                        if(is_array($kp)) {
-                                                            $kpItems = $kp;
-                                                        } else {
-                                                            $decoded = json_decode($kp, true);
-                                                            if(is_array($decoded)) {
-                                                                $kpItems = $decoded;
-                                                            } else {
-                                                                $kpItems = array_filter(array_map('trim', explode(',', $kp)));
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                @if(empty($kpItems))
-                                                    -
-                                                @else
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        @foreach($kpItems as $item)
-                                                            <span class="badge bg-light text-dark">{{ e($item) }}</span>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                @endif
-
-                                @if($ticket->ticket_category === 'resource')
-                                <div class=row>
-                                    <div class="col-md-6">
-                                        <div class="info-box">
-
-                                            <div class="info-title">
-
-                                                <i class="bi bi-geo-alt-fill"></i>
-
-                                                Venue
-
-                                            </div>
-
-                                            <div class="info-content">
-
-                                                {{ $ticket->venue }}
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="info-box">
-
-                                            <div class="info-title">
-
-                                                <i class="bi bi-calendar-event"></i>
-
-                                                Type of activity
-
-                                            </div>
-
-                                            <div class="info-content">
-
-                                                {{$ticket->type_of_activity}}
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-12">
-                                        <div style="background:#f8fafc;
-                                        border:1px solid #e5e7eb;
-                                        border-radius:16px;
-                                        padding:22px;
-                                        transition:.3s;
-                                        min-height:80px;">
-                                            <div class="row">
-                                                    <div class="col-md-6">
-                                                        <h6>
-                                                            Start of Acitivty
-
-                                                        </h6>
-
-                                                        <div class="info-content">
-
-                                                            {{ $ticket->date_of_activity }}
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6 text-end">
-                                                        <h6 >
-                                                            End of Activity
-
-                                                        </h6>
-
-                                                        <div class="info-content">
-
-                                                            {{ $ticket->date_of_activity_end }}
-
-                                                        </div>
-                                                    </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($ticket->ticket_category === 'completed')
-
-                                <div class="info-box">
-
-                                    <div class="info-title">
-
-                                        <i class="bi bi-diagram-3"></i>
-
-                                        Program
-
-                                    </div>
-
-                                    <div class="info-content">
-
-                                        {{ optional($ticket->programDetails)->program ?? '-' }}
-
-                                    </div>
-
-                                </div>
-
-                                @endif
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
+                    {{-- Col end --}}
                 </div>
 
             </div>
@@ -1893,8 +1892,8 @@ hr{
 
     </div>
 
-    <div class="col-4 pt-1">
-        <div class="card resolution-panel">
+    <div class="col-12 col-md-4 pt-1 mt-3 mt-md-0">
+        <div class="card resolution-panel sticky-top">
             <div class="card-header d-flex align-items-center justify-content-between py-3 px-3">
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-check2-square"></i>
@@ -1911,7 +1910,7 @@ hr{
 
                     <div class="mb-3">
                         <label for="resolution_text" class="form-label">Resolution details</label>
-                        <textarea id="resolution_text" name="resolution_text" class="form-control" placeholder="Describe the action taken or the final resolution.">{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
+                        <textarea id="resolution_text" name="resolution_text" rows="4" class="form-control" placeholder="Describe the action taken or the final resolution.">{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
                         @error('resolution_text')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
@@ -1957,6 +1956,154 @@ hr{
             </div>
         </div>
     </div>
+
+    <div class="col-12 pt-4">
+
+                        <div class="card request-card border-0 shadow-sm">
+                            <div class="request-header">
+                                <div class="d-flex align-items-center">
+                                    <div class="request-icon">
+                                        <i class="bi bi-file-earmark-text-fill"></i>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h4 class="mb-1 fw-bold">
+                                            Request Information
+                                        </h4>
+                                        <small class="mb-1">
+                                            Details submitted by the requester
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body p-4">
+                                <div class="row">
+                                    <div class="col-md-4 pt-3">
+                                        <div class="request-info-box pt-3">
+                                            <h5>Technical Assistance</h5>
+                                            <div class="info-box mb-4">
+                                                <div class="info-title">
+                                                    <i class="bi bi-chat-left-text"></i>
+                                                    Purpose of Request
+                                                </div>
+                                                <div class="info-content">
+                                                    {{ $ticket->purpose_of_request }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pt-3">
+                                        <div class="request-info-box">
+                                            <h5>Knowledge Product</h5>
+                                            <div class="row g-4">
+                                                <div class="col-md-12">
+                                                    <div class="info-box h-100">
+                                                        <div class="info-title">
+                                                            <i class="bi bi-journal-bookmark"></i>
+                                                            Knowledge Product Requested
+                                                        </div>
+                                                        <div class="info-content">
+                                                            @php
+                                                                $kp = $ticket->type_of_knowledge_product ?? null;
+                                                                $kpItems = [];
+                                                                if($kp) {
+                                                                    if(is_array($kp)) {
+                                                                        $kpItems = $kp;
+                                                                    } else {
+                                                                        $decoded = json_decode($kp, true);
+                                                                        if(is_array($decoded)) {
+                                                                            $kpItems = $decoded;
+                                                                        } else {
+                                                                            $kpItems = array_filter(array_map('trim', explode(',', $kp)));
+                                                                        }
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            @if(empty($kpItems))
+                                                                -
+                                                            @else
+                                                                <div class="d-flex flex-wrap gap-2">
+                                                                    @foreach($kpItems as $item)
+                                                                        <span class="badge bg-light text-dark">{{ e($item) }}</span>
+                                                                    @endforeach
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 pt-3">
+                                        <div class="request-info-box">
+                                            <h5>Resource Person</h5>
+                                            <div class=row>
+                                                <div class="col-md-6 pt-3">
+                                                    <div class="info-box">
+                                                        <div class="info-title">
+                                                            <i class="bi bi-geo-alt-fill"></i>
+                                                            Venue
+                                                        </div>
+                                                        <div class="info-content">
+                                                            {{ $ticket->venue ?? '-' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 pt-3">
+                                                    <div class="info-box">
+                                                        <div class="info-title">
+                                                            <i class="bi bi-calendar-event"></i>
+                                                            Type of activity
+                                                        </div>
+                                                        <div class="info-content">
+                                                            {{$ticket->type_of_activity ?? '-'}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-12">
+                                                    <div style="background:#f8fafc;
+                                                    border:1px solid #e5e7eb;
+                                                    border-radius:16px;
+                                                    padding:22px;
+                                                    transition:.3s;
+                                                    min-height:80px;">
+                                                        <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <h6>
+                                                                        Start of Acitivty
+    
+                                                                    </h6>
+    
+                                                                    <div class="info-content">
+    
+                                                                        {{ $ticket->date_of_activity ?? '-'}}
+    
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-6 text-end">
+                                                                    <h6 >
+                                                                        End of Activity
+    
+                                                                    </h6>
+    
+                                                                    <div class="info-content">
+    
+                                                                        {{ $ticket->date_of_activity_end ?? '-'}}
+    
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 </div>
 
     <div id="printBody" class="d-none mt-3">
@@ -3151,5 +3298,63 @@ document.addEventListener('click', function(e){
 
     
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const ackForm = document.getElementById('ackForm');
+    const ackLoader = document.getElementById('ackLoader');
+    const ackBtn = document.getElementById('ackBtn');
+    if(!ackForm || !ackLoader || !ackBtn) return;
+
+    ackForm.addEventListener('submit', async function(e){
+        e.preventDefault();
+        ackLoader.classList.remove('d-none');
+        ackLoader.setAttribute('aria-hidden','false');
+        ackBtn.disabled = true;
+        const fd = new FormData(ackForm);
+        try{
+            const token = document.querySelector('input[name="_token"]').value;
+            const res = await fetch(ackForm.action, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token },
+                body: fd,
+                redirect: 'follow'
+            });
+            if(res.ok){
+                let message = 'Ticket acknowledged successfully.';
+                try{
+                    const txt = await res.text();
+                    const j = JSON.parse(txt);
+                    if(j && j.message) message = j.message;
+                }catch(_){}
+
+                // hide loader before showing success modal
+                try{ ackLoader.classList.add('d-none'); ackLoader.setAttribute('aria-hidden','true'); }catch(_){}
+
+                if(typeof Swal !== 'undefined' && Swal.fire){
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Acknowledged',
+                        text: message,
+                        confirmButtonColor: '#2563eb'
+                    });
+                } else {
+                    alert(message);
+                }
+
+                // reload to reflect acknowledged state
+                location.reload();
+                return;
+            }
+            throw new Error('Request failed: ' + res.status);
+        }catch(err){
+            console.error(err);
+            alert('Failed to acknowledge ticket. Please try again.');
+            ackLoader.classList.add('d-none');
+            ackLoader.setAttribute('aria-hidden','true');
+            ackBtn.disabled = false;
+        }
+    });
+});
 </script>
 @endsection

@@ -2438,7 +2438,7 @@ body.review-modal-open .modal-backdrop.show {
                                     </div>
                                     <div class="mb-3 mt-3">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <div class="p-2">
                                                     <div class="d-flex align-items-start p-3">
                                                         <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px">
@@ -2458,7 +2458,7 @@ body.review-modal-open .modal-backdrop.show {
                                                 </div>
                                                 
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-4">
                                                 <div class="p-2">
                                                     <div class="d-flex align-items-start p-3">
                                                         <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px">
@@ -2477,71 +2477,8 @@ body.review-modal-open .modal-backdrop.show {
                                                         required></textarea>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 mt-3">
-                                        <div class="row rp-detail-row">
-                                            <div class="col-md service-base-fields" style="flex: 0 0 31%; max width:31px;">
-                                                        <div class="p-2">
-                                                            <div class="d-flex align-items-start p-2">
-                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
-                                                                        <i class="bi bi-file-earmark fs-5 text-primary"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="me-1">
-                                                                        Purpose of request <span style="color:red;">*</span>
-                                                                    </h6>
-                                                                    <small class="text-muted">
-                                                                        Briefly describe the purpose of your request
-                                                                    </small>
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        </div>
-                                                        <textarea 
-                                                            id="reasonRequestRP" 
-                                                            name="purpose_of_request" 
-                                                            class="form-control" 
-                                                            rows="5" 
-                                                            maxlength="200"
-                                                            placeholder="Input purpose of your request..."
-                                                            style="height:30px;"></textarea>
-                                                        <div class="text-end small text-muted mt-1">
-                                                            <span id="reasonRequestRP_count">0/200</span>
-                                                        </div>
-                                                </div>
-                                                <div class="vertical-divider" style="width: 1px;"></div>
-                                                <div class="col-md service-base-fields" style="flex: 0 0 31%; max width:31px;">
-                                                        <div class="p-2">
-                                                            <div class="d-flex align-item-center p-2">
-                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
-                                                                        <i class="bi bi-activity fs-5 text-primary"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="me-1">
-                                                                        Program <span style="color:red">*</span>
-                                                                    </h6>
-                                                                    <small class="text-muted">
-                                                                        Select a program you want for this request
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                            <select class="form-select" id="programSelectRP" name="program">
-                                                                <option value="">Select a program</option>
-                                                                @foreach($programs as $program)
-                                                                <option value="{{$program->program_id}}">{{$program->program}}</option>
-                                                                @endforeach
-                                                                <option value="others">Others</option>
-                                                            </select>
-                                                    <div id="otherProgramFieldRP" class="mt-3 d-none">
-                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="otherProgramInputRP" name="program_others">
-                                                    </div>
-                                                </div>
-                                                <div class="vertical-divider" style="width: 1px;"></div>
-                                                <div class="col-md rp-detail-column" style="flex: 0 0 31%; max width:31px;">
-                                                       <div class="mb-3">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
                                                             <div class="d-flex align-items-center p-2">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
                                                                     <i class="bi bi-geo-alt-fill"> </i>
@@ -2565,8 +2502,10 @@ body.review-modal-open .modal-backdrop.show {
                                                                 <input type="text" class="form-control border-start-0" id="venue" name="venue" placeholder="Input venue or location">
                                                             </div>
                                                         </div>
-                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="mb-3 mt-3">
                                         <div class="flex-grow-1 border-top mt-4"> </div>
                                                     <div class="row p-3">
                                                         <div class= "col-md-8 border-end d-flex flex-column">
@@ -4440,20 +4379,7 @@ document.getElementById('programSelectTAPD').addEventListener('change', function
     }
 });
 
-document.getElementById('programSelectRP').addEventListener('change', function(){
-    const otherFieldRP = document.getElementById('otherProgramFieldRP');
-    const ProgramInputFieldRP = document.getElementById('otherProgramInputRP');
 
-    if(this.value==='others'){
-        otherFieldRP.classList.remove('d-none');
-        ProgramInputFieldRP.setAttribute('required', '');
-    } else {
-        otherFieldRP.classList.add('d-none');
-        ProgramInputFieldRP.removeAttribute('required');
-        ProgramInputFieldRP.value = '';                                                                                                                                                                                                     
-
-    }
-});
 
 document.getElementById('programSelectKP').addEventListener('change', function(){
     const otherFieldKP = document.getElementById('otherProgramFieldKP');
