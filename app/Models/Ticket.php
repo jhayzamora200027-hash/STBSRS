@@ -17,6 +17,8 @@ class Ticket extends Model
     'ticket_id',
     'ticket_status',
     'ticket_resolved_at',
+    'ticket_acknowledged_at',
+    'ticket_completed_at',
 
     'requestor_first_name',
     'requestor_middle_name',
@@ -57,9 +59,16 @@ class Ticket extends Model
     'requestor_office_address',
     'received_ticket_to',
     'received_ticket_to_office',
-    'title_of_the_activity'
-    ,'acknowledged'
+    'title_of_the_activity',
+    'acknowledged',
 ];
+
+protected $casts = [
+    'ticket_acknowledged_at' => 'datetime',
+    'ticket_resolved_at' => 'datetime',
+    'ticket_completed_at' => 'datetime',
+];
+
     public function programDetails(){
         return $this->belongsTo(Program::class, 'program', 'program_id');
     }

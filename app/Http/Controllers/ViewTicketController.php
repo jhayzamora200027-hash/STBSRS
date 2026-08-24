@@ -144,6 +144,7 @@ class ViewTicketController extends Controller
         $ticket->update([
             'ticket_status' => 'inprogress',
             'acknowledged' => true,
+            'ticket_acknowledged_at' => now()
         ]);
 
         $ticket->activities()->create([

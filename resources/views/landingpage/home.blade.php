@@ -250,6 +250,11 @@
 .modal-backdrop.show { opacity: 0.55 !important; }
 .modal-backdrop.otp-backdrop { z-index: 2040 !important; }
 #guestOtpBackdrop { position:fixed; inset:0; z-index:2040; background:rgba(0,0,0,.55); backdrop-filter:blur(3px); }
+body.review-modal-open .modal-backdrop.show {
+    background-color: rgba(0, 0, 0, .58) !important;
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
 .swal2-container { z-index: 99999 !important; }
 .swal2-popup { z-index: 100000 !important; }
 
@@ -631,6 +636,317 @@
 .wizard-next-btn:active{
 
     transform:scale(.97);
+
+}
+
+.assist-card {
+    position: relative;
+    border: 1px solid #dee2e6;
+    border-radius: 16px;
+    padding: 24px;
+    height: 190px;
+    background: #fff;
+    transition: all .2s ease;
+    cursor: pointer;
+}
+
+
+.assist-card:hover {
+    border-color:#0d6efd;
+    transform: translateY(-3px);
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+
+.assist-card.active {
+    border:2px solid #0d6efd;
+    background:#f8fbff;
+}
+
+
+.assist-icon {
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+.assist-icon i {
+    font-size:26px;
+}
+
+
+.assist-check {
+    position:absolute;
+    top:15px;
+    right:15px;
+
+    width:25px;
+    height:25px;
+
+    border-radius:50%;
+    border:1px solid #dee2e6;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:white;
+    opacity:0;
+    transition:.2s;
+}
+
+
+.assist-card.active .assist-check {
+    opacity:1;
+    background:#0d6efd;
+    border-color:#0d6efd;
+}
+
+
+.assist-check i {
+    font-size:14px;
+}
+
+.service-base-fields {
+    display: none;
+}
+
+.service-body-selected {
+    display: block !important;
+}
+
+.service-panel {
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px solid #dbe5f0;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(6,44,82,.06);
+}
+
+.service-panel-rp {
+    background: #fbfffc;
+}
+
+.service-panel-kp {
+    background: #fffdf7;
+}
+
+.service-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e9eef5;
+}
+
+.service-panel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 12px;
+    background: #e8f1ff;
+    color: #0d6efd;
+    font-size: 21px;
+}
+
+.service-panel-rp .service-panel-icon {
+    background: #e7f7ee;
+    color: #198754;
+}
+
+.service-panel-kp .service-panel-icon {
+    background: #fff1c7;
+    color: #9a7100;
+}
+
+.service-panel-title {
+    margin: 0;
+    color: #062c52;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.service-panel-description {
+    margin: 3px 0 0;
+    color: #6c757d;
+    font-size: .85rem;
+}
+
+.service-panel-badge {
+    margin-left: auto;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #e8f1ff;
+    color: #0d6efd;
+    font-size: .72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.service-panel-rp .service-panel-badge {
+    background: #e7f7ee;
+    color: #198754;
+}
+
+.service-panel-kp .service-panel-badge {
+    background: #fff1c7;
+    color: #806000;
+}
+
+@media (max-width: 575.98px) {
+    .service-panel {
+        padding: 18px 14px;
+    }
+
+    .service-panel-badge {
+        align-self: flex-start;
+    }
+}
+
+.rp-detail-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.rp-detail-column {
+    min-width: 0;
+    flex: 1 1 auto !important;
+    width: auto !important;
+}
+
+.rp-activity-options {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.rp-activity-options .act-card-ftf,
+.rp-activity-options .act-card-vt,
+.rp-activity-options .act-card-blended {
+    min-width: 0;
+    margin: 0 !important;
+}
+
+.rp-activity-options .act-card-ftf h6,
+.rp-activity-options .act-card-vt h6,
+.rp-activity-options .act-card-blended h6,
+.rp-activity-options .act-card-ftf p,
+.rp-activity-options .act-card-vt p,
+.rp-activity-options .act-card-blended p {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 767.98px) {
+    #stepFooter1,
+    #stepFooter2 {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 14px;
+    }
+
+    #stepFooter1 .footer-progress,
+    #stepFooter2 .footer-progress,
+    #stepFooter1 .footer-actions,
+    #stepFooter2 .footer-actions {
+        width: 100% !important;
+    }
+
+    #stepFooter1 .footer-actions,
+    #stepFooter2 .footer-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px !important;
+        margin-top: 0 !important;
+    }
+
+    #stepFooter1 .footer-actions button,
+    #stepFooter2 .footer-actions button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .rp-detail-row {
+        display: block !important;
+    }
+
+    .rp-detail-column {
+        width: 100% !important;
+        margin-bottom: 18px;
+    }
+
+    .rp-detail-row .vertical-divider {
+        display: none;
+    }
+
+    .rp-activity-options {
+        grid-template-columns: 1fr;
+    }
+
+    .rp-activity-options .act-card-ftf,
+    .rp-activity-options .act-card-vt,
+    .rp-activity-options .act-card-blended {
+        min-height: 112px;
+    }
+
+    .rp-activity-options .card-body {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr);
+        column-gap: 14px;
+        align-items: center;
+        text-align: left;
+    }
+
+    .rp-activity-options .card-body > div:first-child {
+        grid-row: span 2;
+        padding: 0 !important;
+    }
+
+    .rp-activity-options .card-body h6,
+    .rp-activity-options .card-body p {
+        margin: 0;
+    }
+
+    .rp-form-footer {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px !important;
+        width: 100%;
+    }
+
+    .rp-form-footer > #back,
+    .rp-form-footer > .rp-form-actions {
+        width: 100%;
+    }
+
+    .rp-form-footer > .rp-form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px !important;
+        margin-top: 0 !important;
+    }
+
+    .rp-form-footer .wizard-back-btn,
+    .rp-form-footer .wizard-cancel-btn,
+    .rp-form-footer .wizard-submit-btn {
+        width: 100%;
+        min-width: 0;
+        height: 46px;
+        padding: .65rem .75rem;
+        margin: 0;
+    }
 
 }
 </style>
@@ -1610,7 +1926,7 @@
                                 </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
                                 <div id="stepFooter1" class="d-flex justify-content-between align-items-center mt-4 mb-4">
-                                    <div style="width:320px;"> 
+                                    <div class="footer-progress" style="width:320px;"> 
                                         <small class="text-muted" id="stepText">Step 1 of 2</small>
                                     
                                         <div class="progress mt-2" style="height:8px;"> 
@@ -1626,7 +1942,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-3">
+                                    <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-3 footer-actions">
 
                                         <button type="button"
                                                 class="wizard-cancel-btn"
@@ -1679,7 +1995,7 @@
                                                 <div class="card-body text-center" p-4>
                                                     <i class="bi bi-tools fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Technical Assistance</h5>
-                                                    <h6 style="color:#062c52"> On Completed Program</h6> 
+                                                    <h6 style="color:#062c52"> On STB-developed Programs/Projects</h6> 
                                                 </div>
                                             </div>
                                         </div>
@@ -1688,33 +2004,35 @@
                                                 <div class="card-body text-center" p-4>
                                                     <i class="bi bi-graph-up-arrow fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Technical Assistance</h5>
-                                                    <h6 style="color:#062c52"> On Program Development</h6> 
+                                                    <h6 style="color:#062c52"> On Program Development and Enhancement</h6> 
                                                 </div>
                                             </div>
                                         </div>
+                                        {{-- Temporarily disabled: Resource Person service
                                         <div class="col-md-6">
                                             <div id="rp" class="card service-card h-100" data-service="resource" style="cursor: pointer;">
                                                 <div class="card-body text-center" p-4>
                                                     <i class="bi bi-mic-fill fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Resouce Person</h5>
-                                                    <h6 style="color:#062c52"> Schedule meeting</h6> 
-
+                                                    <h6 style="color:#062c52"> Schedule meeting</h6>
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
+                                        {{-- Temporarily disabled: Knowledge Product service
                                         <div class="col-md-6">
                                             <div id="kp" class="card service-card h-100" data-service="knowledge" style="cursor: pointer;">
                                                 <div class="card-body text-center" p-4>
                                                     <i class="bi bi-book-half fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Knowledge product</h5>
-                                                    <h6 style="color:#062c52"> STB Documents</h6> 
-
+                                                    <h6 style="color:#062c52"> STB Documents</h6>
                                                 </div>
                                             </div>
                                         </div>
+                                        --}}
                                 <div class="flex-grow-1 border-top mt-4"> </div>
                                     <div id="stepFooter2" class="d-flex justify-content-between align-items-center mt-4 mb-4">
-                                        <div style="width:320px;"> 
+                                        <div class="footer-progress" style="width:320px;"> 
                                             <small class="text-muted" id="stepText2">Step 2 of 2</small>
                                             
                                             <div class="progress mt-2" style="height:8px;"> 
@@ -1730,16 +2048,129 @@
                                                 </div>
                                             </div>
                                         </div>
-                                       <div class="d-flex flex-column flex-sm-row w-100 w-md-auto gap-2 justify-content-end">
+                                       <div class="d-flex flex-column flex-sm-row w-100 w-md-auto gap-2 justify-content-end footer-actions">
                                                 <button type="button" class="btn btn-outline-secondary wizard-btn" data-bs-dismiss="modal"  style="width:100px; border-radius:10px;">Cancel</button>
                                        </div>
                                     </div>
                                 </div>
                             </div>
                     {{-- Step 3 Body--}}
-                            <div id="step3" class="d-none">
+                            <div id="step3" class="d-none p-3">
+                                 <div class="mb-4">
+
+                                    <div class="mb-3">
+                                        <h5 class="fw-bold mb-1">
+                                            Select the assistance you need
+                                            <span class="text-danger">*</span>
+                                        </h5>
+
+                                        <small class="text-muted">
+                                            You may select one or more types of assistance for your request.
+                                        </small>
+                                    </div>
+
+
+                                    <div class="row g-3">
+
+                                        <!-- Technical Assistance -->
+                                        <div class="col-md-4">
+                                            <div class="assist-card active" 
+                                                data-service="tacp" 
+                                                role="button"
+                                                tabindex="0">
+
+                                                <div class="assist-check">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </div>
+
+                                                <div class="assist-icon bg-primary-subtle">
+                                                    <i class="bi bi-tools text-primary"></i>
+                                                </div>
+
+                                                <div class="mt-3">
+                                                    <h6 class="fw-bold mb-1">
+                                                        Technical Assistance
+                                                    </h6>
+
+                                                    <small class="text-muted">
+                                                        Request technical support, guidance, or consultation.
+                                                    </small>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        <!-- Resource Person -->
+                                        <div class="col-md-4">
+                                            <div class="assist-card" 
+                                                data-service="rp"
+                                                role="button"
+                                                tabindex="0">
+
+                                                <div class="assist-check">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </div>
+
+                                                <div class="assist-icon bg-success-subtle">
+                                                    <i class="bi bi-person-badge text-success"></i>
+                                                </div>
+
+                                                <div class="mt-3">
+                                                    <h6 class="fw-bold mb-1">
+                                                        Resource Person
+                                                    </h6>
+
+                                                    <small class="text-muted">
+                                                        Request an expert, speaker, or facilitator.
+                                                    </small>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        <!-- Knowledge Product -->
+                                        <div class="col-md-4">
+                                            <div class="assist-card" 
+                                                data-service="kp"
+                                                role="button"
+                                                tabindex="0">
+
+                                                <div class="assist-check">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </div>
+
+                                                <div class="assist-icon bg-warning-subtle">
+                                                    <i class="bi bi-journal-text text-warning"></i>
+                                                </div>
+
+                                                <div class="mt-3">
+                                                    <h6 class="fw-bold mb-1">
+                                                        Knowledge Product
+                                                    </h6>
+
+                                                    <small class="text-muted">
+                                                        Request manuals, templates, or reference materials.
+                                                    </small>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
                             {{-- TA Completed Program --}}
-                                <div id="tacpBody" class="d-none">
+                                <div id="tacpBody" class="service-panel d-none">
+                                    <div class="service-panel-header">
+                                        <div class="service-panel-icon"><i class="bi bi-tools"></i></div>
+                                        <div>
+                                            <h5 class="service-panel-title">Technical Assistance</h5>
+                                            <p class="service-panel-description">Describe the support or consultation you need.</p>
+                                        </div>
+                                        <span class="service-panel-badge">Base request</span>
+                                    </div>
                                     <div class="mb-3 mt-3">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -1854,7 +2285,15 @@
                                     </div>                                
                                 </div>
                             {{-- TA Program Development --}}
-                                <div id="tapdBody" class="d-none">
+                                <div id="tapdBody" class="service-panel d-none">
+                                    <div class="service-panel-header">
+                                        <div class="service-panel-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                                        <div>
+                                            <h5 class="service-panel-title">Technical Assistance</h5>
+                                            <p class="service-panel-description">Describe the support or consultation you need.</p>
+                                        </div>
+                                        <span class="service-panel-badge">Base request</span>
+                                    </div>
                                     <div class="mb-3 mt-3">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -1988,7 +2427,15 @@
                                     </div>                                
                                 </div>
                         {{-- Resource Person --}}
-                                <div id="rpBody" class="d-none">
+                                <div id="rpBody" class="service-panel service-panel-rp d-none">
+                                    <div class="service-panel-header">
+                                        <div class="service-panel-icon"><i class="bi bi-person-badge"></i></div>
+                                        <div>
+                                            <h5 class="service-panel-title">Resource Person</h5>
+                                            <p class="service-panel-description">Provide the details of the expert or facilitator you need.</p>
+                                        </div>
+                                        <span class="service-panel-badge">Additional service</span>
+                                    </div>
                                     <div class="mb-3 mt-3">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -2009,6 +2456,7 @@
                                                         placeholder="Input the title of the activity"
                                                         required></textarea>
                                                 </div>
+                                                
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="p-2">
@@ -2032,8 +2480,8 @@
                                         </div>
                                     </div>
                                     <div class="mb-3 mt-3">
-                                        <div class="row">
-                                            <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                        <div class="row rp-detail-row">
+                                            <div class="col-md service-base-fields" style="flex: 0 0 31%; max width:31px;">
                                                         <div class="p-2">
                                                             <div class="d-flex align-items-start p-2">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
@@ -2063,7 +2511,7 @@
                                                         </div>
                                                 </div>
                                                 <div class="vertical-divider" style="width: 1px;"></div>
-                                                <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                                <div class="col-md service-base-fields" style="flex: 0 0 31%; max width:31px;">
                                                         <div class="p-2">
                                                             <div class="d-flex align-item-center p-2">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
@@ -2092,7 +2540,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="vertical-divider" style="width: 1px;"></div>
-                                                <div class="col-md" style="flex: 0 0 31%; max width:31px;">
+                                                <div class="col-md rp-detail-column" style="flex: 0 0 31%; max width:31px;">
                                                        <div class="mb-3">
                                                             <div class="d-flex align-items-center p-2">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
@@ -2135,7 +2583,7 @@
                                                                     </small>
                                                                 </div>
                                                             </div>
-                                                            <div class="d-flex align-items-start p-2">
+                                                            <div class="d-flex align-items-start p-2 rp-activity-options">
                                                                 <div class="card m-2 act-card-ftf" id="facetoface">
                                                                     <div class="card-body">
                                                                         <div class="p-3">
@@ -2173,7 +2621,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="p-3">
+                                                            <div class="p-3 service-base-fields">
                                                                 <div>
                                                                     <h6 class="me-2">
                                                                         Priority <i style="color:red">*</i>
@@ -2232,10 +2680,10 @@
                                                                         </div>
                                                                     </div>
 
-                                                                    <h6 class="mb-0 p-1 mt-3">
+                                                                    <h6 class="service-base-fields mb-0 p-1 mt-3">
                                                                         Supporting Document(Optional)
                                                                     </h6>
-                                                                    <div class="card p-2 mt-2">
+                                                                    <div class="service-base-fields card p-2 mt-2">
                                                                             <div class="d-flex align-items-center mb-2">
                                                                                 <i class="bi bi-file-earmark-arrow-up fs-2 text-primary"></i>
                                                                                 <div class="ps-3">
@@ -2265,9 +2713,17 @@
                                     </div>
                                 </div>
                         {{-- Knowledge Product --}}
-                                <div id="kpBody" class="d-none">
+                                <div id="kpBody" class="service-panel service-panel-kp d-none">
+                                    <div class="service-panel-header">
+                                        <div class="service-panel-icon"><i class="bi bi-journal-text"></i></div>
+                                        <div>
+                                            <h5 class="service-panel-title">Knowledge Product</h5>
+                                            <p class="service-panel-description">Choose the reference materials you want to request.</p>
+                                        </div>
+                                        <span class="service-panel-badge">Additional service</span>
+                                    </div>
                                     <div class="row p-2">
-                                        <div class="col-md-6"> 
+                                                        <div class="col-md-6 service-base-fields"> 
                                                 <div class="d-flex align-items-start p-2">
                                                         <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color: #cfe0ff; width:50px; height:50px;">
                                                                 <i class="bi bi-file-earmark fs-5 text-primary"></i>
@@ -2316,7 +2772,7 @@
 
                                                                         <div class="file-name mt-3 text-success fw-semibold d-none"></div>
                                                                     </div>
-                                                                    <div class="mt-3">
+                                                                    <div class="service-base-fields mt-3">
                                                                         <div>
                                                                             <h6 class="me-2">
                                                                                 Priority <i style="color:red">*</i>
@@ -2335,7 +2791,7 @@
                                                                     </div>
                                         </div>
                                         <div class="col-md-6"> 
-                                            <div class="p-2">
+                                                <div class="p-2 service-base-fields">
                                                             <div class="d-flex align-item-center p-2">
                                                                 <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
                                                                         <i class="bi bi-activity fs-5 text-primary"></i>
@@ -2350,14 +2806,14 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                <select class="form-select" id="programSelectKP" name="program">
+                                                <select class="form-select service-base-fields" id="programSelectKP" name="program">
                                                                 <option value="">Select a program</option>
                                                                 @foreach($programs as $program)
                                                                 <option value="{{$program->program_id}}">{{$program->program}}</option>
                                                                 @endforeach
                                                                 <option value="others">Others</option>
                                                 </select>
-                                                    <div id="otherProgramFieldKP" class="mt-3 d-none">
+                                                    <div id="otherProgramFieldKP" class="service-base-fields mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
                                                         <input type="text" class="form-control" id="otherProgramInputKP" name="program_others">
                                                     </div> 
@@ -2533,14 +2989,14 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1 border-top mt-4"> </div>
-                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                <div class="d-flex justify-content-between align-items-center mt-4 rp-form-footer">
                                     <button type="button" id="back" class="btn btn-light wizard-back-btn">
                                         <i class="bi bi-arrow-left-short fs-5"></i>
                                         <span>Back</span>
                                     </button>
 
   
-                                        <div class="d-flex justify-content-end gap-3 mt-3">
+                                        <div class="d-flex justify-content-end gap-3 mt-3 rp-form-actions">
 
                                             <button type="button"
                                                     class="wizard-cancel-btn"
@@ -2949,7 +3405,7 @@
 <script>
 
     let step2Unlocked = false;
-        const serviceCards = ['tacp', 'tapd','rp', 'kp'];   
+        const serviceCards = ['tacp', 'tapd'];
         const toggle = document.getElementById('togglePassword');
         const password = document.getElementById('password');
         const input1 = document.getElementById('supportFileTACP');
@@ -3112,6 +3568,16 @@ window._preventAutoReload = false;
 }
 const proceedOtpBtn = document.getElementById('proceedOtpBtn');
 
+const reviewModalEl = document.getElementById('reviewModal');
+if (reviewModalEl) {
+    reviewModalEl.addEventListener('show.bs.modal', function () {
+        document.body.classList.add('review-modal-open');
+    });
+    reviewModalEl.addEventListener('hidden.bs.modal', function () {
+        document.body.classList.remove('review-modal-open');
+    });
+}
+
 if (proceedOtpBtn) {
     proceedOtpBtn.addEventListener('click', function () {
 
@@ -3128,7 +3594,7 @@ if (proceedOtpBtn) {
     });
 }
 
-        function populateReviewSlip() {
+        function populateReviewSlip() {  
             const program = document.getElementById('programSelectKP');
             document.getElementById('reviewRPSection').style.display = 'none';
             document.getElementById('reviewKPSection').style.display = 'none';
@@ -3254,6 +3720,9 @@ if (organizationConfig[organization]) {
 }
 
     const category = document.getElementById('ticket_category').value;
+    const selectedAssistance = new Set(
+        Array.from(document.querySelectorAll('.assist-card.active')).map(card => card.dataset.service)
+    );
 
         let categoryText = '';
 
@@ -3335,18 +3804,8 @@ if (organizationConfig[organization]) {
 
     }
 
-    else if(category === 'resource'){
+    if(selectedAssistance.has('rp')){
         document.getElementById('reviewRPSection').style.display = 'block';
-
-        const program = document.getElementById('programSelectRP');
-
-        document.getElementById('reviewProgram').textContent =
-            program.value === 'others'
-            ? document.getElementById('otherProgramInputRP').value
-            : program.selectedOptions?.[0]?.text || '-';
-
-        document.getElementById('reviewPurpose').textContent =
-            document.getElementById('reasonRequestRP').value;
 
         document.getElementById('reviewVenue').textContent =
             document.getElementById('venue').value;
@@ -3369,31 +3828,15 @@ if (organizationConfig[organization]) {
             document.getElementById('reviewDate').textContent = '-';
 }
 
-        showAttachment('supportFileRP');
-
-     
-        const prRP = document.getElementById('prioritySelectRP');
-        document.getElementById('reviewPriority').textContent = prRP?.selectedOptions?.[0]?.text || '-';
-
     }
 
-    else if(category === 'knowledge'){
+    if(selectedAssistance.has('kp')){
     document.getElementById('reviewKPSection').style.display = 'block';
-
-        const program = document.getElementById('programSelectKP');
-
-        document.getElementById('reviewProgram').textContent =
-            program.value === 'others'
-            ? document.getElementById('otherProgramInputKP').value
-            : program.selectedOptions?.[0]?.text || '-';
-
-        document.getElementById('reviewPurpose').textContent =
-            document.getElementById('reasonRequestKP').value;
 
         const kpContainer = document.getElementById('reviewKnowledgeProduct');
         kpContainer.innerHTML = '';
 
-        document.querySelectorAll('input[name="type_of_knowledge_product[]"]:checked')
+        document.querySelectorAll('#kpBody .kp-input:checked')
             .forEach(cb => {
 
                 let value = cb.value;
@@ -3858,6 +4301,96 @@ if (organizationConfig[organization]) {
 
 
     });
+
+        const supplementalFields = {
+            rp: ['titleOfActivity', 'targetParticipants', 'venue', 'type_of_activity', 'dateOfActivity', 'dateOfActivityEnd'],
+            kp: ['type_of_knowledge_product[]', 'type_of_knowledge_product_others']
+        };
+        const technicalOnlyFields = [
+            'reasonRequestRP', 'programSelectRP', 'otherProgramInputRP', 'prioritySelectRP', 'supportFileRP',
+            'reasonRequestKP', 'programSelectKP', 'otherProgramInputKP', 'prioritySelectKP', 'supportFileKP'
+        ];
+
+        function setFieldSubmissionState(field, enabled) {
+            if (!field) return;
+            if (enabled) {
+                const originalName = field.dataset.originalName || (
+                    field.classList.contains('kp-input')
+                        ? 'type_of_knowledge_product[]'
+                        : field.id === 'otherKnowledgeProduct'
+                            ? 'type_of_knowledge_product_others'
+                            : field.name
+                );
+                if (originalName) {
+                    field.dataset.originalName = originalName;
+                    field.setAttribute('name', originalName);
+                }
+            } else {
+                if (field.name) field.dataset.originalName = field.name;
+                field.removeAttribute('name');
+                field.required = false;
+            }
+        }
+
+        function updateSupplementalServices() {
+            const selected = new Set(Array.from(document.querySelectorAll('.assist-card.active')).map(card => card.dataset.service));
+            const rpSelected = selected.has('rp');
+            const kpSelected = selected.has('kp');
+
+            document.getElementById('rpBody')?.classList.toggle('service-body-selected', rpSelected);
+            document.getElementById('rpBody')?.classList.toggle('d-none', !rpSelected);
+            document.getElementById('kpBody')?.classList.toggle('service-body-selected', kpSelected);
+            document.getElementById('kpBody')?.classList.toggle('d-none', !kpSelected);
+
+            supplementalFields.rp.forEach(id => setFieldSubmissionState(document.getElementById(id), rpSelected));
+            document.querySelectorAll('#kpBody .kp-input, #kpBody #otherKnowledgeProduct')
+                .forEach(field => setFieldSubmissionState(field, kpSelected));
+            technicalOnlyFields.forEach(id => setFieldSubmissionState(document.getElementById(id), false));
+
+            if (!rpSelected) {
+                ['titleOfActivity', 'targetParticipants', 'venue', 'type_of_activity', 'dateOfActivity', 'dateOfActivityEnd']
+                    .forEach(id => {
+                        const field = document.getElementById(id);
+                        if (!field) return;
+                        field.value = '';
+                        field.required = false;
+                    });
+                document.querySelectorAll('#rpBody .act-card-ftf, #rpBody .act-card-vt, #rpBody .act-card-blended')
+                    .forEach(card => {
+                        card.style.backgroundColor = '#fff';
+                        card.style.borderColor = '#dee2e6';
+                    });
+                const activityType = document.getElementById('type_of_activity');
+                if (activityType) activityType.value = '';
+            }
+            if (!kpSelected) {
+                document.querySelectorAll('#kpBody input[type="checkbox"]').forEach(field => { field.checked = false; });
+                const other = document.getElementById('otherKnowledgeProduct');
+                if (other) other.value = '';
+            }
+        }
+
+        document.querySelectorAll('.assist-card').forEach(card => {
+            const selectService = () => {
+                const service = card.dataset.service;
+                if (service === 'tacp') {
+                    document.getElementById('tacp')?.click();
+                    card.classList.add('active');
+                } else {
+                    card.classList.toggle('active');
+                }
+                updateSupplementalServices();
+            };
+
+            card.addEventListener('click', selectService);
+            card.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    selectService();
+                }
+            });
+        });
+        updateSupplementalServices();
 
         document.getElementById('back').addEventListener('click', function(){
             //Step 1
@@ -4462,12 +4995,13 @@ if (ticketForm) {
         if (!sex) missing.push('Sex');
         if (!ticketCat) missing.push('Service selection');
 
-        const activeProgram = document.querySelector('select[name="program"]');
+        const activeProgram = ticketForm.querySelector(
+            '#programSelectTACP[name="program"], #programSelectTAPD[name="program"]'
+        );
         if (activeProgram && (!activeProgram.value || activeProgram.value === '')) {
             missing.push('Program selection');
         }
 
-        // Organization-specific requirements (match validateStep1)
         if (org === 'lgu') {
             if (!region) missing.push('Region');
             if (!province) missing.push('Province');
@@ -4495,7 +5029,6 @@ if (ticketForm) {
             let spec = '';
             Array.from(document.querySelectorAll('input[name="requestor_specific_office"]')).some(i => {
                 if (i.disabled) return false;
-                // accept if visible or if it contains a value filled earlier on step1
                 if (i.offsetParent !== null || (i.value && i.value.trim() !== '')) { spec = i.value.trim() || ''; return true; }
                 return false;
             });
@@ -4511,7 +5044,6 @@ if (ticketForm) {
         }
 
         if (missing.length) {
-                // if office missing, focus the visible office select
                 if (missing.includes('Select Office/Bureau/Section/Unit')) {
                     const visOffice = Array.from(document.querySelectorAll('select[name="requestor_office"]')).find(s => !s.disabled && s.offsetParent !== null);
                     if (visOffice) { try { visOffice.focus(); visOffice.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){} }
@@ -4533,7 +5065,9 @@ if (ticketForm) {
         }
 
         // Ensure the active service's purpose_of_request is filled
-        const purposeEl = ticketForm.querySelector('textarea[name="purpose_of_request"]');
+        const purposeEl = ticketForm.querySelector(
+            '#reasonRequestTACP[name="purpose_of_request"], #reasonRequestTAPD[name="purpose_of_request"]'
+        );
         if (purposeEl && purposeEl.value.trim() === '') {
             Swal.fire({
                 icon: 'warning',
@@ -4544,6 +5078,45 @@ if (ticketForm) {
             purposeEl.classList.add('is-invalid');
             purposeEl.focus();
             return false;
+        }
+
+        const selectedAssistance = new Set(
+            Array.from(document.querySelectorAll('.assist-card.active')).map(card => card.dataset.service)
+        );
+
+        if (selectedAssistance.has('rp')) {
+            const resourceFields = [
+                ['titleOfActivity', 'the title of the activity'],
+                ['targetParticipants', 'the target participants'],
+                ['venue', 'the venue'],
+                ['type_of_activity', 'the activity type'],
+                ['dateOfActivity', 'the activity start date'],
+                ['dateOfActivityEnd', 'the activity end date']
+            ];
+            const missingResourceField = resourceFields.find(([id]) => !document.getElementById(id)?.value.trim());
+            if (missingResourceField) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Incomplete Resource Person Details',
+                    text: 'Please enter ' + missingResourceField[1] + '.',
+                    confirmButtonColor: '#062c52'
+                });
+                document.getElementById(missingResourceField[0])?.focus();
+                return false;
+            }
+        }
+
+        if (selectedAssistance.has('kp')) {
+            const selectedProducts = ticketForm.querySelectorAll('#kpBody .kp-input:checked');
+            if (!selectedProducts.length) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Select Knowledge Product',
+                    text: 'Please select at least one knowledge product.',
+                    confirmButtonColor: '#062c52'
+                });
+                return false;
+            }
         }
 
         if (ticketCat === 'knowledge') {
@@ -4943,20 +5516,6 @@ document.getElementById('tapd').addEventListener('click', function() {
     clearKPFields();
 });
 
-document.getElementById('rp').addEventListener('click', function() {
-    clearTACPFields();
-    clearTAPDFields();
-    clearKPFields();
-});
-
-document.getElementById('kp').addEventListener('click', function() {
-    clearTACPFields();
-    clearTAPDFields();
-    clearRPFields();
-});
-
-
-
 document.addEventListener('DOMContentLoaded', function(){
     function showInvalid(el, msg){
         el.classList.add('is-invalid');
@@ -4985,9 +5544,7 @@ document.addEventListener('DOMContentLoaded', function(){
     submitBtn.addEventListener('click', function(e){
         var bodies = [
             {id:'tacpBody', select:'prioritySelectTACP'},
-            {id:'tapdBody', select:'prioritySelectTADP'},
-            {id:'rpBody', select:'prioritySelectRP'},
-            {id:'kpBody', select:'prioritySelectKP'}
+            {id:'tapdBody', select:'prioritySelectTADP'}
         ];
 
         // clear previous invalid states
@@ -4996,29 +5553,6 @@ document.addEventListener('DOMContentLoaded', function(){
         for(var i=0;i<bodies.length;i++){
             var body = document.getElementById(bodies[i].id);
             if(body && body.classList && !body.classList.contains('d-none')){
-                if (bodies[i].id === 'rpBody') {
-                    var resourcePersonFields = [
-                        {element: document.getElementById('titleOfActivity'), label: 'the title of the activity'},
-                        {element: document.getElementById('targetParticipants'), label: 'the target participants'}
-                    ];
-
-                    for (var fieldIndex = 0; fieldIndex < resourcePersonFields.length; fieldIndex++) {
-                        var field = resourcePersonFields[fieldIndex];
-                        if (field.element && !field.element.value.trim()) {
-                            e.preventDefault();
-                            showInvalid(field.element, 'This field is required.');
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Incomplete Information',
-                                text: 'Please enter ' + field.label + ' before proceeding.',
-                                confirmButtonColor: '#062c52',
-                                confirmButtonText: 'OK'
-                            });
-                            return false;
-                        }
-                    }
-                }
-
                 var select = document.getElementById(bodies[i].select);
                 if(select && (!select.value || select.value.trim() === '')){
                     e.preventDefault();

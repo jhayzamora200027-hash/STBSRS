@@ -59,7 +59,7 @@ class ResolutionController extends Controller
         $ticketUpdate = ['ticket_status' => $data['ticket_status']];
 
         if ($previousStatus !== 'resolved' && $data['ticket_status'] === 'resolved') {
-            $ticketUpdate['ticket_resolved_at'] = now()->toDateString();
+            $ticketUpdate['ticket_resolved_at'] = now();
         } elseif ($data['ticket_status'] !== 'resolved') {
             $ticketUpdate['ticket_resolved_at'] = null;
         }

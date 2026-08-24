@@ -59,9 +59,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 
-
+> composer install
+> composer require doctrine/dbal
+> copy .env.example .env
 > npm install chart.js
 > npm install jquery
 > npm install sweetalert2
 > composer require spatie/browsershot
 > npm install puppeteer
+> npm install bootstrap-icons

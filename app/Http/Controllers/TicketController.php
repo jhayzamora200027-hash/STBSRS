@@ -54,9 +54,18 @@ class TicketController extends Controller
             $rules['requestor_specific_office'] = 'required';
         }
 
-        if ($request->input('ticket_category') === 'resource') {
+        if ($request->input('ticket_category') === 'resource' || $request->has('title_of_activity')) {
             $rules['title_of_activity'] = 'required|string|max:255';
             $rules['target_participants'] = 'required|string|max:255';
+            $rules['venue'] = 'required|string|max:255';
+            $rules['type_of_activity'] = 'required|string|max:255';
+            $rules['date_of_activity'] = 'required|date';
+            $rules['date_of_activity_end'] = 'required|date|after_or_equal:date_of_activity';
+        }
+
+        if ($request->has('type_of_knowledge_product')) {
+            $rules['type_of_knowledge_product'] = 'required|array|min:1';
+            $rules['type_of_knowledge_product.*'] = 'string|max:255';
         }
 
         if ($request->input('received_ticket_to') === 'FO') {
@@ -268,9 +277,18 @@ class TicketController extends Controller
             $rules['requestor_specific_office'] = 'required';
         }
 
-        if ($request->input('ticket_category') === 'resource') {
+        if ($request->input('ticket_category') === 'resource' || $request->has('title_of_activity')) {
             $rules['title_of_activity'] = 'required|string|max:255';
             $rules['target_participants'] = 'required|string|max:255';
+            $rules['venue'] = 'required|string|max:255';
+            $rules['type_of_activity'] = 'required|string|max:255';
+            $rules['date_of_activity'] = 'required|date';
+            $rules['date_of_activity_end'] = 'required|date|after_or_equal:date_of_activity';
+        }
+
+        if ($request->has('type_of_knowledge_product')) {
+            $rules['type_of_knowledge_product'] = 'required|array|min:1';
+            $rules['type_of_knowledge_product.*'] = 'string|max:255';
         }
 
         if ($request->input('received_ticket_to') === 'FO') {

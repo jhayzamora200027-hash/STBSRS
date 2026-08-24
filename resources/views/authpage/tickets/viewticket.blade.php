@@ -1363,7 +1363,7 @@ hr{
                             @break
 
                             @case('resolved')
-                                <span class="badge rounded-pill bg-warning text-dark px-4 py-2">
+                                <span class="badge rounded-pill bg-success-subtle text-dark px-4 py-2">
                                     <i class="bi bi-check2-circle me-1"></i>
                                     Resolved
                                 </span>
@@ -1509,7 +1509,7 @@ hr{
                                         @break
 
                                         @case('resolved')
-                                            <span class="badge bg-warning text-dark px-3 py-2">
+                                            <span class="badge bg-success-subtle text-dark px-3 py-2">
                                                 Resolved
                                             </span>
                                         @break
@@ -2753,7 +2753,6 @@ hr{
                     text: 'Please acknowledge this ticket before printing or exporting.',
                 });
             } else {
-                alert('Please acknowledge this ticket before printing.');
             }
             return;
         }
