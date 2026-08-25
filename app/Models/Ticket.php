@@ -18,7 +18,7 @@ class Ticket extends Model
     'ticket_status',
     'ticket_resolved_at',
     'ticket_acknowledged_at',
-    'ticket_completed_at',
+    'ticket_completed_date',
 
     'requestor_first_name',
     'requestor_middle_name',
@@ -66,7 +66,7 @@ class Ticket extends Model
 protected $casts = [
     'ticket_acknowledged_at' => 'datetime',
     'ticket_resolved_at' => 'datetime',
-    'ticket_completed_at' => 'datetime',
+    'ticket_completed_date' => 'datetime',
 ];
 
     public function programDetails(){
@@ -108,6 +108,16 @@ protected $casts = [
     public function resolutions()
     {
         return $this->hasMany(Resolution::class, 'ticket_id');
+    }
+
+    public function returns()
+    {
+        return $this->hasMany(TicketReturn::class, 'ticket_id');
+    }
+
+    public function feedback()
+    {
+        return $this->hasOne(TicketFeedback::class, 'ticket_id');
     }
 
     public function activities()

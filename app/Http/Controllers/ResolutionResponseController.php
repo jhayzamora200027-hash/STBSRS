@@ -13,6 +13,13 @@ class ResolutionResponseController extends Controller
         $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
         $resolution = Resolution::findOrFail($resolution_id);
 
+        if ($ticket->ticket_status !== 'resolved') {
+            return view('tickets.resolution_response', [
+                'message' => 'This ticket can only be completed after it has been resolved.',
+                'ticket' => $ticket,
+            ]);
+        }
+
         $ticket->update([
             'ticket_status' => 'completed',
             'ticket_resolved_at' => null,
@@ -40,7 +47,7 @@ class ResolutionResponseController extends Controller
             'ticket_resolved_at' => null,
         ]);
         $ticket->activities()->create([
-            'event' => 'status_changed',
+            'event' => 'ticket_returned',
             'title' => 'Ticket returned for follow-up',
             'description' => 'The requester returned the ticket and its status changed to In Progress.',
             'performed_by' => 'Requester',

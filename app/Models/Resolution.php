@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resolution extends Model
 {
+    protected $casts = [
+        'resolved_at' => 'datetime',
+    ];
+
     protected $fillable = [
         'ticket_id',
         'resolution_text',

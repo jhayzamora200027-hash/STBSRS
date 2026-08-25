@@ -32,7 +32,7 @@ class CompleteResolvedTickets extends Command
         foreach ($eligibleTickets as $ticket) {
             $ticket->update(['ticket_status' => 'completed']);
             $ticket->activities()->create([
-                'event' => 'status_changed',
+                'event' => 'ticket_auto_completed',
                 'title' => 'Status changed to Completed',
                 'description' => 'The ticket was automatically completed after remaining resolved for three days.',
                 'performed_by' => 'System',

@@ -7,22 +7,48 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\Rule;
 use App\Mail\TicketResolvedMail;
+use App\Mail\TicketRejectedMail;
 
 class ResolutionController extends Controller
 {
     public function store(Request $request, string $ticket_id)
     {
         $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+        $latestResolution = $ticket->resolutions()->latest()->first();
+        $requestedStatus = $request->input('ticket_status');
+        $requiresResolution = in_array($requestedStatus, ['resolved', 'completed', 'rejected'], true);
+        $hasNewAttachments = $request->hasFile('attachments');
+        $resolutionContentChanged = !$latestResolution
+            || (string) ($latestResolution->resolution_text ?? '') !== (string) ($request->input('resolution_text') ?? '')
+            || $hasNewAttachments;
+        $createResolution = $requiresResolution && $resolutionContentChanged;
 
         $data = $request->validate([
-            'resolution_text' => ['nullable', 'string'],
-            'ticket_status' => ['required', 'in:review,inprogress,resolved,completed'],
-            'attachments' => ['nullable', 'array'],
+            'resolution_text' => [Rule::requiredIf($requiresResolution), 'nullable', 'string'],
+            'ticket_status' => ['required', 'in:review,inprogress,resolved,completed,rejected'],
+            'attachments' => [
+                Rule::requiredIf($createResolution && ! $latestResolution?->attachments()->exists()),
+                'nullable',
+                'array',
+                'min:1',
+            ],
             'attachments.*' => ['file', 'max:10240'],
         ]);
 
-        $resolution = $ticket->resolutions()->latest()->first();
+        if (in_array($ticket->ticket_status, ['completed', 'rejected'], true)) {
+            return back()
+                ->withErrors(['ticket_status' => 'This ticket is closed and can no longer be edited.'])
+                ->withInput();
+        }
+
+        if ($data['ticket_status'] === 'completed' && $ticket->ticket_status !== 'resolved') {
+            return back()
+                ->withErrors(['ticket_status' => 'A ticket can only be marked as completed after it has been resolved.'])
+                ->withInput();
+        }
+
         $resolutionData = [
             'resolution_text' => $data['resolution_text'] ?? null,
             'resolution_status' => $data['ticket_status'],
@@ -30,28 +56,28 @@ class ResolutionController extends Controller
             'resolved_at' => now(),
         ];
 
+        $resolution = $createResolution
+            ? $ticket->resolutions()->create($resolutionData)
+            : $latestResolution;
+
         if ($resolution) {
-            $resolution->update($resolutionData);
-        } else {
-            $resolution = $ticket->resolutions()->create($resolutionData);
-        }
+            foreach ($request->file('attachments', []) as $file) {
+                $path = $file->store('resolution-attachments/' . $ticket->ticket_id, 'public');
 
-        foreach ($request->file('attachments', []) as $file) {
-            $path = $file->store('resolution-attachments/' . $ticket->ticket_id, 'public');
+                $resolution->attachments()->create([
+                    'attachment' => $file->getClientOriginalName(),
+                    'attachment_path' => $path,
+                    'file_type' => $file->getClientMimeType(),
+                    'file_size' => $file->getSize(),
+                ]);
 
-            $resolution->attachments()->create([
-                'attachment' => $file->getClientOriginalName(),
-                'attachment_path' => $path,
-                'file_type' => $file->getClientMimeType(),
-                'file_size' => $file->getSize(),
-            ]);
-
-            $ticket->activities()->create([
-                'event' => 'resolution_attachment_added',
-                'title' => 'Resolution attachment added',
-                'description' => 'Added resolution attachment: ' . $file->getClientOriginalName(),
-                'performed_by' => Auth::user()?->name,
-            ]);
+                $ticket->activities()->create([
+                    'event' => 'resolution_attachment_added',
+                    'title' => 'Resolution attachment added',
+                    'description' => 'Added resolution attachment: ' . $file->getClientOriginalName(),
+                    'performed_by' => Auth::user()?->name,
+                ]);
+            }
         }
 
         $previousStatus = $ticket->ticket_status;
@@ -97,6 +123,19 @@ class ResolutionController extends Controller
             }
         }
 
-        return back()->with('success', 'Resolution saved and ticket status updated.');
+        if ($previousStatus !== 'rejected' && $data['ticket_status'] === 'rejected') {
+            try {
+                if (!empty($ticket->requestor_email)) {
+                    Mail::to($ticket->requestor_email)
+                        ->send(new TicketRejectedMail($ticket, $resolution));
+                }
+            } catch (\Exception $e) {
+                // swallow email exceptions for now; consider logging
+            }
+        }
+
+        return back()
+            ->with('success', 'Resolution saved and ticket status updated.')
+            ->with('success_title', $createResolution ? 'Resolution Saved' : 'Ticket Updated');
     }
 }

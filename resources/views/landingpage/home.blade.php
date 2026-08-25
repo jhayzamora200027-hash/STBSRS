@@ -1139,6 +1139,80 @@ body.review-modal-open .modal-backdrop.show {
                                 <div class="modal-header border-0 pb-0">
                                     <div>
                                         <small class="text-uppercase otp-label">Secure Sign-In</small>
+                                    <style>
+                                        .recent-ticket-item {
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: space-between;
+                                            gap: 1rem;
+                                            padding: 1rem 1.1rem;
+                                            border: 1px solid #dbe4f0;
+                                            border-radius: 12px;
+                                            background: #fff;
+                                            color: #1e293b;
+                                            text-decoration: none;
+                                            transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+                                        }
+
+                                        .recent-ticket-item:hover,
+                                        .recent-ticket-item:focus-visible {
+                                            border-color: #7da9ff;
+                                            box-shadow: 0 8px 18px rgba(13, 110, 253, .1);
+                                            color: #1e293b;
+                                            transform: translateY(-1px);
+                                        }
+
+                                        #recentTicketsList {
+                                            max-height: 270px;
+                                            overflow-y: auto;
+                                            padding: .15rem .35rem .15rem .05rem;
+                                            scrollbar-width: thin;
+                                            scrollbar-color: #b8c9e6 transparent;
+                                        }
+
+                                        #recentTicketsList::-webkit-scrollbar {
+                                            width: 6px;
+                                        }
+
+                                        #recentTicketsList::-webkit-scrollbar-thumb {
+                                            background: #b8c9e6;
+                                            border-radius: 6px;
+                                        }
+
+                                        .recent-ticket-label {
+                                            color: #64748b;
+                                            font-size: .75rem;
+                                            font-weight: 600;
+                                            letter-spacing: .04em;
+                                            text-transform: uppercase;
+                                        }
+
+                                        .recent-ticket-reference {
+                                            color: #1268ed;
+                                            font-size: 1rem;
+                                            font-weight: 700;
+                                            overflow-wrap: anywhere;
+                                            text-align: right;
+                                        }
+
+                                        .recent-ticket-arrow {
+                                            color: #1268ed;
+                                            flex-shrink: 0;
+                                            font-size: 1.1rem;
+                                        }
+
+                                        @media (max-width: 576px) {
+                                            .recent-ticket-item {
+                                                align-items: flex-start;
+                                                padding: .85rem;
+                                            }
+
+                                            .recent-ticket-reference {
+                                                font-size: .85rem;
+                                            }
+                                        }
+                                    </style>
+
                                         <h2 class="otp-title mb-0">Two-step verification</h2>
                                     </div>
 
@@ -1383,6 +1457,16 @@ body.review-modal-open .modal-backdrop.show {
                                             return showError(data.message || 'Failed to send OTP.');
                                         }
 
+                                        saveRecentTicketReference(ticketId);
+                                        renderRecentTicketReferences();
+
+                                        // already verified in this session — skip OTP and go straight to the ticket
+                                        if (data.already_verified) {
+                                            hideProcessingModal();
+                                            window.location = data.redirect || ('/guest/tickets/' + encodeURIComponent(ticketId));
+                                            return;
+                                        }
+
                                         // show OTP modal and populate masked email if provided
                                         if (bsModal) {
                                             const emailMaskedEl = document.getElementById('guestOtpEmailMasked');
@@ -1549,24 +1633,249 @@ body.review-modal-open .modal-backdrop.show {
                                                 <img src="{{asset('images/icons/magnifying.png')}}" width="20" height="20">
                                             </span>
                                             <input
-                                                type="text"
+                                                id="guestEmailSearch"
+                                                type="email"
                                                 class="form-control"
                                                 placeholder="Enter Email Address..." 
-                                                aria-label="Ticket Reference Number">
+                                                aria-label="Requestor Email Address">
                                                 
-                                            <button class="btn btn-primary" type="button">
+                                            <button id="guestEmailSearchBtn" class="btn btn-primary" type="button">
                                                 <i class="bi bi-search"></i> Search
                                             </button>
                             </div>
+                            <div id="guestEmailSearchError" class="text-danger small mt-2" style="display:none;"></div>
                         </div>
                     </div>
-                        <div class="card mt-3">
-                            <div class="card-body shadow-sm d-flex flex-column justify-content-center align-items-center"
-                                style="height:360px;">
-                                <img src="{{ asset('images/icons/norecentact.png') }}"
-                                    style="max-height:40px; max-width:40px;">
 
-                                <p class="mt-2 mb-0 text-muted">No recent activity</p>
+                    <!-- Guest search by email OTP Modal (styled like main OTP modal) -->
+                    <div class="modal fade" id="guestEmailOtpModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content otp-modal border-0">
+
+                                <div class="modal-header border-0 pb-0">
+                                    <div>
+                                        <small class="text-uppercase otp-label">Secure Sign-In</small>
+                                        <h2 class="otp-title mb-0">Two-step verification</h2>
+                                    </div>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="otp-info-card">
+                                        <div class="otp-icon">2FA</div>
+                                        <div class="ms-3">
+                                            <p class="mb-0 text-muted">
+                                                Verification code has been sent to
+                                                <strong id="guestEmailOtpEmailMasked"></strong>.
+                                                Enter the code below to view your requests.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="otp-code-card">
+                                        <h2 class="text-center text-primary mb-4">Verification Code</h2>
+                                        <div class="d-flex justify-content-center gap-2 mb-3">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-1">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-2">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-3">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-4">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-5">
+                                            <input type="text" maxlength="1" class="form-control otp-input" aria-label="otp-6">
+                                        </div>
+                                        <p class="text-center text-muted mb-0">Enter the 6-digit code you received by email.</p>
+                                    </div>
+
+                                    <div id="guestEmailOtpError" class="text-danger small mt-2" style="display:none;"></div>
+                                </div>
+
+                                <div class="modal-footer border-0 d-block">
+                                    <button class="btn btn-primary w-100 mb-3 otp-btn" id="guestEmailVerifyOtpBtn">Verify</button>
+                                    <button class="btn btn-outline-secondary w-100 otp-btn" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function(){
+                            const emailTokenMeta = document.querySelector('meta[name="csrf-token"]');
+                            const emailToken = emailTokenMeta ? emailTokenMeta.getAttribute('content') : '';
+                            const emailSearchBtn = document.getElementById('guestEmailSearchBtn');
+                            const emailInput = document.getElementById('guestEmailSearch');
+                            const emailSearchError = document.getElementById('guestEmailSearchError');
+                            const emailOtpModalEl = document.getElementById('guestEmailOtpModal');
+                            const emailVerifyBtn = document.getElementById('guestEmailVerifyOtpBtn');
+                            const emailOtpError = document.getElementById('guestEmailOtpError');
+
+                            let emailBsModal = null;
+                            if (emailOtpModalEl) {
+                                try {
+                                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                                        emailBsModal = new bootstrap.Modal(emailOtpModalEl);
+                                    }
+                                } catch (e) {
+                                    console.warn('Bootstrap Modal not available:', e);
+                                }
+                            }
+
+                            function showEmailSearchError(msg){
+                                if (emailSearchError) {
+                                    emailSearchError.style.display = 'block';
+                                    emailSearchError.textContent = msg;
+                                } else {
+                                    alert(msg);
+                                }
+                            }
+
+                            function clearEmailSearchError(){
+                                if (emailSearchError) { emailSearchError.style.display = 'none'; emailSearchError.textContent = ''; }
+                            }
+
+                            function showEmailOtpError(msg){
+                                if (emailOtpError) { emailOtpError.style.display = 'block'; emailOtpError.textContent = msg; }
+                            }
+
+                            function clearEmailOtpError(){
+                                if (emailOtpError) { emailOtpError.style.display = 'none'; emailOtpError.textContent = ''; }
+                            }
+
+                            function attachOtpNavigation(inputs){
+                                inputs.forEach((input, idx) => {
+                                    input.addEventListener('input', () => {
+                                        const v = input.value.trim();
+                                        if (v.length > 1) {
+                                            const paste = v.split('');
+                                            for (let j = 0; j < inputs.length; j++) inputs[j].value = paste[j] || '';
+                                            inputs[Math.min(inputs.length - 1, paste.length - 1)].focus();
+                                        } else if (v.length === 1 && idx < inputs.length - 1) {
+                                            inputs[idx + 1].focus();
+                                        }
+                                    });
+                                    input.addEventListener('keydown', (e) => {
+                                        if (e.key === 'Backspace' && !input.value && idx > 0) inputs[idx - 1].focus();
+                                    });
+                                    input.addEventListener('paste', function(e){
+                                        e.preventDefault();
+                                        const paste = (e.clipboardData || window.clipboardData).getData('text').trim().slice(0, 6);
+                                        for (let k = 0; k < paste.length && k < inputs.length; k++) inputs[k].value = paste[k];
+                                    });
+                                });
+                            }
+
+                            if (emailSearchBtn) {
+                                emailSearchBtn.addEventListener('click', function(){
+                                    clearEmailSearchError();
+                                    const email = (emailInput?.value || '').trim();
+                                    if (!email) return showEmailSearchError('Please enter your email address.');
+                                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                                        return showEmailSearchError('Please enter a valid email address.');
+                                    }
+
+                                    const origHtml = emailSearchBtn.innerHTML;
+                                    emailSearchBtn.disabled = true;
+                                    emailSearchBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span>Sending...`;
+
+                                    fetch('/guest/tickets/send-otp-by-email', {
+                                        method: 'POST',
+                                        credentials: 'same-origin',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': emailToken,
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({ email: email })
+                                    }).then(async res => {
+                                        const data = await res.json().catch(() => ({}));
+                                        if (!res.ok) {
+                                            return showEmailSearchError(data.message || 'Failed to send OTP.');
+                                        }
+
+                                        // already verified in this session — skip OTP and go straight to the list
+                                        if (data.already_verified) {
+                                            window.location = data.redirect || '/guest/tickets';
+                                            return;
+                                        }
+
+                                        if (emailBsModal) {
+                                            const maskedEl = document.getElementById('guestEmailOtpEmailMasked');
+                                            if (maskedEl) maskedEl.innerText = data.masked_email || '';
+                                            clearEmailOtpError();
+                                            const inputs = emailOtpModalEl.querySelectorAll('.otp-input');
+                                            inputs.forEach(i => { i.value = ''; i.disabled = false; });
+                                            attachOtpNavigation(Array.from(inputs));
+                                            emailBsModal.show();
+                                            setTimeout(() => { try { inputs[0].focus(); } catch (e) {} }, 80);
+                                        } else {
+                                            alert('OTP sent. Please check your email and enter the code.');
+                                        }
+                                    }).catch(() => {
+                                        showEmailSearchError('Unable to send request.');
+                                    }).finally(() => {
+                                        emailSearchBtn.disabled = false;
+                                        emailSearchBtn.innerHTML = origHtml;
+                                    });
+                                });
+                            }
+
+                            if (emailVerifyBtn) {
+                                emailVerifyBtn.addEventListener('click', async function(){
+                                    clearEmailOtpError();
+                                    const email = (emailInput?.value || '').trim();
+                                    const otpInputs = emailOtpModalEl ? emailOtpModalEl.querySelectorAll('.otp-input') : [];
+                                    const otp = Array.from(otpInputs).map(i => i.value.trim()).join('');
+                                    if (!otp || otp.length < 6) return showEmailOtpError('Please enter the 6-digit OTP code.');
+
+                                    emailVerifyBtn.disabled = true;
+                                    const origText = emailVerifyBtn.innerText;
+                                    emailVerifyBtn.innerText = 'Verifying...';
+
+                                    try {
+                                        const res = await fetch('/guest/tickets/verify-otp-by-email', {
+                                            method: 'POST',
+                                            credentials: 'same-origin',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': emailToken,
+                                                'Accept': 'application/json'
+                                            },
+                                            body: JSON.stringify({ email: email, otp: otp })
+                                        });
+                                        const data = await res.json().catch(() => ({}));
+                                        if (!res.ok) {
+                                            showEmailOtpError(data.message || 'Invalid code.');
+                                            return;
+                                        }
+                                        // verified -> redirect to guest tickets list
+                                        window.location = '/guest/tickets';
+                                    } catch (e) {
+                                        showEmailOtpError('Unable to verify OTP.');
+                                    } finally {
+                                        emailVerifyBtn.disabled = false;
+                                        emailVerifyBtn.innerText = origText;
+                                    }
+                                });
+                            }
+                        });
+                    </script>
+
+                        <div class="card mt-3">
+                            <div class="card-body shadow-sm" style="height:360px;">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <i class="bi bi-clock-history text-primary"></i>
+                                    <p class="mb-0 fw-semibold">Recent tickets</p>
+                                </div>
+
+                                <div id="recentTicketsList" class="d-flex flex-column gap-2"></div>
+
+                                <div id="recentTicketsEmpty"
+                                    class="h-75 d-flex flex-column justify-content-center align-items-center">
+                                    <img src="{{ asset('images/icons/norecentact.png') }}"
+                                        style="max-height:40px; max-width:40px;">
+                                    <p class="mt-2 mb-0 text-muted">No recent tickets</p>
+                                </div>
                             </div>
                         </div>
                 </div>
@@ -1576,92 +1885,8 @@ body.review-modal-open .modal-backdrop.show {
     </div>
 </div>
 {{-- MODAL LOGIN --}}
+{{-- login modal now lives in layouts.app so it's available on every guest page --}}
 @push('modals')
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="row g-0">
-                    {{-- Column Left --}}
-                    <div class="col-12 col-lg-5 p-5" style="background-color:#ecf4fe;">
-                        <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}" class="img-fluid">
-
-                        <h4 class="mt-5">Welcome Back!</h4>
-
-                        <p class="text-muted" style="font-size:0.8rem;">
-                            Sign in to your account to continue to the iSTakyson.
-                        </p>
-                        <div class="col-md-5 d-flex justify-content-center align-items-end">
-
-                        </div>
-                        <div style="padding-top:60px;">
-                            <img
-                            src="{{ asset('images/attachments/loginpic.png') }}"
-                            class="img-fluid d-block mx-auto"
-                            style="max-width: 250px !important;">   
-                        </div>             
-                    </div>
-
-                    {{-- Collumn right --}}
-                    <div class="col-12 col-lg-7"> 
-                                <div class="m-3">
-                                    <h4 class="modal-title" id="loginModalLabel">
-                                            Login to your account
-                                    </h4>
-                                    <p class="text-muted" style="font-size:0.7rem;">Enter your credentials to access your account</p>
-                                    <div class="modal-body">
-                                        <form method="POST" id="loginForm" action="{{ route('login')}}">
-                                            @csrf
-                                            <div id="loginError"></div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Email Address</label>
-
-                                                <div class="position-relative">
-                                                    <i class="bi bi-envelope input-email-icon"></i>
-                                                    <input type="email" name="email" class="form-control custom-input" placeholder="Enter your email address" required value="{{old('email')}}">
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Password</label>
-                                                
-                                                <div class="position-relative">
-                                                <i class="bi bi-lock input-password-icon" style="width:30px;"></i>
-                                                <input type="password" name="password" id="password" class="form-control custom-input"  placeholder="Enter your password"  required>
-                                                
-                                                <i class="bi bi-eye eye-icon" id="togglePassword"></i>
-
-                                                </div>
-
-                                                <div class="text-end mt-2">
-                                                    <a href="#" class="forgot-link">Forgot Password?</a>
-                                                </div>
-                                            </div>
-                                            <button class="btn w-100 d-submit-button" type="submit">
-                                                <i class="bi bi-lock"></i>
-                                                Sign-In
-                                            </button>
-                                        </form>
-                                        <div class="d-flex align-items-center my-4">
-                                            <div class="flex-grow-1 border-top"> </div>
-                                                <span class="mx-3 text-secondary fw-medium">
-                                                    or
-                                                </span>
-                                            <div class="flex-grow-1 border-top"> </div>
-                                        </div>
-                                            <button class="btn w-100 d-submit-white-button" >
-                                                    <i class="bi bi-person-circle"></i>
-                                                    Sign-In with Google
-                                            </button>
-
-                                            <div class="text-center mt-3">
-                                               <span style="font-size:0.8rem;"> Need help? </span> <a href="#" class="forgot-link"> Contact your system a`dministator.</a>
-                                            </div>
-                                    </div>
-                                </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     {{-- MODAL NEW REQUEST --}}
     <div class="modal fade" id="createTicketModal" tabindex="-1" arialabelledby="createTicketLabel" aria-hideen="true">
         <form method="POST" id="ticketForm" action="{{route('tickets.store')}}" enctype="multipart/form-data" novalidate>
@@ -3345,8 +3570,6 @@ body.review-modal-open .modal-backdrop.show {
 
     let step2Unlocked = false;
         const serviceCards = ['tacp', 'tapd'];
-        const toggle = document.getElementById('togglePassword');
-        const password = document.getElementById('password');
         const input1 = document.getElementById('supportFileTACP');
         const input2 = document.getElementById('supportFileTAPD');
         const input3 = document.getElementById('supportFileRP');
@@ -3355,6 +3578,77 @@ body.review-modal-open .modal-backdrop.show {
         const textarea = document.getElementById('reasonRequestTAPD');
         const checkboxes = document.querySelectorAll('.kp-input');
         const otherInput = document.getElementById('otherKnowledgeProduct');
+
+        const recentTicketsStorageKey = 'stbsrs_recent_ticket_references';
+
+        function getRecentTicketReferences() {
+            try {
+                const stored = JSON.parse(localStorage.getItem(recentTicketsStorageKey) || '[]');
+                return Array.isArray(stored) ? stored.filter(reference => typeof reference === 'string').slice(0, 5) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveRecentTicketReference(reference) {
+            if (!reference) return;
+
+            const references = getRecentTicketReferences().filter(item => item !== reference);
+            references.unshift(reference);
+
+            try {
+                localStorage.setItem(recentTicketsStorageKey, JSON.stringify(references.slice(0, 5)));
+            } catch (error) {
+            }
+        }
+
+        function renderRecentTicketReferences() {
+            const list = document.getElementById('recentTicketsList');
+            const emptyState = document.getElementById('recentTicketsEmpty');
+            if (!list || !emptyState) return;
+
+            list.replaceChildren();
+            const references = getRecentTicketReferences();
+            emptyState.classList.toggle('d-none', references.length > 0);
+
+            references.forEach((reference, index) => {
+                const item = document.createElement('a');
+                item.className = 'recent-ticket-item';
+                item.href = '#guestTicketRef';
+                item.setAttribute('aria-label', `Open ticket ${reference}`);
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+
+                    const ticketInput = document.getElementById('guestTicketRef');
+                    const searchButton = document.getElementById('guestTicketSearchBtn');
+                    if (!ticketInput || !searchButton) return;
+
+                    ticketInput.value = reference;
+                    searchButton.click();
+                });
+
+                const label = document.createElement('small');
+                label.className = 'recent-ticket-label';
+                label.textContent = `Recent ${index + 1}`;
+
+                const value = document.createElement('strong');
+                value.className = 'recent-ticket-reference';
+                value.textContent = reference;
+
+                const details = document.createElement('span');
+                details.className = 'd-flex flex-column gap-1';
+                details.append(label, value);
+
+                const arrow = document.createElement('i');
+                arrow.className = 'bi bi-arrow-up-right recent-ticket-arrow';
+                arrow.setAttribute('aria-hidden', 'true');
+
+                item.append(details, arrow);
+                list.appendChild(item);
+            });
+        }
+
+        renderRecentTicketReferences();
 
     function animateCard(cardId, e = null){
 
@@ -3384,6 +3678,8 @@ body.review-modal-open .modal-backdrop.show {
         const pre = "{{ session('created_ticket_number') ?? '' }}";
         if(pre && pre.length){
             const ticketNum = pre;
+            saveRecentTicketReference(ticketNum);
+            renderRecentTicketReferences();
             const swalHtml = `
                 <div style="text-align:center">
                     <div style="font-size:14px;color:#16a34a;font-weight:600;margin-bottom:8px">Successfully Submitted</div>
@@ -3799,44 +4095,6 @@ if (organizationConfig[organization]) {
     }
 
         }
-
-    toggle.addEventListener('click', function () {
-        if(password.type === 'password'){
-            password.type = 'text';
-            this.classList.replace('bi-eye', 'bi-eye-slash');
-        } else {
-            password.type = 'password';
-            this.classList.replace('bi-eye-slash', 'bi-eye');
-        }
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-        e.preventDefault();
-    let form = this;
-    let formData = new FormData(form);
-
-    document.getElementById('loginError').innerHTML = '';
-
-    fetch(form.action, {
-        method: 'POST',
-        headers:{
-            'X-Requested-With' : 'XMLHttpRequest',
-            'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]').content
-        },
-        body:formData
-    }).then(response => response.json())
-    .then(data => {
-        if(data.success){
-            window.location.href= data.redirect;
-        }else {
-            document.getElementById('loginError').innerHTML = 
-            `<div class="alert alert-danger">${data.message}</div>`;
-        }
-    })
-    .catch(error=>{
-        console.log(error);
-        });
-    });
 
     document.getElementById('region').addEventListener('change', function(){
         let regionCode = this.value;
@@ -5174,6 +5432,8 @@ if (ticketForm) {
 
                 if (data && data.ticket_number) {
                     const ticketNum = data.ticket_number;
+                    saveRecentTicketReference(ticketNum);
+                    renderRecentTicketReferences();
                     const swalHtml = `
                         <div style="text-align:center">
                             <div style="color:#374151">${message}</div>

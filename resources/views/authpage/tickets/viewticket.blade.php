@@ -3,6 +3,9 @@
 @section('title', 'ViewTicket')
 
 @section('content')
+@php
+    $resolutionLocked = in_array($ticket->ticket_status, ['completed', 'rejected'], true);
+@endphp
 <style>
 .page-break {
     page-break-before: always;
@@ -1436,6 +1439,176 @@ hr{
     color: #6c757d;
 }
     
+.returned-ticket-btn {
+    display:inline-flex;
+    align-items:center;
+    gap:.35rem;
+    background:#fff3cd;
+    color:#856404;
+    border:1px solid #ffe69c;
+    border-radius:10px;
+    padding:.55rem 1rem;
+    font-weight:600;
+    transition:.25s ease;
+}
+
+.returned-ticket-btn:hover {
+    background:#ffda6a;
+    color:#664d03;
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(133,100,4,.15);
+}
+
+.return-details-modal .modal-content {
+    border: 0;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.return-details-modal .modal-header {
+    background: #fff8f0;
+    border-bottom: 1px solid #f3dfc5;
+}
+
+.return-details-modal .return-detail-icon {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #fff3cd;
+    color: #856404;
+}
+
+.return-details-modal .return-reason-box {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #374151;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.return-details-modal .return-meta-label {
+    display: block;
+    color: #6b7280;
+    font-size: .75rem;
+    margin-bottom: .2rem;
+}
+
+@media (max-width: 576px) {
+    .ticket-header > .text-end {
+        width: 100%;
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+
+    .returned-ticket-btn {
+        width: 100%;
+    }
+}
+
+.resolutions-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .5rem;
+    background: #eef4ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: .55rem 1rem;
+    font-weight: 600;
+}
+
+.resolutions-btn:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.resolution-history-modal .modal-content {
+    border: 0;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.resolution-history-modal .modal-header {
+    background: #eef4ff;
+    border-bottom: 1px solid #dbeafe;
+}
+
+.resolution-history-modal .resolution-history-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #fff;
+    padding: 1rem;
+}
+
+.resolution-history-modal .resolution-history-item + .resolution-history-item {
+    margin-top: .8rem;
+}
+
+.resolution-history-modal .resolution-history-item.is-current {
+    border: 2px solid #0d6efd;
+    background: #f5f9ff;
+    box-shadow: 0 6px 18px rgba(13, 110, 253, .12);
+}
+
+.resolution-history-modal .current-resolution-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    margin-bottom: .75rem;
+    border-radius: 999px;
+    padding: .3rem .65rem;
+    background: #0d6efd;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+.resolution-history-modal .resolution-transition {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: #475569;
+    font-size: .8rem;
+}
+
+.resolution-history-modal .resolution-description {
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.resolution-history-modal .resolution-file {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .6rem .7rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    color: #1d4ed8;
+    background: #f8fbff;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 576px) {
+    .ticket-header > .text-end {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .resolutions-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
 </style>
 <div class="row">
     <!-- Loading Overlay -->
@@ -1445,8 +1618,8 @@ hr{
             <span class="visually-hidden">Loading...</span>
         </div>
 
-        <div class="ack-loader-title">
-            Processing request...
+        <div class="ack-loader-title" id="ackLoaderTitle">
+            Processing action...
         </div>
 
         <div class="ack-loader-subtitle">
@@ -1480,13 +1653,44 @@ hr{
     </div>
 </div>
 <div class="p-2">
-    
-    <h4>
-        Ticket Details
-    </h4>
-    <div class="mb-2">
-        <small>View the status and details of request.</small>
+    <div class="ticket-header d-flex justify-content-between align-items-center">
+
+    <div>
+        <h4 class="mb-1 fw-semibold">
+            Ticket Details
+        </h4>
+        <p class="text-muted mb-0 small">
+            View the status and details of your request.
+        </p>
     </div>
+
+<div>
+    @if(isset($ticketReturns) && $ticketReturns->isNotEmpty())
+    <div class="text-end">
+    <button 
+        type="button" 
+        class="btn returned-ticket-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#returnDetailsModal"
+    >
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        View Return Details ({{ $ticketReturns->count() }})
+    </button>
+
+</div>
+    @endif
+
+    @if(isset($resolutions) && $resolutions->isNotEmpty())
+    <div class="text-end">
+        <button type="button" class="btn resolutions-btn" data-bs-toggle="modal" data-bs-target="#resolutionHistoryModal">
+            <i class="bi bi-check2-square"></i>
+            Resolutions ({{ $resolutions->count() }})
+        </button>
+    </div>
+    @endif
+</div>
+
+</div>
     <div class="row">
     <div class="col-md-12 mb-3">
         <div class="ticket-tabs mt-4 d-flex flex-column flex-md-row">
@@ -1554,49 +1758,6 @@ hr{
                             </small>
 
                         </div>
-
-                    </div>
-
-                    <div>
-
-                        @switch($ticket->ticket_status)
-
-                            @case('review')
-                                <span class="badge rounded-pill bg-light text-dark border px-4 py-2">
-                                    <i class="bi bi-hourglass me-1"></i>
-                                    For Review
-                                </span>
-                            @break
-
-                            @case('inprogress')
-                                <span class="badge rounded-pill bg-primary px-4 py-2">
-                                    <i class="bi bi-arrow-repeat me-1"></i>
-                                    In Progress
-                                </span>
-                            @break
-
-                            @case('resolved')
-                                <span class="badge rounded-pill bg-success-subtle text-dark px-4 py-2">
-                                    <i class="bi bi-check2-circle me-1"></i>
-                                    Resolved
-                                </span>
-                            @break
-
-                            @case('completed')
-                                <span class="badge rounded-pill bg-success px-4 py-2">
-                                    <i class="bi bi-check-circle-fill me-1"></i>
-                                    Completed
-                                </span>
-                            @break
-
-                            @case('rejected')
-                                <span class="badge rounded-pill bg-danger px-4 py-2">
-                                    <i class="bi bi-x-circle me-1"></i>
-                                    Rejected
-                                </span>
-                            @break
-
-                        @endswitch
 
                     </div>
 
@@ -1905,12 +2066,12 @@ hr{
             </div>
 
             <div class="card-body p-3">
-                <form method="POST" action="{{ route('ticket.resolve', $ticket->ticket_id) }}" enctype="multipart/form-data">
+                <form id="resolutionForm" method="POST" action="{{ route('ticket.resolve', $ticket->ticket_id) }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-3">
                         <label for="resolution_text" class="form-label">Resolution details</label>
-                        <textarea id="resolution_text" name="resolution_text" rows="4" class="form-control" placeholder="Describe the action taken or the final resolution.">{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
+                        <textarea id="resolution_text" name="resolution_text" rows="4" class="form-control" placeholder="Describe the action taken or the final resolution." {{ $resolutionLocked ? 'disabled' : '' }}>{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
                         @error('resolution_text')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
@@ -1918,8 +2079,11 @@ hr{
 
                     <div class="mb-3">
                         <label for="attachments" class="form-label">Resolution attachments</label>
-                        <input id="attachments" type="file" name="attachments[]" class="form-control" multiple>
+                        <input id="attachments" type="file" name="attachments[]" class="form-control" multiple data-existing-count="{{ $latestResolution?->attachments->count() ?? 0 }}" {{ $resolutionLocked ? 'disabled' : '' }}>
                         <div class="form-text">You can select multiple supporting files.</div>
+                        @error('attachments')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
                         @error('attachments.*')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
@@ -1938,19 +2102,20 @@ hr{
 
                     <div class="mb-4">
                         <label for="ticket_status" class="form-label">Update ticket status</label>
-                        <select id="ticket_status" name="ticket_status" class="form-select">
+                        <select id="ticket_status" name="ticket_status" class="form-select" {{ $resolutionLocked ? 'disabled' : '' }}>
                             <option value="review" @selected(old('ticket_status', $ticket->ticket_status) === 'review')>For Review</option>
                             <option value="resolved" @selected(old('ticket_status', $ticket->ticket_status) === 'resolved')>Resolved</option>
                             <option value="completed" @selected(old('ticket_status', $ticket->ticket_status) === 'completed')>Completed</option>
+                            <option value="rejected" @selected(old('ticket_status', $ticket->ticket_status) === 'rejected')>Rejected</option>
                         </select>
                         @error('ticket_status')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100">
+                    <button type="submit" class="btn btn-dark w-100" {{ $resolutionLocked ? 'disabled' : '' }}>
                         <i class="bi bi-check2-circle me-2"></i>
-                        {{ $latestResolution ? 'Update Resolution' : 'Save Resolution' }}
+                        {{ $resolutionLocked ? 'Ticket Closed' : ($latestResolution ? 'Update Resolution' : 'Save Resolution') }}
                     </button>
                 </form>
             </div>
@@ -2744,6 +2909,123 @@ hr{
         </div>
     </div>
 </div>
+
+@if(isset($ticketReturns) && $ticketReturns->isNotEmpty())
+    <div class="modal fade return-details-modal" id="returnDetailsModal" tabindex="-1" aria-labelledby="returnDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="return-detail-icon">
+                            <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title mb-1" id="returnDetailsModalLabel">Ticket returned</h5>
+                            <small class="text-muted">Return details for #{{ $ticket->ticket_id }}</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @foreach($ticketReturns as $return)
+                        @php
+                            $returnUrgency = strtolower($return->urgency ?? 'medium');
+                            $returnUrgencyClass = match($returnUrgency) {
+                                'urgent' => 'bg-danger text-white',
+                                'high' => 'bg-warning text-dark',
+                                'low' => 'bg-success-subtle text-success',
+                                default => 'bg-primary-subtle text-primary',
+                            };
+                        @endphp
+                        <div class="return-history-item mb-4 pb-4 border-bottom">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <span class="return-meta-label">Urgency</span>
+                                    <span class="badge rounded-pill {{ $returnUrgencyClass }}">{{ ucfirst($returnUrgency) }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="return-meta-label">Current status</span>
+                                    <span class="badge rounded-pill bg-info-subtle text-info">{{ ucfirst($ticket->ticket_status) }}</span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="return-meta-label">Returned by</span>
+                                    <strong>{{ $ticket->requestor_first_name }} {{ $ticket->requestor_last_name }}</strong>
+                                    <div class="small text-muted">{{ $return->returned_at?->format('M d, Y h:i A') ?? $return->created_at->format('M d, Y h:i A') }}</div>
+                                </div>
+                            </div>
+
+                            <span class="return-meta-label">Return reason</span>
+                            <div class="return-reason-box">{{ $return->return_reason }}</div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
+@if(isset($resolutions) && $resolutions->isNotEmpty())
+    @php
+        $currentResolutionId = $resolutions->first()->id;
+    @endphp
+    <div class="modal fade resolution-history-modal" id="resolutionHistoryModal" tabindex="-1" aria-labelledby="resolutionHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title mb-1" id="resolutionHistoryModalLabel"><i class="bi bi-check2-square me-2"></i>Resolution history</h5>
+                        <small class="text-muted">Descriptions, attachments, and status changes for #{{ $ticket->ticket_id }}</small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @foreach($resolutions as $index => $resolution)
+                        @php
+                            $fromStatus = $resolutions->get($index + 1)?->resolution_status ?? 'submitted';
+                            $toStatus = $resolution->resolution_status ?? 'updated';
+                        @endphp
+                        <article class="resolution-history-item {{ $resolution->id === $currentResolutionId ? 'is-current' : '' }}">
+                            @if($resolution->id === $currentResolutionId)
+                                <div class="current-resolution-badge">Current resolution</div>
+                            @endif
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                                <div class="resolution-transition">
+                                    <span class="badge bg-light text-dark border">{{ ucfirst($fromStatus) }}</span>
+                                    <i class="bi bi-arrow-right"></i>
+                                    <span class="badge bg-success-subtle text-success">{{ ucfirst($toStatus) }}</span>
+                                </div>
+                                <span class="small text-muted text-end">{{ ($resolution->resolved_at ?? $resolution->created_at)->format('M d, Y h:i A') }}</span>
+                            </div>
+                            <div class="small fw-semibold text-muted mb-2">Resolution description</div>
+                            <div class="resolution-description mb-3">{{ $resolution->resolution_text ?: 'No resolution details were provided.' }}</div>
+                            @if($resolution->attachments->isNotEmpty())
+                                <div class="small fw-semibold text-muted mb-2">Attachments</div>
+                                <div class="d-grid gap-2">
+                                    @foreach($resolution->attachments as $attachment)
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}" target="_blank" rel="noopener" class="resolution-file">
+                                            <i class="bi bi-paperclip"></i>
+                                            <span>{{ $attachment->attachment }}</span>
+                                            <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="small text-muted"><i class="bi bi-paperclip me-1"></i>No attachments</div>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
 <script>
     (function () {
             const textarea = document.getElementById('main_comment');
@@ -2985,13 +3267,14 @@ hr{
             }
         }
 const flashSuccess = {!! json_encode(session('success')) !!};
+const flashSuccessTitle = {!! json_encode(session('success_title', 'Success')) !!};
 
 if (flashSuccess) {
     const showFlash = () => {
         if (window.Swal) {
             Swal.fire({
                 icon: 'success',
-                title: 'Ticket Acknowledged',
+                title: flashSuccessTitle,
                 text: flashSuccess,
                 confirmButtonText: 'Continue',
                 confirmButtonColor: '#212529',
@@ -3304,12 +3587,83 @@ document.addEventListener('DOMContentLoaded', function(){
     const ackForm = document.getElementById('ackForm');
     const ackLoader = document.getElementById('ackLoader');
     const ackBtn = document.getElementById('ackBtn');
+    const resolutionForm = document.getElementById('resolutionForm');
+    const resolutionStatus = document.getElementById('ticket_status');
+    const resolutionText = document.getElementById('resolution_text');
+    const resolutionAttachments = document.getElementById('attachments');
+    const loaderTitle = document.getElementById('ackLoaderTitle');
+
+    function requiresResolution() {
+        return resolutionStatus && ['resolved', 'completed', 'rejected'].includes(resolutionStatus.value);
+    }
+
+    function requiresTerminalConfirmation() {
+        return resolutionStatus && ['completed', 'rejected'].includes(resolutionStatus.value);
+    }
+
+    function updateResolutionRequirements() {
+        if (!resolutionStatus) return;
+        const required = requiresResolution();
+        if (resolutionText) resolutionText.required = required;
+        if (resolutionAttachments) {
+            const hasExistingAttachment = Number(resolutionAttachments.dataset.existingCount || 0) > 0;
+            resolutionAttachments.required = required && !hasExistingAttachment;
+        }
+    }
+
+    if (resolutionStatus) {
+        updateResolutionRequirements();
+        resolutionStatus.addEventListener('change', updateResolutionRequirements);
+    }
+
+    if (resolutionForm && ackLoader) {
+        resolutionForm.addEventListener('submit', async function(event){
+            updateResolutionRequirements();
+
+            if (resolutionForm.dataset.confirmed !== '1' && requiresTerminalConfirmation()) {
+                event.preventDefault();
+
+                const statusLabel = resolutionStatus.value === 'completed' ? 'complete' : 'reject';
+                let confirmed = false;
+
+                if (window.Swal && Swal.fire) {
+                    const result = await Swal.fire({
+                        icon: 'warning',
+                        title: `${statusLabel.charAt(0).toUpperCase() + statusLabel.slice(1)} this ticket?`,
+                        text: `This will ${statusLabel} the ticket and it cannot be edited afterward.`,
+                        showCancelButton: true,
+                        confirmButtonText: `Yes, ${statusLabel} ticket`,
+                        cancelButtonText: 'Cancel',
+                        confirmButtonColor: '#212529',
+                        cancelButtonColor: '#6c757d'
+                    });
+                    confirmed = result.isConfirmed;
+                } else {
+                    confirmed = window.confirm(`This will ${statusLabel} the ticket and it cannot be edited afterward. Continue?`);
+                }
+
+                if (!confirmed) return;
+                resolutionForm.dataset.confirmed = '1';
+                HTMLFormElement.prototype.requestSubmit.call(resolutionForm);
+                return;
+            }
+
+            ackLoader.classList.remove('d-none');
+            ackLoader.setAttribute('aria-hidden','false');
+            if (loaderTitle) loaderTitle.textContent = 'Saving resolution...';
+            const submitButton = resolutionForm.querySelector('button[type="submit"]');
+            if (submitButton) submitButton.disabled = true;
+            resolutionForm.dataset.confirmed = '0';
+        });
+    }
+
     if(!ackForm || !ackLoader || !ackBtn) return;
 
     ackForm.addEventListener('submit', async function(e){
         e.preventDefault();
         ackLoader.classList.remove('d-none');
         ackLoader.setAttribute('aria-hidden','false');
+        if (loaderTitle) loaderTitle.textContent = 'Processing acknowledgement...';
         ackBtn.disabled = true;
         const fd = new FormData(ackForm);
         try{

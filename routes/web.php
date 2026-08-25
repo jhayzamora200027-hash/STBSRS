@@ -24,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tickets',[AllticketController::class, 'index'])->name('tickets');
 
+    Route::get('/search/suggestions', [\App\Http\Controllers\NavbarSearchController::class, 'search'])->name('search.suggestions');
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+
     Route::get('/tickets/{ticket_id}',[ViewTicketController::class, 'index'])->name('ticket.view');
 
     // PDF export
@@ -72,6 +75,16 @@ Route::get('/tickets/otp-status', [TicketController::class, 'otpStatus'])->name(
 // Guest access: send OTP by ticket reference, verify, and view as guest
 Route::post('/guest/tickets/send-otp-by-ticket', [TicketController::class, 'sendOtpForTicket'])->name('guest.tickets.sendOtpByTicket');
 Route::post('/guest/tickets/verify-otp-by-ticket', [TicketController::class, 'verifyOtpForTicket'])->name('guest.tickets.verifyOtpByTicket');
+
+// Guest access: send OTP by email, verify, and view list of tickets tied to that email
+Route::post('/guest/tickets/send-otp-by-email', [TicketController::class, 'sendOtpForEmail'])->name('guest.tickets.sendOtpByEmail');
+Route::post('/guest/tickets/verify-otp-by-email', [TicketController::class, 'verifyOtpForEmail'])->name('guest.tickets.verifyOtpByEmail');
+Route::get('/guest/tickets', [TicketController::class, 'guestListByEmail'])->name('guest.tickets.list');
+
 Route::get('/guest/tickets/{ticket_id}', [TicketController::class, 'guestView'])->name('guest.ticket.view');
+Route::post('/guest/tickets/{ticket_id}/comments', [TicketController::class, 'storeGuestComment'])->name('guest.tickets.comments.store');
+Route::post('/guest/tickets/{ticket_id}/return', [TicketController::class, 'returnGuestTicket'])->name('guest.tickets.return');
+Route::post('/guest/tickets/{ticket_id}/feedback', [TicketController::class, 'storeGuestFeedback'])->name('guest.tickets.feedback');
+Route::post('tickets/{ticket}/complete', [TicketController::class, 'complete'])->name('tickets.complete');
 
 

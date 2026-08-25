@@ -26,41 +26,41 @@
 
 @guest
 
-<nav class="navbar navbar-expand-lg shadow-sm sticky-top" style="background:#062c52;">
+<nav class="navbar navbar-expand-lg shadow-sm sticky-top guest-navbar" style="background:#062c52;">
 
-    <div class="container-fluid">
+    <div class="container-fluid flex-nowrap">
 
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
             
 
-            <div class="bg-white rounded-circle p-1">
+            <div class="bg-white rounded-circle p-1 guest-logo-wrap flex-shrink-0">
 
                 <img src="{{ asset('images/logo/social technology bureau innovating solution logo.png') }}"
-                     width="45">
+                     width="45" class="guest-logo">
 
             </div>
 
-            <div class="ms-3">
+            <div class="ms-3 guest-brand-text">
 
                 <h5 class="mb-0 text-white">
                     iSTaksyon
                 </h5>
 
                 <small class="text-white">
-                    Department of Social Welfare and Development
+                    Social Technology Bureau
                 </small>
 
             </div>
 
         </a>
 
-        <button class="btn btn-outline-light"
+        <button class="btn btn-outline-light flex-shrink-0"
                 data-bs-toggle="modal"
                 data-bs-target="#loginModal">
 
-            <i class="bi bi-person-fill me-2"></i>
+            <i class="bi bi-person-fill me-md-2"></i>
 
-            Login
+            <span class="guest-login-text">Login</span>
 
         </button>
 
@@ -71,6 +71,92 @@
 <main>
     @yield('content')
 </main>
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="row g-0">
+                {{-- Column Left --}}
+                <div class="col-12 col-lg-5 p-5" style="background-color:#ecf4fe;">
+                    <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}" class="img-fluid">
+
+                    <h4 class="mt-5">Welcome Back!</h4>
+
+                    <p class="text-muted" style="font-size:0.8rem;">
+                        Sign in to your account to continue to the iSTakyson.
+                    </p>
+                    <div class="col-md-5 d-flex justify-content-center align-items-end">
+
+                    </div>
+                    <div style="padding-top:60px;">
+                        <img
+                        src="{{ asset('images/attachments/loginpic.png') }}"
+                        class="img-fluid d-block mx-auto"
+                        style="max-width: 250px !important;">   
+                    </div>             
+                </div>
+
+                {{-- Collumn right --}}
+                <div class="col-12 col-lg-7"> 
+                            <div class="m-3">
+                                <h4 class="modal-title" id="loginModalLabel">
+                                        Login to your account
+                                </h4>
+                                <p class="text-muted" style="font-size:0.7rem;">Enter your credentials to access your account</p>
+                                <div class="modal-body">
+                                    <form method="POST" id="loginForm" action="{{ route('login')}}">
+                                        @csrf
+                                        <div id="loginError"></div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email Address</label>
+
+                                            <div class="position-relative">
+                                                <i class="bi bi-envelope input-email-icon"></i>
+                                                <input type="email" name="email" class="form-control custom-input" placeholder="Enter your email address" required value="{{old('email')}}">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Password</label>
+                                            
+                                            <div class="position-relative">
+                                            <i class="bi bi-lock input-password-icon" style="width:30px;"></i>
+                                            <input type="password" name="password" id="password" class="form-control custom-input"  placeholder="Enter your password"  required>
+                                            
+                                            <i class="bi bi-eye eye-icon" id="togglePassword"></i>
+
+                                            </div>
+
+                                            <div class="text-end mt-2">
+                                                <a href="#" class="forgot-link">Forgot Password?</a>
+                                            </div>
+                                        </div>
+                                        <button class="btn w-100 d-submit-button" type="submit">
+                                            <i class="bi bi-lock"></i>
+                                            Sign-In
+                                        </button>
+                                    </form>
+                                    <div class="d-flex align-items-center my-4">
+                                        <div class="flex-grow-1 border-top"> </div>
+                                            <span class="mx-3 text-secondary fw-medium">
+                                                or
+                                            </span>
+                                        <div class="flex-grow-1 border-top"> </div>
+                                    </div>
+                                        <button class="btn w-100 d-submit-white-button" >
+                                                <i class="bi bi-person-circle"></i>
+                                                Sign-In with Google
+                                        </button>
+
+                                        <div class="text-center mt-3">
+                                           <span style="font-size:0.8rem;"> Need help? </span> <a href="#" class="forgot-link"> Contact your system administator.</a>
+                                        </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endguest
 
@@ -91,7 +177,7 @@
             <h6>iSTaksyon</h6>
 
             <small>
-                Department of Social Welfare and Development
+                Social Technology Bureau
             </small>
 
         </div>
@@ -178,36 +264,62 @@
     @endphp
 
 
-    <div class="d-flex align-items-center gap-4">
+    <div class="d-flex align-items-center gap-4 navbar-title-group">
 
-        <h4 class="mb-0">
+        <h4 class="mb-0 navbar-title">
 
             {{ $title }}
 
         </h4>
 
-        <div class="search-box">
+        <div class="search-box position-relative" id="navbarSearch">
 
             <i class="bi bi-search"></i>
 
             <input
+                type="text"
                 class="form-control border-0"
-                placeholder="Search tickets or user...">
+                id="navbarSearchInput"
+                placeholder="Search tickets or user..."
+                autocomplete="off">
+
+            <div class="search-suggestions" id="navbarSearchSuggestions"></div>
 
         </div>
 
     </div>
 
 
-    <div class="d-flex align-items-center gap-3">
+    <div class="d-flex align-items-center gap-3 navbar-actions-group">
 
-        <button class="btn btn-light nav-icon position-relative">
+        <div class="dropdown notification-dropdown">
 
-            <i class="bi bi-bell"></i>
+            <button class="btn btn-light nav-icon position-relative"
+                    type="button"
+                    id="notificationButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="Notifications">
 
-            <span class="notification-dot"></span>
+                <i class="bi bi-bell"></i>
 
-        </button>
+                <span class="notification-dot d-none" id="notificationDot"></span>
+                <span class="notification-count d-none" id="notificationCount"></span>
+
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-end notification-menu shadow border-0"
+                 aria-labelledby="notificationButton">
+                <div class="notification-menu-header">
+                    <strong>Notifications</strong>
+                    <span class="text-muted" id="notificationSummary">Recent activity</span>
+                </div>
+                <div id="notificationList" class="notification-list">
+                    <div class="notification-empty">Loading notifications...</div>
+                </div>
+            </div>
+
+        </div>
 
         <div class="dropdown">
 
@@ -220,7 +332,7 @@
 
                 <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0B2A72&color=fff">
 
-                <div class="text-start ms-2">
+                <div class="text-start ms-2 user-button-text">
 
                     <div class="fw-semibold">
 
@@ -314,6 +426,21 @@
 
 
 @stack('scripts')
+
+@if (session('error'))
+<script>
+    window.addEventListener('load', function () {
+        if (window.Swal && Swal.fire) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access denied',
+                text: @json(session('error')),
+                confirmButtonColor: '#062c52'
+            });
+        }
+    });
+</script>
+@endif
 
 <style>
     /* =====================================================
@@ -596,14 +723,31 @@ body{
    SEARCH BOX
 ===================================================== */
 
+.navbar-title-group{
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+.navbar-title{
+
+    flex-shrink:0;
+
+}
+
 .search-box{
 
     display:flex;
 
     align-items:center;
 
-    width:360px;
-    max-width:100%;
+    flex:1;
+
+    width:auto;
+    min-width:0;
+    max-width:520px;
 
     background:#F8FAFC;
 
@@ -631,11 +775,154 @@ body{
 
     padding:11px 12px;
 
+    width:100%;
+
 }
 
 .search-box input:focus{
 
     box-shadow:none;
+
+}
+
+.search-suggestions{
+
+    display:none;
+
+    position:absolute;
+
+    top:calc(100% + 8px);
+
+    left:0;
+
+    right:0;
+
+    background:#fff;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    box-shadow:0 12px 30px rgba(15,23,42,.12);
+
+    max-height:360px;
+
+    overflow-y:auto;
+
+    z-index:1050;
+
+    padding:8px;
+
+}
+
+.search-suggestions.show{
+
+    display:block;
+
+}
+
+.search-suggestions .suggestion-group-title{
+
+    font-size:.72rem;
+
+    font-weight:700;
+
+    color:#94A3B8;
+
+    letter-spacing:.03em;
+
+    text-transform:uppercase;
+
+    padding:8px 10px 4px;
+
+}
+
+.search-suggestions .suggestion-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    color:#1E293B;
+
+    text-decoration:none;
+
+}
+
+.search-suggestions .suggestion-item:hover,
+.search-suggestions .suggestion-item.active{
+
+    background:#F1F5FB;
+
+}
+
+.search-suggestions .suggestion-icon{
+
+    width:34px;
+
+    height:34px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-shrink:0;
+
+    background:#E8EEFF;
+
+    color:#000099;
+
+}
+
+.search-suggestions .suggestion-title{
+
+    font-size:.85rem;
+
+    font-weight:600;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.search-suggestions .suggestion-subtitle{
+
+    font-size:.75rem;
+
+    color:#6B7280;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    white-space:nowrap;
+
+}
+
+.search-suggestions .suggestion-empty{
+
+    padding:14px 10px;
+
+    color:#9CA3AF;
+
+    font-size:.85rem;
+
+    text-align:center;
 
 }
 
@@ -685,6 +972,99 @@ body{
 
     right:10px;
 
+}
+
+.notification-count{
+    position:absolute;
+    top:3px;
+    right:3px;
+    min-width:17px;
+    height:17px;
+    padding:0 4px;
+    border-radius:9px;
+    background:#EF4444;
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+    line-height:17px;
+    text-align:center;
+    border:2px solid #fff;
+}
+
+.notification-menu{
+    width:360px;
+    max-width:calc(100vw - 24px);
+    padding:0;
+    overflow:hidden;
+}
+
+.notification-menu-header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px 18px 12px;
+    border-bottom:1px solid var(--border);
+}
+
+.notification-menu-header strong{ font-size:.95rem; }
+.notification-menu-header span{ font-size:.72rem; }
+
+.notification-list{
+    max-height:390px;
+    overflow-y:auto;
+}
+
+.notification-item{
+    display:flex;
+    gap:12px;
+    padding:13px 18px;
+    color:#1E293B;
+    text-decoration:none;
+    border-bottom:1px solid #F1F5F9;
+}
+
+.notification-item:hover{ background:#F8FAFC; }
+
+.notification-item-icon{
+    width:34px;
+    height:34px;
+    flex:0 0 34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:#E8EEFF;
+    color:#0B2A72;
+}
+
+.notification-item-title{
+    display:block;
+    font-size:.8rem;
+    font-weight:600;
+    line-height:1.3;
+}
+
+.notification-item-description{
+    display:block;
+    margin-top:3px;
+    color:#64748B;
+    font-size:.72rem;
+    line-height:1.35;
+}
+
+.notification-item-time{
+    display:block;
+    margin-top:5px;
+    color:#94A3B8;
+    font-size:.68rem;
+}
+
+.notification-empty{
+    padding:28px 18px;
+    color:#94A3B8;
+    font-size:.8rem;
+    text-align:center;
 }
 
 .user-button{
@@ -802,11 +1182,37 @@ body{
 
         height:auto;
 
-        padding:15px;
+        padding:12px 15px;
 
         flex-wrap:wrap;
 
-        gap:15px;
+        row-gap:12px;
+
+    }
+
+    .navbar-actions-group{
+
+        order:1;
+
+        margin-left:auto;
+
+    }
+
+    .navbar-title-group{
+
+        order:2;
+
+        flex-basis:100%;
+
+        flex-wrap:wrap;
+
+        gap:10px !important;
+
+    }
+
+    .navbar-title{
+
+        font-size:1.05rem;
 
     }
 
@@ -825,67 +1231,83 @@ body{
     }
 
 }
-/* ===============================
-   Mobile Sidebar
-================================ */
 
-.sidebar-overlay{
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
 
-    position:fixed;
+@media (max-width:575.98px){
 
-    inset:0;
+    .guest-brand-text small{
 
-    background:rgba(0,0,0,.45);
-
-    opacity:0;
-
-    visibility:hidden;
-
-    transition:.25s;
-
-    z-index:1035;
-
-}
-
-.sidebar-overlay.show{
-
-    opacity:1;
-
-    visibility:visible;
-
-}
-
-@media (max-width:991.98px){
-
-    .sidebar{
-
-        width:280px;
-
-        transform:translateX(-100%);
-
-        transition:.3s ease;
+        display:none;
 
     }
 
-    .sidebar.show{
+    .guest-logo{
 
-        transform:translateX(0);
+        width:36px;
+
+    }
+
+    .guest-login-text{
+
+        display:none;
 
     }
 
     .top-navbar{
 
-        margin-left:0;
+        padding:10px 12px;
 
     }
 
-    .main-content{
+    .navbar-actions-group{
 
-        margin-left:0;
+        gap:8px !important;
 
+    }
+
+    .user-button-text{
+
+        display:none;
+
+    }
+
+    .user-button img{
+
+        width:38px;
+
+        height:38px;
+
+    }
+
+    .nav-icon{
+
+        width:38px;
+
+        height:38px;
+
+    }
+
+    .nav-icon i{
+
+        font-size:18px;
+
+    }
+
+    .notification-menu{
+        position:fixed !important;
+        top:58px !important;
+        right:12px !important;
+        left:auto !important;
+        transform:none !important;
     }
 
 }
+/* ===============================
+   Mobile Sidebar
+================================ */
 
 .sidebar{
     transition:transform .3s ease;
@@ -935,30 +1357,6 @@ body{
 
     }
 
-    .top-navbar{
-
-        margin-left:0;
-
-        padding:0 15px;
-
-    }
-
-    .main-content{
-
-        margin-left:0;
-
-        padding:20px;
-
-    }
-
-    .search-box{
-
-        width:100%;
-
-        max-width:280px;
-
-    }
-
 }
     
 </style>
@@ -988,6 +1386,298 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const passwordToggle = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const loginForm = document.getElementById('loginForm');
+
+    if (passwordToggle && passwordInput) {
+        passwordToggle.addEventListener('click', function () {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                this.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+            const loginError = document.getElementById('loginError');
+
+            loginError.innerHTML = '';
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    loginError.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        });
+    }
+
+});
 </script>
+
+@auth
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchWrapper = document.getElementById('navbarSearch');
+    const searchInput = document.getElementById('navbarSearchInput');
+    const suggestionsBox = document.getElementById('navbarSearchSuggestions');
+
+    if (!searchWrapper || !searchInput || !suggestionsBox) return;
+
+    const searchUrl = @json(route('search.suggestions', [], false));
+    let debounceTimer = null;
+    let activeIndex = -1;
+    let currentItems = [];
+
+    function closeSuggestions() {
+        suggestionsBox.classList.remove('show');
+        suggestionsBox.innerHTML = '';
+        currentItems = [];
+        activeIndex = -1;
+    }
+
+    function renderSuggestions(data) {
+        const tickets = data.tickets || [];
+        const users = data.users || [];
+
+        if (!tickets.length && !users.length) {
+            suggestionsBox.innerHTML = '<div class="suggestion-empty">No matching tickets or users found.</div>';
+            suggestionsBox.classList.add('show');
+            currentItems = [];
+            activeIndex = -1;
+            return;
+        }
+
+        let html = '';
+
+        if (tickets.length) {
+            html += '<div class="suggestion-group-title">Tickets</div>';
+            tickets.forEach(function (ticket) {
+                html += `
+                    <a href="${ticket.url}" class="suggestion-item" data-url="${ticket.url}">
+                        <span class="suggestion-icon"><i class="bi bi-file-earmark-text"></i></span>
+                        <span class="flex-grow-1 min-width-0">
+                            <span class="suggestion-title d-block">${ticket.ticket_id}</span>
+                            <span class="suggestion-subtitle d-block">${ticket.requestor || ''}${ticket.purpose ? ' • ' + ticket.purpose : ''}</span>
+                        </span>
+                    </a>
+                `;
+            });
+        }
+
+        if (users.length) {
+            html += '<div class="suggestion-group-title">Users</div>';
+            users.forEach(function (user) {
+                html += `
+                    <div class="suggestion-item" data-static="true">
+                        <span class="suggestion-icon"><i class="bi bi-person"></i></span>
+                        <span class="flex-grow-1 min-width-0">
+                            <span class="suggestion-title d-block">${user.name}</span>
+                            <span class="suggestion-subtitle d-block">${user.email}</span>
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        suggestionsBox.innerHTML = html;
+        suggestionsBox.classList.add('show');
+        currentItems = Array.from(suggestionsBox.querySelectorAll('.suggestion-item[data-url]'));
+        activeIndex = -1;
+    }
+
+    function fetchSuggestions(query) {
+        fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(function (response) { return response.json(); })
+            .then(renderSuggestions)
+            .catch(function () { closeSuggestions(); });
+    }
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.trim();
+
+        clearTimeout(debounceTimer);
+
+        if (query.length < 2) {
+            closeSuggestions();
+            return;
+        }
+
+        debounceTimer = setTimeout(function () {
+            fetchSuggestions(query);
+        }, 250);
+    });
+
+    searchInput.addEventListener('keydown', function (e) {
+        if (!currentItems.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, currentItems.length - 1);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+        } else if (e.key === 'Enter') {
+            if (activeIndex >= 0 && currentItems[activeIndex]) {
+                e.preventDefault();
+                window.location.href = currentItems[activeIndex].dataset.url;
+            }
+            return;
+        } else {
+            return;
+        }
+
+        currentItems.forEach(function (item, index) {
+            item.classList.toggle('active', index === activeIndex);
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!searchWrapper.contains(e.target)) {
+            closeSuggestions();
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const notificationButton = document.getElementById('notificationButton');
+    const notificationList = document.getElementById('notificationList');
+    const notificationDot = document.getElementById('notificationDot');
+    const notificationCount = document.getElementById('notificationCount');
+    const notificationSummary = document.getElementById('notificationSummary');
+
+    if (!notificationButton || !notificationList) return;
+
+    const notificationUrl = @json(route('notifications.index', [], false));
+    const lastSeenKey = 'istaksyon.notifications.last_seen_id';
+
+    function iconFor(event) {
+        if (event === 'ticket_created') return 'bi-plus-circle';
+        if (event === 'ticket_returned') return 'bi-arrow-counterclockwise';
+        if (event === 'comment_added' || event === 'comment_reply') return 'bi-chat-dots';
+        return 'bi-check-circle';
+    }
+
+    function setUnreadCount(count) {
+        const unread = Number(count) || 0;
+        notificationDot.classList.toggle('d-none', unread === 0);
+        notificationCount.classList.toggle('d-none', unread === 0);
+        notificationCount.textContent = unread > 99 ? '99+' : String(unread);
+    }
+
+    function renderNotifications(notifications) {
+        notificationList.innerHTML = '';
+
+        if (!notifications.length) {
+            const empty = document.createElement('div');
+            empty.className = 'notification-empty';
+            empty.textContent = 'No ticket notifications yet.';
+            notificationList.appendChild(empty);
+            return;
+        }
+
+        notifications.forEach(function (notification) {
+            const item = document.createElement(notification.url ? 'a' : 'div');
+            item.className = 'notification-item';
+            if (notification.url) item.href = notification.url;
+
+            const icon = document.createElement('span');
+            icon.className = 'notification-item-icon';
+            const iconElement = document.createElement('i');
+            iconElement.className = 'bi ' + iconFor(notification.event);
+            icon.appendChild(iconElement);
+
+            const content = document.createElement('span');
+            content.className = 'min-width-0';
+
+            const title = document.createElement('span');
+            title.className = 'notification-item-title';
+            title.textContent = notification.ticket_id
+                ? notification.title + ' #' + notification.ticket_id
+                : notification.title;
+
+            const description = document.createElement('span');
+            description.className = 'notification-item-description';
+            description.textContent = notification.description || '';
+
+            const time = document.createElement('span');
+            time.className = 'notification-item-time';
+            time.textContent = notification.created_at || '';
+
+            content.appendChild(title);
+            content.appendChild(description);
+            content.appendChild(time);
+            item.appendChild(icon);
+            item.appendChild(content);
+            notificationList.appendChild(item);
+        });
+    }
+
+    function loadNotifications() {
+        const lastSeenId = Number(window.localStorage.getItem(lastSeenKey) || 0);
+
+        fetch(notificationUrl + '?since=' + encodeURIComponent(lastSeenId), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (response) {
+                if (!response.ok) throw new Error('Unable to load notifications');
+                return response.json();
+            })
+            .then(function (data) {
+                renderNotifications(data.notifications || []);
+                setUnreadCount(data.unread_count || 0);
+                notificationSummary.textContent = (data.notifications || []).length + ' recent';
+                notificationButton.dataset.latestNotificationId = data.latest_id || lastSeenId;
+            })
+            .catch(function () {
+                notificationList.innerHTML = '';
+                const error = document.createElement('div');
+                error.className = 'notification-empty';
+                error.textContent = 'Notifications are unavailable right now.';
+                notificationList.appendChild(error);
+            });
+    }
+
+    notificationButton.addEventListener('click', function () {
+        const latestId = Number(this.dataset.latestNotificationId || 0);
+        if (latestId > 0) {
+            window.localStorage.setItem(lastSeenKey, String(latestId));
+            setUnreadCount(0);
+        }
+    });
+
+    loadNotifications();
+    window.setInterval(loadNotifications, 60000);
+});
+</script>
+@endauth
 </body>
 </html>

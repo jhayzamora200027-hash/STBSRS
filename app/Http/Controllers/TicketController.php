@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\TicketAttachment;
+use App\Models\TicketComment;
+use App\Models\TicketCommentAttachment;
+use App\Models\TicketReturn;
+use App\Models\User;
+use App\Mail\TicketReturnedMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -531,6 +536,20 @@ class TicketController extends Controller
 
         $email = $ticket->requestor_email;
 
+        // if this ticket was already OTP-verified recently, skip sending a new code
+        $alreadyVerified = Session::get('ticket_otp_verified', false);
+        $verifiedTicket = Session::get('ticket_otp_ticket');
+        $verifiedAt = Session::get('ticket_otp_verified_at');
+
+        if ($alreadyVerified && $verifiedTicket === $ticket->ticket_id && $verifiedAt
+            && Carbon::parse($verifiedAt)->addMinutes(30)->gte(Carbon::now())) {
+            return response()->json([
+                'already_verified' => true,
+                'message' => 'Already verified.',
+                'redirect' => route('guest.ticket.view', $ticket->ticket_id),
+            ]);
+        }
+
         // reuse session structure used by sendOtp
         Session::forget(['ticket_otp_verified', 'ticket_otp_email']);
 
@@ -620,6 +639,143 @@ class TicketController extends Controller
     }
 
     /**
+     * Send OTP to a requestor email so they can look up all tickets tied to it.
+     */
+    public function sendOtpForEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $email = $request->email;
+
+        if (!Ticket::where('requestor_email', $email)->exists()) {
+            return response()->json(['message' => 'No requests found for this email address.'], 404);
+        }
+
+        // if this email was already OTP-verified recently, skip sending a new code
+        $alreadyVerified = Session::get('guest_email_otp_verified', false);
+        $verifiedEmail = Session::get('guest_email_otp_email');
+        $verifiedAt = Session::get('guest_email_otp_verified_at');
+
+        if ($alreadyVerified && $verifiedEmail === $email && $verifiedAt
+            && Carbon::parse($verifiedAt)->addMinutes(30)->gte(Carbon::now())) {
+            return response()->json([
+                'already_verified' => true,
+                'message' => 'Already verified.',
+                'redirect' => route('guest.tickets.list'),
+            ]);
+        }
+
+        Session::forget(['guest_email_otp', 'guest_email_otp_verified', 'guest_email_otp_email', 'guest_email_otp_verified_at']);
+
+        $otp = random_int(100000, 999999);
+        $expires = Carbon::now()->addMinutes(10);
+
+        Session::put('guest_email_otp', [
+            'email' => $email,
+            'otp' => (string)$otp,
+            'expires_at' => $expires->toDateTimeString(),
+        ]);
+
+        $firstName = null;
+        if (strpos($email, '@') !== false) {
+            $firstName = explode('@', $email)[0];
+            $firstName = preg_replace('/[._\-\d]+/', ' ', $firstName);
+            $firstName = trim($firstName);
+            $firstName = $firstName ? ucwords($firstName) : null;
+        }
+
+        try {
+            $minutes = 10;
+            Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
+                $m->to($email)->subject('OTP Verification');
+                if (config('mail.from.address')) {
+                    $m->from(config('mail.from.address'), config('mail.from.name'));
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error('Failed to send OTP email for guest email lookup', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json(['message' => 'Failed to send OTP.'], 500);
+        }
+
+        [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, '');
+        $visibleCharacters = min(2, strlen($localPart));
+        $maskedEmail = substr($localPart, 0, $visibleCharacters)
+            . str_repeat('*', max(0, strlen($localPart) - $visibleCharacters));
+
+        if ($domain !== '') {
+            $maskedEmail .= '@' . $domain;
+        }
+
+        return response()->json([
+            'message' => 'OTP sent to ' . $maskedEmail,
+            'masked_email' => $maskedEmail,
+        ]);
+    }
+
+    /**
+     * Verify OTP for the guest email lookup flow.
+     */
+    public function verifyOtpForEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required'
+        ]);
+
+        $payload = Session::get('guest_email_otp');
+        if (!$payload) {
+            return response()->json(['message' => 'No OTP found. Please request a new code.'], 422);
+        }
+
+        if ($payload['email'] !== $request->email) {
+            return response()->json(['message' => 'Email mismatch for OTP.'], 422);
+        }
+
+        if (Carbon::now()->gt(Carbon::parse($payload['expires_at']))) {
+            return response()->json(['message' => 'OTP expired. Please request a new code.'], 422);
+        }
+
+        if ((string)$payload['otp'] !== (string)$request->otp) {
+            return response()->json(['message' => 'Invalid OTP code.'], 422);
+        }
+
+        Session::put('guest_email_otp_verified', true);
+        Session::put('guest_email_otp_email', $request->email);
+        Session::put('guest_email_otp_verified_at', Carbon::now()->toDateTimeString());
+
+        return response()->json(['message' => 'Email verified.']);
+    }
+
+    /**
+     * List tickets tied to the OTP-verified email address.
+     */
+    public function guestListByEmail()
+    {
+        $verified = Session::get('guest_email_otp_verified', false);
+        $email = Session::get('guest_email_otp_email', null);
+        $verifiedAt = Session::get('guest_email_otp_verified_at', null);
+
+        if (!$verified || !$email || !$verifiedAt) {
+            return redirect()->route('home')->with('error', 'You cannot access this page.');
+        }
+
+        $expiresAfterMinutes = 30;
+        $expiresAt = Carbon::parse($verifiedAt)->addMinutes($expiresAfterMinutes);
+        if ($expiresAt->lt(Carbon::now())) {
+            Session::forget(['guest_email_otp', 'guest_email_otp_verified', 'guest_email_otp_email', 'guest_email_otp_verified_at']);
+            return redirect()->route('home')->with('error', 'You cannot access this page.');
+        }
+
+        $tickets = Ticket::where('requestor_email', $email)
+            ->latest()
+            ->get();
+
+        return view()->file(resource_path('views/guestpage/guestviewpage.php/guesttickets.blade.php'), compact('tickets', 'email', 'expiresAt'));
+    }
+
+    /**
      * Show guest view for a ticket after OTP verification.
      */
     public function guestView(string $ticket_id)
@@ -628,14 +784,21 @@ class TicketController extends Controller
         $sessionTicket = Session::get('ticket_otp_ticket', null);
         $verifiedAt = Session::get('ticket_otp_verified_at', null);
 
-        if (!$verified || $sessionTicket !== $ticket_id || !$verifiedAt) {
-            abort(403, 'Unauthorized to view this ticket.');
-        }
+        $ticketAuthorized = $verified && $sessionTicket === $ticket_id && $verifiedAt
+            && Carbon::parse($verifiedAt)->addMinutes(30)->gte(Carbon::now());
 
-        $expiresAfterMinutes = 30;
-        if (Carbon::parse($verifiedAt)->addMinutes($expiresAfterMinutes)->lt(Carbon::now())) {
-            Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email', 'ticket_otp_ticket', 'ticket_otp_verified_at']);
-            abort(403, 'Unauthorized to view this ticket.');
+        if (!$ticketAuthorized) {
+            $emailVerified = Session::get('guest_email_otp_verified', false);
+            $verifiedEmail = Session::get('guest_email_otp_email', null);
+            $emailVerifiedAt = Session::get('guest_email_otp_verified_at', null);
+
+            $emailAuthorized = $emailVerified && $verifiedEmail && $emailVerifiedAt
+                && Carbon::parse($emailVerifiedAt)->addMinutes(30)->gte(Carbon::now())
+                && Ticket::where('ticket_id', $ticket_id)->where('requestor_email', $verifiedEmail)->exists();
+
+            if (!$emailAuthorized) {
+                return redirect()->route('home')->with('error', 'You cannot access this page.');
+            }
         }
 
         $ticket = Ticket::with([
@@ -644,10 +807,188 @@ class TicketController extends Controller
             'requestForRegion',
             'requestProvince',
             'requestCity',
-            'agency'
+            'agency',
+            'comments.user',
+            'comments.attachments',
+            'comments.replies.user',
+            'comments.replies.attachments',
+            'resolutions.attachments',
+            'feedback',
         ])->where('ticket_id', $ticket_id)->firstOrFail();
 
         // render existing guest ticket view (file is nested under guestviewpage.php folder)
         return view()->file(resource_path('views/guestpage/guestviewpage.php/guestticketview.blade.php'), compact('ticket'));
+    }
+
+    public function storeGuestComment(Request $request, string $ticket_id)
+    {
+        $verified = Session::get('ticket_otp_verified', false);
+        $sessionTicket = Session::get('ticket_otp_ticket');
+        $verifiedAt = Session::get('ticket_otp_verified_at');
+
+        if (!$verified || $sessionTicket !== $ticket_id || !$verifiedAt || Carbon::parse($verifiedAt)->addMinutes(30)->lt(Carbon::now())) {
+            return redirect()->back()->with('error', 'You cannot access this page.');
+        }
+
+        $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+        $data = $request->validate([
+            'comment' => ['required', 'string', 'max:1000'],
+            'parent_id' => ['nullable', 'integer'],
+            'attachments.*' => ['file', 'max:10240'],
+        ]);
+
+        $parentId = $data['parent_id'] ?? null;
+        if ($parentId && !TicketComment::where('id', $parentId)->where('ticket_id', $ticket->id)->exists()) {
+            abort(422, 'The selected comment is invalid.');
+        }
+
+        $comment = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => null,
+            'guest_name' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+            'guest_email' => Session::get('ticket_otp_email'),
+            'comment' => $data['comment'],
+            'parent_id' => $parentId,
+        ]);
+
+        foreach ($request->file('attachments', []) as $file) {
+            $path = $file->store('ticket_comment_attachments', 'public');
+            TicketCommentAttachment::create([
+                'ticket_comment_id' => $comment->id,
+                'original_name' => $file->getClientOriginalName(),
+                'file_name' => basename($path),
+                'file_path' => $path,
+                'mime_type' => $file->getClientMimeType(),
+                'file_size' => $file->getSize(),
+            ]);
+        }
+
+        $ticket->activities()->create([
+            'event' => $parentId ? 'comment_reply' : 'comment_added',
+            'title' => $parentId ? 'Guest replied to a comment' : 'Guest added a comment',
+            'description' => $parentId ? 'A guest reply was added to the discussion.' : 'A guest comment was added to the discussion.',
+            'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+        ]);
+
+        return redirect()->route('guest.ticket.view', $ticket->ticket_id)->with('success', 'Comment posted.');
+    }
+
+    public function returnGuestTicket(Request $request, string $ticket_id)
+    {
+        $verified = Session::get('ticket_otp_verified', false);
+        $sessionTicket = Session::get('ticket_otp_ticket');
+        $verifiedAt = Session::get('ticket_otp_verified_at');
+
+        if (!$verified || $sessionTicket !== $ticket_id || !$verifiedAt || Carbon::parse($verifiedAt)->addMinutes(30)->lt(Carbon::now())) {
+            return redirect()->back()->with('error', 'You cannot access this page.');
+        }
+
+        $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+
+        if ($ticket->ticket_status !== 'resolved') {
+            return back()->withErrors(['return_reason' => 'Only resolved tickets can be returned.']);
+        }
+
+        $data = $request->validate([
+            'return_reason' => ['required', 'string', 'max:2000'],
+            'urgency' => ['required', 'in:low,medium,high,urgent'],
+        ]);
+
+        $ticketReturn = TicketReturn::create([
+            'ticket_id' => $ticket->id,
+            'return_reason' => $data['return_reason'],
+            'urgency' => $data['urgency'],
+            'returned_by' => null,
+            'returned_at' => now(),
+        ]);
+
+        $ticket->update([
+            'ticket_status' => 'inprogress',
+            'ticket_resolved_at' => null,
+        ]);
+
+        $ticket->activities()->create([
+            'event' => 'ticket_returned',
+            'title' => 'Ticket returned for follow-up',
+            'description' => 'The requester returned the ticket for additional assistance.',
+            'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+        ]);
+
+        $recipientEmails = User::query()
+            ->whereNotNull('email')
+            ->whereRaw('LOWER(usergroup) IN (?, ?)', ['admin', 'sysadmin'])
+            ->pluck('email')
+            ->filter()
+            ->unique()
+            ->values();
+
+        foreach ($recipientEmails as $recipientEmail) {
+            try {
+                Mail::to($recipientEmail)->send(new TicketReturnedMail($ticket, $ticketReturn));
+            } catch (\Throwable $exception) {
+                Log::error('Unable to send ticket return notification.', [
+                    'ticket_id' => $ticket->ticket_id,
+                    'recipient' => $recipientEmail,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return redirect()->route('guest.ticket.view', $ticket->ticket_id)
+            ->with('success', 'Your ticket has been returned to the team for follow-up.');
+    }
+
+    public function storeGuestFeedback(Request $request, string $ticket_id)
+    {
+        $verified = Session::get('ticket_otp_verified', false);
+        $sessionTicket = Session::get('ticket_otp_ticket');
+        $verifiedAt = Session::get('ticket_otp_verified_at');
+
+        if (!$verified || $sessionTicket !== $ticket_id || !$verifiedAt || Carbon::parse($verifiedAt)->addMinutes(30)->lt(Carbon::now())) {
+            return redirect()->back()->with('error', 'You cannot access this page.');
+        }
+
+        $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+
+        if (!in_array($ticket->ticket_status, ['resolved', 'completed'], true)) {
+            return back()->withErrors(['feedback' => 'Feedback is available for resolved or completed tickets.']);
+        }
+
+        if ($ticket->feedback()->exists()) {
+            return redirect()->route('guest.ticket.view', $ticket->ticket_id);
+        }
+
+        $data = $request->validate([
+            'overall_satisfaction' => ['required', 'integer', 'between:1,5'],
+            'timeliness' => ['required', 'integer', 'between:1,5'],
+            'professionalism' => ['required', 'integer', 'between:1,5'],
+            'quality_of_resolution' => ['required', 'integer', 'between:1,5'],
+            'ease_of_process' => ['required', 'integer', 'between:1,5'],
+            'communication' => ['required', 'integer', 'between:1,5'],
+            'additional_comments' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $ticket->feedback()->create($data);
+
+        $ticket->activities()->create([
+            'event' => 'feedback_submitted',
+            'title' => 'Satisfaction feedback submitted',
+            'description' => 'The requester submitted ticket satisfaction feedback.',
+            'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
+        ]);
+
+        return redirect()->route('guest.ticket.view', $ticket->ticket_id)
+            ->with('success', 'Thank you for sharing your feedback.')
+            ->with('feedback_submitted', true);
+    }
+    public function complete(Ticket $ticket){
+        $ticket->update([
+            'ticket_status' => 'completed',
+            'ticket_completed_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }

@@ -59,13 +59,13 @@
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="padding:18px;line-height:1.7;">
-                        <strong>Information</strong><br><br>
+                        <br>
 
                         Please review and validate the resolution provided.
 
                         If your request has been fully addressed, no further action is required. The ticket will be considered completed after your confirmation or will be automatically marked as completed after 3 calendar days if no response or further action is received.
 
-                        If the provided resolution does not fully address your concern, please return the ticket with additional details or feedback so the assigned personnel can further assist you.
+                        If the provided resolution does not fully address your request, please return the ticket with additional details or feedback so the assigned personnel can further assist you.
 
                         For additional assistance regarding this request, please contact the Social Technology Bureau or submit a new service request through the iSTAksyon System, referencing your ticket number.
                     </td>

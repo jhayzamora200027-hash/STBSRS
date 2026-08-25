@@ -27,9 +27,19 @@ class ViewTicketController extends Controller
                 ->latest()
                 ->first();
 
+            $resolutions = $ticket->resolutions()
+                ->with('attachments')
+                ->latest()
+                ->get();
+
+            $ticketReturns = $ticket->returns()
+                ->latest('returned_at')
+                ->latest()
+                ->get();
+
             $activities = $ticket->activities()->get();
 
-            return view('authpage.tickets.viewticket', compact('ticket', 'latestResolution', 'activities'));
+            return view('authpage.tickets.viewticket', compact('ticket', 'latestResolution', 'resolutions', 'ticketReturns', 'activities'));
     }
 
     public function delete(string $ticket_id){
@@ -164,6 +174,8 @@ class ViewTicketController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Ticket acknowledged and requester notified.');
+        return redirect()->back()
+            ->with('success', 'Ticket acknowledged and requester notified.')
+            ->with('success_title', 'Ticket Acknowledged');
     }
 }
