@@ -4,6 +4,321 @@
 
 @section('content')
 <style>
+    .tickets-page {
+        --tickets-ink: #17324d;
+        --tickets-muted: #6b7c8f;
+        --tickets-line: #e6edf3;
+        --tickets-blue: #0b5cab;
+        color: var(--tickets-ink);
+    }
+
+    .tickets-page-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .tickets-page-header h1 {
+        font-size: clamp(1.45rem, 2vw, 1.9rem);
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0;
+    }
+
+    .tickets-page-header p {
+        color: var(--tickets-muted);
+        margin: .35rem 0 0;
+    }
+
+    .metric-card,
+    .filter-card,
+    .table-card {
+        border: 1px solid var(--tickets-line);
+        border-radius: .75rem;
+        box-shadow: 0 8px 24px rgba(23, 50, 77, .045);
+    }
+
+    .metric-card .card-body {
+        padding: 1rem;
+    }
+
+    .metrics-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        margin-bottom: 1.5rem;
+    }
+
+    .metrics-grid > .col {
+        min-width: 0;
+    }
+
+    .metric-card .container-fluid,
+    .metric-card .ps-3 {
+        min-width: 0;
+    }
+
+    .metric-card {
+        position: relative;
+        transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .filter-card .card-header,
+    .table-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid var(--tickets-line);
+        padding: 1rem 1.25rem;
+    }
+
+    .filter-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .filter-card .form-label {
+        color: var(--tickets-ink);
+        font-size: .78rem;
+        margin-bottom: .4rem;
+    }
+
+    .filter-card .form-control,
+    .filter-card .form-select {
+        border-color: #d7e1ea;
+        min-height: 42px;
+    }
+
+    .filter-card .form-control:focus,
+    .filter-card .form-select:focus {
+        border-color: var(--tickets-blue);
+        box-shadow: 0 0 0 .2rem rgba(11, 92, 171, .12);
+    }
+
+    .date-range {
+        display: grid;
+        gap: .5rem;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-actions {
+        border-top: 1px solid var(--tickets-line);
+        margin-top: .25rem;
+        padding-top: 1rem;
+    }
+
+    .filter-count {
+        color: var(--tickets-muted);
+        font-size: .82rem;
+    }
+
+    .table-card {
+        overflow: hidden;
+    }
+
+    .table-card .table-responsive {
+        margin: 0;
+    }
+
+    .table-card .table {
+        --bs-table-bg: #fff;
+        color: var(--tickets-ink);
+    }
+
+    .table-card .table thead th {
+        background: #f7f9fb;
+        border-bottom: 1px solid var(--tickets-line);
+        color: #52677a;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        padding: .9rem 1rem;
+        text-transform: uppercase;
+    }
+
+    .table-card .table tbody td {
+        border-color: #edf2f6;
+        padding: 1rem;
+    }
+
+    .table-card .pagination {
+        margin: 0;
+    }
+
+    .table-card .pagination-wrap {
+        border-top: 1px solid var(--tickets-line);
+        padding: 1rem 1.25rem;
+    }
+
+    .table-card .dropdown-toggle::after {
+        display: none;
+    }
+
+    .ticket-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 1.25rem;
+    }
+
+    .ticket-item {
+        background: #fff;
+        border: 1px solid var(--tickets-line);
+        border-radius: .7rem;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        padding: 1.1rem;
+        transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+    }
+
+    .ticket-item:hover {
+        border-color: #b9d0e5;
+        box-shadow: 0 10px 24px rgba(23, 50, 77, .08);
+        transform: translateY(-2px);
+    }
+
+    .ticket-item:focus-visible {
+        border-color: var(--tickets-blue);
+        box-shadow: 0 0 0 .2rem rgba(11, 92, 171, .12);
+        outline: none;
+    }
+
+    .ticket-item-header,
+    .ticket-item-footer {
+        align-items: center;
+        display: flex;
+        gap: .75rem;
+        justify-content: space-between;
+    }
+
+    .ticket-item-number {
+        color: var(--tickets-blue);
+        font-size: .82rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+    }
+
+    .ticket-item-purpose {
+        color: var(--tickets-ink);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin: 1rem 0 .85rem;
+        min-height: 2.8rem;
+    }
+
+    .ticket-item-meta {
+        border-top: 1px solid #edf2f6;
+        display: grid;
+        gap: .75rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: auto;
+        padding: .9rem 0;
+    }
+
+    .ticket-meta-label {
+        color: var(--tickets-muted);
+        display: block;
+        font-size: .68rem;
+        margin-bottom: .2rem;
+        text-transform: uppercase;
+    }
+
+    .ticket-meta-value {
+        display: block;
+        font-size: .78rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ticket-item-footer {
+        border-top: 1px solid #edf2f6;
+        padding-top: .85rem;
+    }
+
+    .ticket-view-link {
+        font-size: .8rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .ticket-empty {
+        grid-column: 1 / -1;
+        padding: 2.5rem 1rem;
+        text-align: center;
+    }
+
+    .ticket-grid > .pagination-wrap {
+        grid-column: 1 / -1;
+    }
+
+    @media (max-width: 1199.98px) {
+        .ticket-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .ticket-grid {
+            grid-template-columns: 1fr;
+            padding: 1rem;
+        }
+    }
+
+    .table-card .table caption {
+        caption-side: top;
+    }
+
+    .ticket-row:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--tickets-blue);
+        outline: none;
+    }
+
+    .tickets-loading {
+        opacity: .55;
+        pointer-events: none;
+        transition: opacity .15s ease;
+    }
+
+    @media (max-width: 575.98px) {
+        .tickets-page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .filter-card .card-body {
+            padding: 1rem;
+        }
+
+        .date-range {
+            grid-template-columns: 1fr;
+        }
+
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (min-width: 576px) and (max-width: 767.98px) {
+        .metrics-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .metrics-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 576px) {
+        .filter-actions .w-sm-auto {
+            min-width: 150px;
+            width: auto !important;
+        }
+    }
+
     .metric-title{
     display:block;
     line-height:1.2;
@@ -100,9 +415,9 @@
     transition: background-color .12s ease, transform .08s ease;
 }
 
-.table tbody tr.ticket-row:hover {
+    .table tbody tr.ticket-row:hover {
     background-color: rgba(13,110,253,0.04);
-    transform: translateY(-1px);
+        transform: translateY(-1px);
 }
 
 .table tbody tr.ticket-row td {
@@ -204,7 +519,7 @@
         border: none !important;
         text-align: left !important;
         position: relative !important;
-        padding-left: 48% !important; /* reserve space for the label */
+        padding-left: 36% !important;
         box-sizing: border-box !important;
     }
 
@@ -213,7 +528,7 @@
         position: absolute !important;
         left: 12px !important;
         top: 12px !important;
-        width: calc(48% - 24px) !important;
+        width: calc(36% - 24px) !important;
         font-weight: 700;
         color: #495057;
         white-space: normal !important;
@@ -260,7 +575,18 @@
     }
 }
 </style>
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
+<div class="tickets-page">
+<div class="tickets-page-header">
+    <div>
+        <h1>All Tickets</h1>
+        <p>Track, review, and manage service requests in one place.</p>
+    </div>
+    <div class="text-sm-end">
+        <div class="small text-muted">Showing</div>
+        <strong>{{ number_format($tickets->total()) }} {{ Str::plural('ticket', $tickets->total()) }}</strong>
+    </div>
+</div>
+<div class="metrics-grid">
     <div class="col">
         <div class="card metric-card h-100">
             <div class="card-body">
@@ -379,7 +705,28 @@
 </div>
 <form method="GET" action="{{ route('tickets') }}">
 
-<div class="card mb-4">
+<div class="card filter-card mb-4">
+    @php
+        $activeFilters = collect([
+            request('search'),
+            request('status'),
+            request('category'),
+            request('priority'),
+            request('requestor'),
+            request('program'),
+            request('date_from'),
+            request('date_to'),
+        ])->filter(fn ($filter) => filled($filter))->count();
+    @endphp
+    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+            <h2 class="h6 mb-1">Find a ticket</h2>
+            <div class="filter-count">Use one or more filters to narrow the list.</div>
+        </div>
+        @if($activeFilters)
+            <span class="badge rounded-pill text-bg-primary">{{ $activeFilters }} active {{ Str::plural('filter', $activeFilters) }}</span>
+        @endif
+    </div>
     <div class="card-body">
 
         <div class="row mb-3">
@@ -388,7 +735,12 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
                     <input id="search" name="search" type="search" class="form-control"
-                        placeholder="Search tickets or user..." value="{{ request('search') }}">
+                        placeholder="Search by ticket number, requestor, purpose, or program" value="{{ request('search') }}" aria-label="Search tickets">
+                    @if(request('search'))
+                        <a href="{{ request()->fullUrlWithoutQuery('search') }}" class="btn btn-outline-secondary" aria-label="Clear search">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
 
@@ -486,10 +838,10 @@
                     class="form-select">
 
                     <option value="">All</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="low" {{ request('priority')=='low'?'selected':'' }}>Low</option>
+                    <option value="medium" {{ request('priority')=='medium'?'selected':'' }}>Medium</option>
+                    <option value="high" {{ request('priority')=='high'?'selected':'' }}>High</option>
+                    <option value="urgent" {{ request('priority')=='urgent'?'selected':'' }}>Urgent</option>
 
                 </select>
 
@@ -536,42 +888,31 @@
                 <select name="program" class="form-select">
                     <option value="">All Program</option>
                     @foreach($programs as $program)
-                    <option value="{{$program->program_id}}">{{$program->program}}</option>
+                    <option value="{{$program->program_id}}" {{ request('program') == $program->program_id ? 'selected' : '' }}>{{$program->program}}</option>
                     @endforeach
                 </select>
             </div>
 
-            {{-- DATE FROM --}}
+            {{-- DATE RANGE --}}
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    From
-                </label>
-
-                <input
-                    type="date"
-                    class="form-control"
-                    name="date_from"
-                    value="{{ request('date_from') }}">
-
+                <label class="form-label fw-semibold">Date range</label>
+                <div class="date-range">
+                    <input
+                        type="date"
+                        class="form-control"
+                        name="date_from"
+                        value="{{ request('date_from') }}"
+                        aria-label="From date">
+                    <input
+                        type="date"
+                        class="form-control"
+                        name="date_to"
+                        value="{{ request('date_to') }}"
+                        aria-label="To date">
+                </div>
             </div>
 
-            {{-- DATE TO --}}
-            <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    To
-                </label>
-
-                <input
-                    type="date"
-                    class="form-control"
-                    name="date_to"
-                    value="{{ request('date_to') }}">
-
-            </div>
-
-            <div class="col-12 d-flex flex-column flex-sm-row align-items-stretch align-items-sm-end justify-content-end gap-2">
+            <div class="col-12 filter-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-end gap-2">
 
                 <button type="submit" class="btn btn-primary w-100 w-sm-auto">
                     <i class="bi bi-search"></i>
@@ -592,293 +933,104 @@
 
 </form>
 {{-- Table --}}
+<div class="table-card">
 <div id="tickets-container">
-<div class="table-responsive ticket-card-table drag-scroll" id="dragScroll">
-    <table class="table align-middle table-hover mb-0">
+<div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div>
+        <h2 class="h6 mb-1">Ticket directory</h2>
+        <div class="filter-count">Select a row to view the full request.</div>
+    </div>
+    <span class="filter-count">Page {{ $tickets->currentPage() }} of {{ $tickets->lastPage() }}</span>
+</div>
+<div class="ticket-grid" aria-live="polite">
+    @forelse($tickets as $ticket)
+        @php
+            $priority = strtolower($ticket->ticket_priority ?? 'low');
+        @endphp
+        <article class="ticket-item ticket-row" data-url="{{ route('ticket.view', $ticket->ticket_id) }}" tabindex="0" role="link" aria-label="View ticket {{ $ticket->ticket_id }}">
+            <div class="ticket-item-header">
+                <span class="ticket-item-number">#{{ $ticket->ticket_id }}</span>
+                @switch($ticket->ticket_status)
+                    @case('review') <span class="badge rounded-pill bg-warning text-dark">For Review</span> @break
+                    @case('inprogress') <span class="badge rounded-pill bg-primary">In Progress</span> @break
+                    @case('resolved') <span class="badge rounded-pill bg-info">Resolved</span> @break
+                    @case('completed') <span class="badge rounded-pill bg-success">Completed</span> @break
+                    @case('rejected') <span class="badge rounded-pill bg-danger">Rejected</span> @break
+                    @default <span class="badge rounded-pill bg-secondary">Unknown</span>
+                @endswitch
+            </div>
 
-        <thead class="table-light">
-            <tr>
-                <th style="min-width:170px;">Ticket Number</th>
-                <th style="min-width:250px;">Purpose</th>
-                <th style="min-width:180px;">Category</th>
-                <th style="min-width:180px;">Program</th>
-                <th style="min-width:220px;">Requestor</th>
-                <th style="min-width:140px;">Status</th>
-                <th style="min-width:130px;">Priority</th>
-                <th style="min-width:170px;">Last Updated</th>
-                <th style="min-width:110px;">Actions</th>
-            </tr>
-        </thead>
+            <h3 class="ticket-item-purpose">{{ Str::limit($ticket->purpose_of_request, 80) }}</h3>
 
-        <tbody>
+            <div class="mb-3">
+                @switch($ticket->ticket_category)
+                    @case('enhancement') <span class="badge rounded-pill bg-primary-subtle text-primary">Program Enhancement</span> @break
+                    @case('completed') <span class="badge rounded-pill bg-success-subtle text-success">Completed Program</span> @break
+                    @case('resource') <span class="badge rounded-pill bg-warning-subtle text-dark">Resource Person</span> @break
+                    @case('knowledge') <span class="badge rounded-pill bg-info-subtle text-info">Knowledge Product</span> @break
+                    @default <span class="badge rounded-pill bg-secondary-subtle text-secondary">N/A</span>
+                @endswitch
+            </div>
 
-            @forelse($tickets as $ticket)
-
-            <tr class="ticket-row" data-url="{{ route('ticket.view', $ticket->ticket_id) }}" tabindex="0" aria-label="Ticket {{ $ticket->ticket_id }}">
-                
-
-                {{-- Ticket Number --}}
-                <td data-label="Ticket Number">
-                    <div class="fw-bold text-primary">
-                        {{ $ticket->ticket_id }}
-                    </div>
-
-                    <small class="text-muted">
-                        {{ $ticket->created_at->format('M d, Y h:i A') }}
-                    </small>
-                </td>
-
-                {{-- Purpose --}}
-                <td data-label="Purpose">
-                    <div class="fw-semibold">
-                        {{ Str::limit($ticket->purpose_of_request, 55) }}
-                    </div>
-                </td>
-
-                {{-- Category --}}
-                <td data-label="Category">
-
-                    @switch($ticket->ticket_category)
-
-                        @case('enhancement')
-
-                            <span class="badge rounded-pill bg-primary-subtle text-primary">
-                                Program Enhancement
-                            </span>
-
-                        @break
-
-                        @case('completed')
-
-                            <span class="badge rounded-pill bg-success-subtle text-success">
-                                Completed Program
-                            </span>
-
-                        @break
-
-                        @case('resource')
-
-                            <span class="badge rounded-pill bg-warning-subtle text-dark">
-                                Resource Person
-                            </span>
-
-                        @break
-
-                        @case('knowledge')
-
-                            <span class="badge rounded-pill bg-info-subtle text-info">
-                                Knowledge Product
-                            </span>
-
-                        @break
-
-                        @default
-
-                            <span class="badge bg-secondary">
-                                N/A
-                            </span>
-
-                    @endswitch
-
-                </td>
-
-                {{-- Program --}}
-                <td data-label="Program">
-
-                    <div class="fw-semibold">
-                        {{ Str::limit($ticket->programDetails->program ?? '-',25) }}
-                    </div>
-
-                </td>
-
-                {{-- Requestor --}}
-                <td data-label="Requestor">
-
-                    <div class="fw-semibold">
-
-                        {{ $ticket->requestor_first_name }}
-                        {{ $ticket->requestor_last_name }}
-
-                    </div>
-
-                    <small class="text-muted">
-
-                        {{ $ticket->requestor_email }}
-
-                    </small>
-
-                </td>
-
-                {{-- Status --}}
-                <td data-label="Status">
-
-                    @switch($ticket->ticket_status)
-
-                        @case('review')
-
-                            <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
-                                For Review
-                            </span>
-
-                        @break
-
-                        @case('inprogress')
-
-                            <span class="badge rounded-pill bg-primary px-3 py-2">
-                                In Progress
-                            </span>
-
-                        @break
-
-                        @case('resolved')
-
-                            <span class="badge rounded-pill bg-info px-3 py-2">
-                                Resolved
-                            </span>
-
-                        @break
-
-                        @case('completed')
-
-                            <span class="badge rounded-pill bg-success px-3 py-2">
-                                Completed
-                            </span>
-
-                        @break
-
-                        @case('rejected')
-
-                            <span class="badge rounded-pill bg-danger px-3 py-2">
-                                Rejected
-                            </span>
-
-                        @break
-
-                        @default
-
-                            <span class="badge bg-secondary">
-                                Unknown
-                            </span>
-
-                    @endswitch
-
-                </td>
-
-                <td data-label="Priority">
-
-                    @php
-                        $priority = strtolower($ticket->ticket_priority ?? 'low');
-                    @endphp
-
+            <div class="ticket-item-meta">
+                <div>
+                    <span class="ticket-meta-label">Requestor</span>
+                    <strong class="ticket-meta-value">{{ $ticket->requestor_first_name }} {{ $ticket->requestor_last_name }}</strong>
+                </div>
+                <div>
+                    <span class="ticket-meta-label">Program</span>
+                    <strong class="ticket-meta-value">{{ Str::limit($ticket->programDetails->program ?? '-', 24) }}</strong>
+                </div>
+                <div>
+                    <span class="ticket-meta-label">Priority</span>
                     @switch($priority)
-
-                        @case('urgent')
-                            <span class="badge rounded-pill bg-danger px-3 py-2">
-                                Urgent
-                            </span>
-                        @break
-
-                        @case('high')
-                            <span class="badge rounded-pill bg-warning text-dark px-3 py-2">
-                                High
-                            </span>
-                        @break
-
-                        @case('medium')
-                            <span class="badge rounded-pill bg-info px-3 py-2">
-                                Medium
-                            </span>
-                        @break
-
-                        @case('low')
-                            <span class="badge rounded-pill bg-success px-3 py-2">
-                                Low
-                            </span>
-                        @break
-                        @default
-                            <span class="badge rounded-pill bg-success px-3 py-2">
-                                -
-                            </span>
-
+                        @case('urgent') <span class="badge rounded-pill bg-danger">Urgent</span> @break
+                        @case('high') <span class="badge rounded-pill bg-warning text-dark">High</span> @break
+                        @case('medium') <span class="badge rounded-pill bg-info">Medium</span> @break
+                        @default <span class="badge rounded-pill bg-success">Low</span>
                     @endswitch
+                </div>
+                <div>
+                    <span class="ticket-meta-label">Updated</span>
+                    <span class="ticket-meta-value">{{ $ticket->updated_at->format('M d, Y') }}</span>
+                </div>
+            </div>
 
-                </td>
+            <div class="ticket-item-footer">
+                <a class="ticket-view-link" href="{{ route('ticket.view', $ticket->ticket_id) }}">View ticket <i class="bi bi-arrow-right"></i></a>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions for ticket {{ $ticket->ticket_id }}">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li><a class="dropdown-item" href="{{ route('ticket.view', $ticket->ticket_id) }}"><i class="bi bi-eye me-2"></i> View Ticket</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('ticket.delete', $ticket->ticket_id) }}" class="delete-form m-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i> Delete</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </article>
+    @empty
+        <div class="ticket-empty">
+            <i class="bi bi-inbox fs-1 text-muted"></i>
+            <h3 class="h6 mt-3 mb-1">No tickets found</h3>
+            <p class="small text-muted mb-0">There are currently no tickets matching your filters.</p>
+        </div>
+    @endforelse
 
-                {{-- Last Updated --}}
-                <td data-label="Last Updated">
-
-                    <div class="fw-semibold">
-                        {{ $ticket->updated_at->format('M d, Y') }}
-                    </div>
-
-                    <small class="text-muted">
-                        {{ $ticket->updated_at->format('h:i A') }}
-                    </small>
-
-                </td>
-
-                <td data-label="Actions" class="text-end">
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions for ticket {{ $ticket->ticket_id }}">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow">
-                            <li>
-                                <a class="dropdown-item" href="{{route('ticket.view', $ticket->ticket_id)}}">
-                                    <i class="bi bi-eye me-2"></i> View Ticket
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{route('ticket.delete', $ticket->ticket_id)}}" class="delete-form m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-trash me-2"></i> Delete
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-
-            </tr>
-
-            @empty
-
-            <tr>
-
-                <td colspan="9" class="text-center py-5">
-
-                    <i class="bi bi-inbox fs-1 text-muted"></i>
-
-                    <h6 class="mt-3 mb-1">
-
-                        No tickets found
-
-                    </h6>
-
-                    <small class="text-muted">
-
-                        There are currently no tickets matching your filters.
-
-                    </small>
-
-                </td>
-
-            </tr>
-
-            @endforelse
-
-        </tbody>
-
-    </table>
     @if ($tickets->hasPages())
-        <div class="d-flex justify-content-end mt-4">
+        <div class="pagination-wrap d-flex justify-content-end">
             {{ $tickets->links('pagination::bootstrap-5') }}
         </div>
     @endif
-    </div>
+</div>
+</div>
 </div>
 
 <script>
@@ -889,20 +1041,24 @@ document.addEventListener('click', function(e){
     const url = link.getAttribute('href');
     if(!url) return;
 
+    const current = document.querySelector('#tickets-container');
+    if(current) current.classList.add('tickets-loading');
+
     fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
         .then(res => res.text())
         .then(html => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const newContainer = doc.querySelector('#tickets-container');
-            const current = document.querySelector('#tickets-container');
             if(newContainer && current){
                 current.innerHTML = newContainer.innerHTML;
                 window.history.pushState({}, '', url);
                 current.scrollIntoView({behavior:'smooth'});
             }
+            if(current) current.classList.remove('tickets-loading');
         })
         .catch(err => {
+            if(current) current.classList.remove('tickets-loading');
             console.error('Pagination load failed', err);
         });
 });
@@ -1012,6 +1168,16 @@ document.addEventListener('click', function(e){
         document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
     }
 
+});
+
+document.addEventListener('keydown', function(e){
+    const row = e.target.closest('.ticket-row');
+    if(!row || e.target.closest('a, button, input, select')) return;
+
+    if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        if(row.dataset.url) window.location.href = row.dataset.url;
+    }
 });
 
 document.addEventListener('submit', function(e){

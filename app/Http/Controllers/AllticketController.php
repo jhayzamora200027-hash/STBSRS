@@ -82,7 +82,7 @@ class AllticketController extends Controller
         $tickets = $tickets
         ->with('programDetails')
         ->latest()
-        ->paginate(10)
+        ->paginate(6)
         ->withQueryString();
 
 

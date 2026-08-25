@@ -9,10 +9,14 @@ use App\Models\Region;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AllticketController;
+use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\ViewTicketController;
 use App\Http\Controllers\TicketPdfController;
+use App\Http\Controllers\UserController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
 
 Route::middleware('auth')->group(function () {
@@ -23,9 +27,15 @@ Route::middleware('auth')->group(function () {
     ->name('dashboard.filter');
 
     Route::get('/tickets',[AllticketController::class, 'index'])->name('tickets');
+    Route::get('/feedback',[FeedBackController::class, 'index'])->name('feedback');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/approvals', [UserController::class, 'approvalIndex'])->name('users.approvals');
+    Route::patch('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
+    Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus'])->name('users.status');
 
     Route::get('/search/suggestions', [\App\Http\Controllers\NavbarSearchController::class, 'search'])->name('search.suggestions');
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password.update');
 
     Route::get('/tickets/{ticket_id}',[ViewTicketController::class, 'index'])->name('ticket.view');
 

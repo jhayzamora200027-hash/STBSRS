@@ -61,6 +61,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 > composer install
 > composer require doctrine/dbal
+> composer require laravel/socialite
 > copy .env.example .env
 > npm install chart.js
 > npm install jquery
@@ -68,3 +69,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > composer require spatie/browsershot
 > npm install puppeteer
 > npm install bootstrap-icons
+
+
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/auth/google/callback

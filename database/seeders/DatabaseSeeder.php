@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
                 'middle_name' => 'Patricio',
                 'last_name' => 'Zamora',
                 'usergroup' => 'sysadmin',
+                'approved_at' => now(),
+                'status' => 'active',
                 'password' => Hash::make('123456'),
             ]
         );

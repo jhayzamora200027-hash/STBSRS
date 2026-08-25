@@ -142,10 +142,10 @@
                                             </span>
                                         <div class="flex-grow-1 border-top"> </div>
                                     </div>
-                                        <button class="btn w-100 d-submit-white-button" >
+                                        <a class="btn w-100 d-submit-white-button" href="{{ route('google.redirect') }}">
                                                 <i class="bi bi-person-circle"></i>
                                                 Sign-In with Google
-                                        </button>
+                                        </a>
 
                                         <div class="text-center mt-3">
                                            <span style="font-size:0.8rem;"> Need help? </span> <a href="#" class="forgot-link"> Contact your system administator.</a>
@@ -157,6 +157,31 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="accountApprovalModal" tabindex="-1" aria-labelledby="accountApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-4">
+                <i class="bi bi-hourglass-split text-warning fs-1"></i>
+                <h5 class="mt-3" id="accountApprovalModalLabel">Account pending approval</h5>
+                <p class="text-muted small mb-4">Your Google account is currently pending approval by a system administrator.</p>
+                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if(session('google_pending'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const approvalModal = document.getElementById('accountApprovalModal');
+
+            if (approvalModal && window.bootstrap) {
+                bootstrap.Modal.getOrCreateInstance(approvalModal).show();
+            }
+        });
+    </script>
+@endif
 
 @endguest
 
@@ -184,18 +209,17 @@
 
     </div>
 
-    <span class="sidebar-title">MAIN</span>
+    <span class="sidebar-title">Reports</span>
 
     <a href="{{ route('dashboard') }}"
        class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }} justify-content-start">
 
         <i class="bi bi-grid"></i>
-
         Dashboard & Reports
 
     </a>
 
-    <a href="#" class="justify-content-start">
+    <a href="{{ route('feedback') }}" class="justify-content-start">
 
         <i class="bi bi-clipboard-data"></i>
 
@@ -216,22 +240,13 @@
         All Tickets
 
     </a>
-
-    <a href="#" class="justify-content-start">
-
-        <i class="bi bi-file-earmark-medical"></i>
-
-        For Review Tickets
-
-    </a>
-
     <span class="sidebar-title mt-4">
 
         SETTINGS
 
     </span>
 
-    <a href="#" class="justify-content-start">
+    <a href="{{ route('users.index') }}" class="sidebar-link {{ request()->routeIs('users.*') ? 'active' : '' }} justify-content-start">
 
         <i class="bi bi-people"></i>
 
@@ -252,10 +267,11 @@
         $pageTitles = [
 
             'dashboard'       => 'Dashboard & Reports',
-            'feedback.index'  => 'Feedback Report',
+            'feedback'  => 'Feedback Report',
             'tickets'   => 'All Tickets',
             'tickets.review'  => 'Review Tickets',
             'users.index'     => 'User Management',
+            'users.approvals' => 'User Management',
 
         ];
 
@@ -275,13 +291,14 @@
         <div class="search-box position-relative" id="navbarSearch">
 
             <i class="bi bi-search"></i>
-
-            <input
-                type="text"
-                class="form-control border-0"
-                id="navbarSearchInput"
-                placeholder="Search tickets or user..."
-                autocomplete="off">
+            <div>
+                <input
+                    type="text"
+                    class="form-control border-0"
+                    id="navbarSearchInput"
+                    placeholder="Search tickets or user..."
+                    autocomplete="off">
+            </div>
 
             <div class="search-suggestions" id="navbarSearchSuggestions"></div>
 
@@ -355,7 +372,9 @@
 
                 <li>
 
-                    <a class="dropdown-item" href="#">
+                          <a class="dropdown-item" href="#profileModal"
+                              data-bs-toggle="modal"
+                              data-bs-target="#profileModal">
 
                         <i class="bi bi-person me-2"></i>
 
@@ -411,6 +430,84 @@
     </div>
 
 </nav>
+
+
+<div class="modal fade profile-modal" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="profile-modal-hero">
+                <button type="button" class="btn-close btn-close-white profile-modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="profile-modal-identity">
+                    <img class="profile-modal-avatar"
+                         src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=ffffff&color=0B2A72&bold=true"
+                         alt="{{ Auth::user()->name }}">
+                    <div>
+                        <span class="profile-modal-eyebrow">Account overview</span>
+                        <h4 class="mb-1" id="profileModalLabel">{{ Auth::user()->name }}</h4>
+                        <span class="profile-modal-role"><i class="bi bi-shield-check me-1"></i>{{ ucfirst(Auth::user()->usergroup) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-body p-0">
+                <div class="profile-modal-section">
+                    <div class="profile-modal-section-heading">
+                        <div class="profile-modal-section-icon"><i class="bi bi-person-vcard"></i></div>
+                        <div>
+                            <h6 class="mb-1">Personal information</h6>
+                            <p class="mb-0">Your account details at a glance</p>
+                        </div>
+                    </div>
+                    <div class="profile-modal-details">
+                        <div><span class="profile-modal-label">First name</span><strong>{{ Auth::user()->first_name ?: 'Not provided' }}</strong></div>
+                        <div><span class="profile-modal-label">Middle name</span><strong>{{ Auth::user()->middle_name ?: 'Not provided' }}</strong></div>
+                        <div><span class="profile-modal-label">Last name</span><strong>{{ Auth::user()->last_name ?: 'Not provided' }}</strong></div>
+                        <div><span class="profile-modal-label">Email address</span><strong class="text-break">{{ Auth::user()->email }}</strong></div>
+                    </div>
+                </div>
+
+                <div class="profile-modal-section profile-security-section">
+                    <div class="profile-modal-section-heading">
+                        <div class="profile-modal-section-icon security"><i class="bi bi-lock"></i></div>
+                        <div>
+                            <h6 class="mb-1">Password and security</h6>
+                            <p class="mb-0">Keep your account protected with a strong password</p>
+                        </div>
+                    </div>
+
+                    @if (session('password_success'))
+                        <div class="alert alert-success d-flex align-items-center gap-2 py-2" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>{{ session('password_success') }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('profile.password.update') }}" class="password-form">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current password</label>
+                            <input type="password" id="currentPassword" name="current_password" class="form-control" required autocomplete="current-password">
+                            @error('current_password', 'passwordUpdate')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="newPassword" class="form-label">New password</label>
+                                <input type="password" id="newPassword" name="password" class="form-control" required minlength="8" autocomplete="new-password">
+                                @error('password', 'passwordUpdate')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label">Confirm new password</label>
+                                <input type="password" id="confirmPassword" name="password_confirmation" class="form-control" required minlength="8" autocomplete="new-password">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn profile-save-button"><i class="bi bi-shield-lock me-2"></i>Update password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -1103,9 +1200,181 @@ body{
 
 }
 
-/* =====================================================
-   MAIN CONTENT
-===================================================== */
+.profile-modal-avatar{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,.55);
+    box-shadow:0 8px 20px rgba(2,12,35,.18);
+}
+
+.profile-modal .modal-content{
+    overflow:hidden;
+    border-radius:20px;
+}
+
+.profile-modal-hero{
+    position:relative;
+    padding:30px 32px;
+    color:#fff;
+    background:#062c52;
+}
+
+.profile-modal-identity{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.profile-modal-identity h4{
+    color:#fff;
+    font-weight:600;
+}
+
+.profile-modal-eyebrow{
+    display:block;
+    margin-bottom:5px;
+    color:#b9d9f4;
+    font-size:.7rem;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.profile-modal-role{
+    color:#e0effc;
+    font-size:.8rem;
+}
+
+.profile-modal-close{
+    position:absolute;
+    top:20px;
+    right:22px;
+    opacity:.9;
+}
+
+.profile-modal-section{
+    padding:26px 32px;
+}
+
+.profile-modal-section + .profile-modal-section{
+    border-top:1px solid #E8EEF5;
+}
+
+.profile-modal-section-heading{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.profile-modal-section-heading h6{
+    color:#172B4D;
+    font-size:.95rem;
+    font-weight:700;
+}
+
+.profile-modal-section-heading p{
+    color:#8492A6;
+    font-size:.75rem;
+}
+
+.profile-modal-section-icon{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 38px;
+    border-radius:11px;
+    color:#0B2A72;
+    background:#E8F1FC;
+    font-size:1.1rem;
+}
+
+.profile-modal-section-icon.security{
+    color:#087f5b;
+    background:#e4f7ef;
+}
+
+.profile-modal-details{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:16px;
+    padding:18px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#F8FAFC;
+}
+
+.profile-modal-details > div{
+    min-width:0;
+}
+
+.profile-modal-label{
+    display:block;
+    margin-bottom:4px;
+    color:#64748B;
+    font-size:.72rem;
+}
+
+.profile-modal-details strong{
+    display:block;
+    font-size:.85rem;
+    font-weight:600;
+}
+
+.password-form .form-label{
+    color:#344563;
+    font-size:.78rem;
+    font-weight:600;
+}
+
+.password-form .form-control{
+    min-height:44px;
+    border-color:#D9E2EC;
+    border-radius:10px;
+    font-size:.85rem;
+}
+
+.password-form .form-control:focus{
+    border-color:#438ac1;
+    box-shadow:0 0 0 3px rgba(67,138,193,.14);
+}
+
+.profile-save-button{
+    min-height:44px;
+    padding:0 20px;
+    border:0;
+    border-radius:10px;
+    color:#fff;
+    background:#062c52;
+    font-size:.82rem;
+    font-weight:600;
+    transition:var(--transition);
+}
+
+.profile-save-button:hover{
+    color:#fff;
+    background:#0B2A72;
+    transform:translateY(-1px);
+}
+
+@media (max-width:575.98px){
+    .profile-modal-hero,
+    .profile-modal-section{
+        padding:22px 20px;
+    }
+
+    .profile-modal-details{
+        grid-template-columns:1fr;
+    }
+
+    .profile-modal-identity{
+        align-items:flex-start;
+    }
+}
+
 
 .main-content{
 
@@ -1119,9 +1388,6 @@ body{
 
 }
 
-/* =====================================================
-   TABLET
-===================================================== */
 
 @media (max-width:991.98px){
 
@@ -1365,6 +1631,7 @@ body{
 @stack('modals')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-funnel"></script>
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -1678,6 +1945,17 @@ document.addEventListener('DOMContentLoaded', function () {
     window.setInterval(loadNotifications, 60000);
 });
 </script>
+@if ($errors->getBag('passwordUpdate')->any() || session('password_success'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const profileModal = document.getElementById('profileModal');
+
+    if (profileModal && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(profileModal).show();
+    }
+});
+</script>
+@endif
 @endauth
 </body>
 </html>
