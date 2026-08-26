@@ -16,6 +16,7 @@ class Program extends Model
         'program_id',
         'program',
         'created_by',
+        'status',
     ];
 
     /**

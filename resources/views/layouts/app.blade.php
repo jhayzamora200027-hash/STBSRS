@@ -125,9 +125,13 @@
                                             <i class="bi bi-eye eye-icon" id="togglePassword"></i>
 
                                             </div>
-
-                                            <div class="text-end mt-2">
-                                                <a href="#" class="forgot-link">Forgot Password?</a>
+                                            <div class="d-flex justify-content-between">
+                                                <div class="text-start mt-2">
+                                                    <a href="#registrationModal" class="forgot-link" data-bs-toggle="modal" data-bs-target="#registrationModal" data-bs-dismiss="modal">Don't have account?</a>
+                                                </div>
+                                                <div class="text-end mt-2">
+                                                    <a href="#forgotPasswordModal" class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">Forgot Password?</a>
+                                                </div>
                                             </div>
                                         </div>
                                         <button class="btn w-100 d-submit-button" type="submit">
@@ -158,26 +162,568 @@
     </div>
 </div>
 
-<div class="modal fade" id="accountApprovalModal" tabindex="-1" aria-labelledby="accountApprovalModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-body text-center p-4">
-                <i class="bi bi-hourglass-split text-warning fs-1"></i>
-                <h5 class="mt-3" id="accountApprovalModalLabel">Account pending approval</h5>
-                <p class="text-muted small mb-4">Your Google account is currently pending approval by a system administrator.</p>
-                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">Understood</button>
+<div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="row g-0">
+                <div class="col-12 col-lg-5 register-brand-panel p-5">
+                    <div class="brand-content">
+
+                        <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}" 
+                            class="img-fluid brand-logo mb-4">
+
+                        <h2 class="brand-title">
+                            Welcome to <span>iSTaksyon</span>
+                        </h2>
+
+                        <p class="brand-description">
+                            Your digital service request platform for the 
+                            Social Technology Bureau.
+                        </p>
+
+                        <div class="brand-feature mt-4">
+                            <div class="feature-item">
+                                <i class="bi bi-ticket-perforated"></i>
+                                <div>
+                                    <strong>Submit Requests Easily</strong>
+                                    <small>Create and track your service requests anytime.</small>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <i class="bi bi-shield-check"></i>
+                                <div>
+                                    <strong>Secure Access</strong>
+                                    <small>Your account is protected and verified.</small>
+                                </div>
+                            </div>
+
+                            <div class="feature-item">
+                                <i class="bi bi-person-check"></i>
+                                <div>
+                                    <strong>Administrator Approval</strong>
+                                    <small>Accounts are reviewed before activation.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-7">
+                    <div class="registration-container">
+                        <div class="modal-body px-0">
+                            <!-- Information -->
+                            <div class="registration-notice">
+                                    <i class="bi bi-shield-check"></i>
+
+                                <div>
+                                    <strong>DSWD Staff Registration</strong>
+                                    <small>
+                                        Only users with an official 
+                                        <b>@dswd.gov.ph</b> email can register.
+                                        Your account requires administrator approval.
+                                    </small>
+                                </div>
+                            </div>
+
+
+                            @if ($errors->any())
+                                <div class="registration-error">
+                                    <i class="bi bi-exclamation-circle"></i>
+
+                                    <div>
+                                        <strong>Registration failed</strong>
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endif
+
+
+
+                            <form method="POST" action="{{ route('register') }}" id="registrationForm">
+
+                                @csrf
+
+                                <input type="hidden" name="registration_form" value="1">
+
+
+                                <!-- Personal Information -->
+                                <div class="form-section-title">
+                                    <i class="bi bi-person"></i>
+                                    Personal Information
+                                </div>
+
+
+                                <div class="row g-3">
+
+                                    <div class="col-md-6">
+                                        <label>First name</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-person"></i>
+                                            <input 
+                                                type="text"
+                                                name="first_name"
+                                                placeholder="Juan"
+                                                value="{{ old('first_name') }}"
+                                                required>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-6">
+                                        <label>Last name</label>
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-person"></i>
+                                            <input 
+                                                type="text"
+                                                name="last_name"
+                                                placeholder="Dela Cruz"
+                                                value="{{ old('last_name') }}"
+                                                required>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <label>
+                                            Middle name 
+                                            <span>(optional)</span>
+                                        </label>
+
+                                        <div class="input-group-custom">
+                                            <i class="bi bi-person-lines-fill"></i>
+                                            <input 
+                                                type="text"
+                                                name="middle_name"
+                                                placeholder="Middle name"
+                                                value="{{ old('middle_name') }}">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- Account Information -->
+                                <div class="form-section-title mt-4">
+                                    <i class="bi bi-envelope"></i>
+                                    Account Information
+                                </div>
+
+
+                                <div class="mb-3">
+
+                                    <label>
+                                        Official DSWD Email
+                                    </label>
+
+                                    <div class="input-group-custom">
+
+                                        <i class="bi bi-envelope"></i>
+
+                                        <input 
+                                            type="email"
+                                            name="email"
+                                            id="registrationEmail"
+                                            placeholder="name@dswd.gov.ph"
+                                            value="{{ old('email') }}"
+                                            required>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="row g-3">
+
+                                    <div class="col-md-6">
+
+                                        <label>Password</label>
+
+                                        <div class="input-group-custom">
+
+                                            <i class="bi bi-lock"></i>
+
+                                            <input 
+                                                type="password"
+                                                name="password"
+                                                placeholder="Enter password"
+                                                minlength="8"
+                                                pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
+                                                title="Use at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a symbol."
+                                                required>
+
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-6">
+
+                                        <label>Confirm password</label>
+
+                                        <div class="input-group-custom">
+
+                                            <i class="bi bi-lock-fill"></i>
+
+                                            <input 
+                                                type="password"
+                                                name="password_confirmation"
+                                                placeholder="Confirm password"
+                                                minlength="8"
+                                                pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
+                                                title="Use at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a symbol."
+                                                required>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <small class="text-muted p-2" style="font-size: 0.7rem;">At least 8 characters with uppercase, lowercase, number, and symbol.</small>
+
+
+
+                                <button 
+                                    class="register-button w-100 mt-4"
+                                    type="submit"
+                                    id="registrationSubmit"
+                                    disabled>
+
+                                    <i class="bi bi-person-check"></i>
+
+                                    Submit Registration
+
+                                </button>
+
+
+                            </form>
+
+
+                            <div class="login-link">
+
+                                Already have an account?
+
+                                <a href="#loginModal"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#loginModal"
+                                    data-bs-dismiss="modal">
+
+                                    Sign in
+
+                                </a>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1"
+    aria-labelledby="forgotPasswordModalLabel"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content forgot-password-card border-0">
+
+            <div class="modal-body p-4 p-md-5">
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+
+                    <div class="forgot-icon mb-3">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-2" id="forgotPasswordModalLabel">
+                        Forgot your password?
+                    </h4>
+
+                    <p class="text-muted small mb-0">
+                        No worries. Enter your email address and we'll send you a secure
+                        password reset link.
+                    </p>
+
+                </div>
+
+
+                <form method="POST"
+                    action="{{ route('password.email') }}"
+                    id="loginForgotPasswordForm">
+
+                    @csrf
+
+
+                    <!-- Email -->
+                    <div class="mb-4">
+
+                        <label for="loginForgotPasswordEmail"
+                            class="form-label fw-semibold small">
+                            Email Address
+                        </label>
+
+
+                        <div class="input-group forgot-input">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+
+                            <input 
+                                id="loginForgotPasswordEmail"
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                value="{{ old('email') }}"
+                                placeholder="Enter your registered email"
+                                required
+                                autofocus>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Submit -->
+                    <button type="submit"
+                        class="btn btn-primary w-100 py-2 fw-semibold"
+                        id="loginForgotPasswordSubmit">
+
+                        <i class="bi bi-send me-2"></i>
+                        Send Reset Link
+
+                    </button>
+
+
+                    <!-- Security Notice -->
+                    <div class="reset-info mt-4">
+
+                        <i class="bi bi-info-circle me-2"></i>
+
+                        <span>
+                            The reset link will expire for your security.
+                        </span>
+
+                    </div>
+
+
+                </form>
+
+
+                <!-- Back -->
+                <div class="text-center mt-4">
+
+                    <button type="button"
+                        class="btn btn-link text-decoration-none text-muted small"
+                        data-bs-dismiss="modal">
+
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back to login
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loginPasswordResetLoadingModal" tabindex="-1" aria-labelledby="loginPasswordResetLoadingLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content password-loading-card border-0">
+            <div class="modal-body text-center p-5">
+                <div class="loading-icon-wrapper mb-4">
+                    <div class="loading-ring"></div>
+                    <i class="bi bi-envelope-check-fill"></i>
+                </div>
+                <h5 class="fw-semibold mb-2" id="loginPasswordResetLoadingLabel">Sending password reset link</h5>
+                <p class="text-muted small mb-4">We're preparing your email notification. Please wait a moment.</p>
+                <div class="progress loading-progress">
+                    <div id="loginPasswordResetProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" style="width: 10%"></div>
+                </div>
+                <small id="loginPasswordResetProgressText" class="text-secondary d-block mt-3" aria-live="polite">Do not close this window</small>
             </div>
         </div>
     </div>
 </div>
 
-@if(session('google_pending'))
+<style>
+    .password-loading-card { border-radius: 20px; background: #fff; opacity: 1; box-shadow: 0 20px 50px rgba(0,0,0,.15); animation: modalFade .3s ease; }
+    .loading-icon-wrapper { width: 90px; height: 90px; margin: auto; position: relative; display: flex; align-items: center; justify-content: center; }
+    .loading-icon-wrapper i { font-size: 2.2rem; color: #0d6efd; z-index: 2; }
+    .loading-ring { position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 4px solid #e9f2ff; border-top-color: #0d6efd; animation: spin 1s linear infinite; }
+    .loading-progress { height: 6px; border-radius: 20px; overflow: hidden; background: #eef3f8; }
+    .loading-progress .progress-bar { border-radius: 20px; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes modalFade { from { opacity: 0; transform: translateY(15px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const forgotPasswordForm = document.getElementById('loginForgotPasswordForm');
+
+        if (forgotPasswordForm) {
+            forgotPasswordForm.addEventListener('submit', function (event) {
+                if (!this.checkValidity()) return;
+
+                event.preventDefault();
+
+                const submitButton = document.getElementById('loginForgotPasswordSubmit');
+                const loadingModal = document.getElementById('loginPasswordResetLoadingModal');
+                const progressBar = document.getElementById('loginPasswordResetProgress');
+                const progressText = document.getElementById('loginPasswordResetProgressText');
+                let progress = 10;
+
+                submitButton.disabled = true;
+                loadingModal.addEventListener('shown.bs.modal', function () {
+                    window.setTimeout(function () {
+                        forgotPasswordForm.submit();
+                    }, 500);
+                }, { once: true });
+
+                bootstrap.Modal.getOrCreateInstance(loadingModal).show();
+
+                window.setInterval(function () {
+                    if (progress >= 90) return;
+
+                    progress += 5;
+                    progressBar.style.width = progress + '%';
+                    progressBar.setAttribute('aria-valuenow', progress);
+                    progressText.textContent = 'Processing your request (' + progress + '%)';
+                }, 500);
+            });
+        }
+    });
+</script>
+
+<div class="modal fade" id="accountApprovalModal" tabindex="-1" aria-labelledby="accountApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered approval-dialog">
+        <div class="modal-content approval-modal border-0">
+
+            <div class="modal-body text-center">
+
+                <div class="approval-icon">
+                    <i class="bi {{ session('google_rejected') ? 'bi-x-circle' : 'bi-shield-lock' }}"></i>
+                </div>
+
+                <h5 id="accountApprovalModalLabel" class="approval-title">
+                    @if(session('google_rejected'))
+                        Google Sign-In Not Allowed
+                    @elseif(session('registration_pending'))
+                        Registration Submitted
+                    @else
+                        Account Pending Approval
+                    @endif
+                </h5>
+
+                <p class="approval-message">
+                    @if(session('google_rejected'))
+                        You cannot proceed with these Google credentials. This login is for STB Staff with a <strong>dswd.gov.ph</strong> account only.
+                    @elseif(session('registration_pending'))
+                        Your registration was submitted successfully. Access will be granted once a system administrator approves your account.
+                    @else
+                        Your Google account has been successfully verified.
+                        Access will be granted once a system administrator approves your account.
+                    @endif
+                </p>
+
+                @if(!session('google_rejected'))
+                    <div class="approval-info">
+                        <i class="bi bi-info-circle"></i>
+                        <span>
+                            You will receive access automatically after approval.
+                        </span>
+                    </div>
+                @endif
+
+                <button type="button" 
+                        class="btn approval-btn w-100" 
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Understood
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@if(session('google_pending') || session('google_rejected') || session('registration_pending'))
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const approvalModal = document.getElementById('accountApprovalModal');
 
             if (approvalModal && window.bootstrap) {
                 bootstrap.Modal.getOrCreateInstance(approvalModal).show();
+            }
+        });
+    </script>
+@endif
+
+@if($errors->any() && old('registration_form'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const registrationModal = document.getElementById('registrationModal');
+
+            if (registrationModal && window.bootstrap) {
+                bootstrap.Modal.getOrCreateInstance(registrationModal).show();
+            }
+        });
+    </script>
+@endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const registrationForm = document.getElementById('registrationForm');
+        const registrationEmail = document.getElementById('registrationEmail');
+        const registrationSubmit = document.getElementById('registrationSubmit');
+
+        if (!registrationForm || !registrationEmail || !registrationSubmit) return;
+
+        function isDswdEmail(email) {
+            return /^[^@\s]+@dswd\.gov\.ph$/i.test(email.trim());
+        }
+
+        function updateRegistrationButton() {
+            registrationSubmit.disabled = !isDswdEmail(registrationEmail.value);
+        }
+
+        registrationEmail.addEventListener('input', updateRegistrationButton);
+        registrationForm.addEventListener('submit', function (event) {
+            if (!isDswdEmail(registrationEmail.value)) {
+                event.preventDefault();
+                updateRegistrationButton();
+            }
+        });
+
+        updateRegistrationButton();
+    });
+</script>
+
+@if (session('status'))
+    <script>
+        window.addEventListener('load', function () {
+            if (window.Swal && Swal.fire) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Email sent successfully',
+                    text: @json(session('status')),
+                    confirmButtonColor: '#062c52'
+                });
             }
         });
     </script>
@@ -240,9 +786,10 @@
         All Tickets
 
     </a>
+    @if(Auth::user()->usergroup === 'sysadmin')
     <span class="sidebar-title mt-4">
 
-        SETTINGS
+        ADMIN
 
     </span>
 
@@ -253,6 +800,22 @@
         Users
 
     </a>
+
+    <a href="{{ route('programs.index') }}"
+   class="sidebar-link {{ request()->routeIs('programs.*') ? 'active' : '' }} justify-content-start">
+
+    <i class="bi bi-grid"></i>
+
+    Programs
+
+    </a>
+
+    <a href="{{ route('audit-logs.index') }}"
+       class="sidebar-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }} justify-content-start">
+        <i class="bi bi-shield-check"></i>
+        Audit Log
+    </a>
+    @endif
 
 </aside>
 <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -272,6 +835,7 @@
             'tickets.review'  => 'Review Tickets',
             'users.index'     => 'User Management',
             'users.approvals' => 'User Management',
+            'programs.index'  => 'Programs',
 
         ];
 
@@ -314,7 +878,6 @@
             <button class="btn btn-light nav-icon position-relative"
                     type="button"
                     id="notificationButton"
-                    data-bs-toggle="dropdown"
                     aria-expanded="false"
                     aria-label="Notifications">
 
@@ -491,23 +1054,128 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="newPassword" class="form-label">New password</label>
-                                <input type="password" id="newPassword" name="password" class="form-control" required minlength="8" autocomplete="new-password">
+                                <input type="password" id="newPassword" name="password" class="form-control" required minlength="8" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" title="Use at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a symbol." autocomplete="new-password">
                                 @error('password', 'passwordUpdate')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="confirmPassword" class="form-label">Confirm new password</label>
-                                <input type="password" id="confirmPassword" name="password_confirmation" class="form-control" required minlength="8" autocomplete="new-password">
+                                <input type="password" id="confirmPassword" name="password_confirmation" class="form-control" required minlength="8" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" title="Use at least 8 characters, including an uppercase letter, a lowercase letter, a number, and a symbol." autocomplete="new-password">
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mt-4">
                             <button type="submit" class="btn profile-save-button"><i class="bi bi-shield-lock me-2"></i>Update password</button>
                         </div>
                     </form>
+                    <div class="text-end mt-3">
+                        <a href="#forgotPasswordModal" class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">
+                            Forgot password?
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="dashboardForgotPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dashboardForgotPasswordLabel">
+                    <i class="bi bi-envelope-lock me-2 text-primary"></i>Reset password by email
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small">Enter your account email and we will send you a link to create a new password.</p>
+
+                <form method="POST" action="{{ route('password.email') }}" id="dashboardForgotPasswordForm">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="dashboardForgotPasswordEmail" class="form-label">Email address</label>
+                        <input id="dashboardForgotPasswordEmail" type="email" name="email" class="form-control" value="{{ Auth::user()->email }}" required>
+                    </div>
+                    <button type="submit" class="btn profile-save-button w-100" id="dashboardForgotPasswordSubmit">
+                        <i class="bi bi-send me-2"></i>Send reset link
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dashboardPasswordResetLoadingModal" tabindex="-1" aria-labelledby="dashboardPasswordResetLoadingLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content password-loading-card border-0">
+            <div class="modal-body text-center p-5">
+                <div class="loading-icon-wrapper mb-4">
+                    <div class="loading-ring"></div>
+                    <i class="bi bi-envelope-check-fill"></i>
+                </div>
+                <h5 class="fw-semibold mb-2" id="dashboardPasswordResetLoadingLabel">Sending password reset link</h5>
+                <p class="text-muted small mb-4">We're preparing your email notification. Please wait a moment.</p>
+                <div class="progress loading-progress">
+                    <div id="dashboardPasswordResetProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10" style="width: 10%"></div>
+                </div>
+                <small id="dashboardPasswordResetProgressText" class="text-secondary d-block mt-3" aria-live="polite">Do not close this window</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .password-loading-card { border-radius: 20px; background: #fff; opacity: 1; box-shadow: 0 20px 50px rgba(0,0,0,.15); animation: modalFade .3s ease; }
+    .loading-icon-wrapper { width: 90px; height: 90px; margin: auto; position: relative; display: flex; align-items: center; justify-content: center; }
+    .loading-icon-wrapper i { font-size: 2.2rem; color: #0d6efd; z-index: 2; }
+    .loading-ring { position: absolute; width: 90px; height: 90px; border-radius: 50%; border: 4px solid #e9f2ff; border-top-color: #0d6efd; animation: spin 1s linear infinite; }
+    .loading-progress { height: 6px; border-radius: 20px; overflow: hidden; background: #eef3f8; }
+    .loading-progress .progress-bar { border-radius: 20px; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes modalFade { from { opacity: 0; transform: translateY(15px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+</style>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const forgotPasswordForm = document.getElementById('dashboardForgotPasswordForm');
+
+        if (!forgotPasswordForm) return;
+
+        forgotPasswordForm.addEventListener('submit', function (event) {
+            if (!this.checkValidity()) return;
+
+            event.preventDefault();
+
+            const submitButton = document.getElementById('dashboardForgotPasswordSubmit');
+            const progressBar = document.getElementById('dashboardPasswordResetProgress');
+            const progressText = document.getElementById('dashboardPasswordResetProgressText');
+            let progress = 10;
+
+            submitButton.disabled = true;
+            const loadingModal = document.getElementById('dashboardPasswordResetLoadingModal');
+            const loadingModalInstance = bootstrap.Modal.getOrCreateInstance(loadingModal);
+
+            loadingModal.addEventListener('shown.bs.modal', function () {
+                window.setTimeout(function () {
+                    forgotPasswordForm.submit();
+                }, 500);
+            }, { once: true });
+
+            loadingModalInstance.show();
+
+            window.setInterval(function () {
+                if (progress >= 90) return;
+
+                progress += 5;
+                progressBar.style.width = progress + '%';
+                progressBar.setAttribute('aria-valuenow', progress);
+                progressText.textContent = 'Processing your request (' + progress + '%)';
+            }, 500);
+
+        });
+    });
+</script>
 
 
 
@@ -532,6 +1200,21 @@
                 icon: 'error',
                 title: 'Access denied',
                 text: @json(session('error')),
+                confirmButtonColor: '#062c52'
+            });
+        }
+    });
+</script>
+@endif
+
+@if (session('status'))
+<script>
+    window.addEventListener('load', function () {
+        if (window.Swal && Swal.fire) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Email sent successfully',
+                text: @json(session('status')),
                 confirmButtonColor: '#062c52'
             });
         }
@@ -599,6 +1282,10 @@ body{
 }
 
 .d-submit-white-button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
     background:#fff;
     color:var(--primary);
     border:1px solid var(--primary);
@@ -1075,16 +1762,18 @@ body{
     position:absolute;
     top:3px;
     right:3px;
-    min-width:17px;
-    height:17px;
-    padding:0 4px;
+    min-width:18px;
+    height:18px;
+    padding:0 3px;
     border-radius:9px;
     background:#EF4444;
     color:#fff;
     font-size:10px;
     font-weight:700;
-    line-height:17px;
-    text-align:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1;
     border:2px solid #fff;
 }
 
@@ -1625,6 +2314,546 @@ body{
 
 }
     
+
+    .approval-dialog {
+    max-width: 390px;
+}
+
+.approval-modal {
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0,0,0,.15);
+    overflow: hidden;
+}
+
+
+.approval-modal .modal-body {
+    padding: 35px 32px;
+}
+
+
+/* Icon */
+.approval-icon {
+    width: 85px;
+    height: 85px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#fff3cd,#ffe69c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulseApproval 2s infinite;
+}
+
+.approval-icon i {
+    font-size: 42px;
+    color: #b88600;
+}
+
+
+/* Text */
+.approval-title {
+    margin-top: 22px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+
+.approval-message {
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: .9rem;
+    line-height: 1.6;
+}
+
+
+/* Info box */
+.approval-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    text-align: left;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin: 22px 0;
+    font-size: .82rem;
+    color: #64748b;
+}
+
+.approval-info i {
+    color: #2563eb;
+    font-size: 1rem;
+}
+
+
+/* Button */
+.approval-btn {
+    border-radius: 14px;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    border: none;
+    transition: .25s ease;
+}
+
+
+.approval-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+
+@keyframes pulseApproval {
+
+    0% {
+        box-shadow: 0 0 0 0 rgba(234,179,8,.25);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(234,179,8,0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(234,179,8,0);
+    }
+
+}
+
+.registration-container {
+    padding: 25px;
+}
+
+
+.registration-header {
+    text-align:center;
+    margin-bottom:25px;
+}
+
+
+.register-icon {
+    width:70px;
+    height:70px;
+    margin:auto;
+    border-radius:50%;
+    background:#eef4ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:15px;
+}
+
+
+.register-icon i {
+    font-size:32px;
+    color:#2563eb;
+}
+
+
+.registration-header h4 {
+    font-weight:700;
+    color:#111827;
+}
+
+
+.registration-header p {
+    color:#6b7280;
+    font-size:.85rem;
+}
+
+
+
+/* Notice */
+
+.registration-notice {
+
+    display:flex;
+    gap:14px;
+    padding:16px;
+    border-radius:16px;
+
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+
+    margin-bottom:25px;
+
+}
+
+
+.notice-icon {
+
+    width:38px;
+    height:38px;
+    border-radius:12px;
+
+    background:#dbeafe;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#2563eb;
+
+}
+
+
+.registration-notice small {
+
+    display:block;
+    color:#64748b;
+    margin-top:4px;
+    line-height:1.5;
+
+}
+
+
+
+/* Sections */
+
+.form-section-title {
+
+    font-size:.85rem;
+    font-weight:700;
+    color:#334155;
+
+    display:flex;
+    gap:8px;
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+
+
+/* Inputs */
+
+label {
+
+    font-size:.8rem;
+    font-weight:600;
+    color:#374151;
+    margin-bottom:7px;
+
+}
+
+
+label span {
+
+    color:#94a3b8;
+    font-weight:400;
+
+}
+
+
+.input-group-custom {
+
+    display:flex;
+    align-items:center;
+
+    border:1px solid #d1d5db;
+
+    border-radius:14px;
+
+    padding:0 14px;
+
+    background:white;
+
+    transition:.2s;
+
+}
+
+
+.input-group-custom:focus-within {
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.1);
+
+}
+
+
+.input-group-custom i {
+
+    color:#94a3b8;
+
+    margin-right:10px;
+
+}
+
+
+.input-group-custom input {
+
+    width:100%;
+    border:0;
+    outline:0;
+
+    padding:13px 0;
+
+    font-size:.9rem;
+
+}
+
+
+
+/* Button */
+
+.register-button {
+
+    border:none;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+
+.register-button:hover:not(:disabled){
+
+    background:#1d4ed8;
+
+    transform:translateY(-1px);
+
+}
+
+
+.register-button:disabled {
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+
+
+/* Login */
+
+.login-link {
+
+    text-align:center;
+
+    margin-top:22px;
+
+    font-size:.85rem;
+
+    color:#64748b;
+
+}
+
+
+.login-link a {
+
+    color:#2563eb;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+}
+
+.register-brand-panel {
+    background: linear-gradient(
+        145deg,
+        #ecf4fe,
+        #f8fbff
+    );
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.brand-content {
+    position: relative;
+    z-index: 1;
+}
+
+.brand-logo {
+    max-width: 280px;
+}
+
+.brand-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1b2a41;
+    line-height: 1.3;
+}
+
+.brand-title span {
+    color: #0d6efd;
+}
+
+.brand-description {
+    color: #6c757d;
+    font-size: 0.95rem;
+    max-width: 380px;
+    line-height: 1.6;
+}
+
+.brand-feature {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feature-item i {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    color: #0d6efd;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.feature-item strong {
+    display: block;
+    color: #1b2a41;
+    font-size: 0.9rem;
+}
+
+.feature-item small {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.forgot-password-card {
+    border-radius: 24px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.15);
+}
+
+
+.forgot-icon {
+
+    width:80px;
+    height:80px;
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#eaf3ff;
+    color:#0d6efd;
+
+}
+
+
+.forgot-icon i {
+    font-size:2.4rem;
+}
+
+
+
+.forgot-input .input-group-text {
+
+    background:#f8fafc;
+    border-right:0;
+    color:#6c757d;
+
+}
+
+
+.forgot-input .form-control {
+
+    border-left:0;
+    padding:12px;
+
+}
+
+
+.forgot-input:focus-within {
+
+    box-shadow:0 0 0 .2rem rgba(13,110,253,.15);
+    border-radius:10px;
+
+}
+
+
+.forgot-input .form-control:focus {
+
+    box-shadow:none;
+
+}
+
+
+
+#loginForgotPasswordSubmit {
+
+    border-radius:12px;
+    transition:.25s ease;
+
+}
+
+
+#loginForgotPasswordSubmit:hover {
+
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(13,110,253,.25);
+
+}
+
+
+
+.reset-info {
+
+    background:#f8f9fa;
+
+    border-radius:12px;
+
+    padding:12px 15px;
+
+    font-size:.8rem;
+
+    color:#6c757d;
+
+    display:flex;
+    align-items:center;
+
+}
+
+
+
+.modal.fade .modal-dialog {
+
+    transform:scale(.95);
+
+    transition:transform .25s ease;
+
+}
+
+
+.modal.show .modal-dialog {
+
+    transform:scale(1);
+
+}
 </style>
 
 <!-- Bootstrap JS bundle fallback -->
@@ -1843,6 +3072,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!notificationButton || !notificationList) return;
 
+    const notificationDropdown = window.bootstrap?.Dropdown
+        ? window.bootstrap.Dropdown.getOrCreateInstance(notificationButton)
+        : null;
+
     const notificationUrl = @json(route('notifications.index', [], false));
     const lastSeenKey = 'istaksyon.notifications.last_seen_id';
 
@@ -1936,9 +3169,15 @@ document.addEventListener('DOMContentLoaded', function () {
     notificationButton.addEventListener('click', function () {
         const latestId = Number(this.dataset.latestNotificationId || 0);
         if (latestId > 0) {
-            window.localStorage.setItem(lastSeenKey, String(latestId));
+            try {
+                window.localStorage.setItem(lastSeenKey, String(latestId));
+            } catch (error) {
+                // Notifications should still open when browser storage is unavailable.
+            }
             setUnreadCount(0);
         }
+
+        if (notificationDropdown) notificationDropdown.toggle();
     });
 
     loadNotifications();

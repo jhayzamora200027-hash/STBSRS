@@ -10,6 +10,8 @@ use App\Models\TicketCommentAttachment;
 use App\Models\TicketReturn;
 use App\Models\User;
 use App\Mail\TicketReturnedMail;
+use App\Mail\TicketCommentMail;
+use App\Mail\TicketCompletedMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -778,14 +780,22 @@ class TicketController extends Controller
     /**
      * Show guest view for a ticket after OTP verification.
      */
-    public function guestView(string $ticket_id)
+    public function guestView(Request $request, string $ticket_id)
     {
+        $signedUrlAuthorized = \Illuminate\Support\Facades\URL::hasValidSignature($request);
+
+        if ($signedUrlAuthorized) {
+            Session::put('ticket_otp_verified', true);
+            Session::put('ticket_otp_ticket', $ticket_id);
+            Session::put('ticket_otp_verified_at', Carbon::now()->toDateTimeString());
+        }
+
         $verified = Session::get('ticket_otp_verified', false);
         $sessionTicket = Session::get('ticket_otp_ticket', null);
         $verifiedAt = Session::get('ticket_otp_verified_at', null);
 
-        $ticketAuthorized = $verified && $sessionTicket === $ticket_id && $verifiedAt
-            && Carbon::parse($verifiedAt)->addMinutes(30)->gte(Carbon::now());
+        $ticketAuthorized = $signedUrlAuthorized || ($verified && $sessionTicket === $ticket_id && $verifiedAt
+            && Carbon::parse($verifiedAt)->addMinutes(30)->gte(Carbon::now()));
 
         if (!$ticketAuthorized) {
             $emailVerified = Session::get('guest_email_otp_verified', false);
@@ -869,6 +879,28 @@ class TicketController extends Controller
             'description' => $parentId ? 'A guest reply was added to the discussion.' : 'A guest comment was added to the discussion.',
             'performed_by' => trim($ticket->requestor_first_name . ' ' . $ticket->requestor_last_name),
         ]);
+
+        $recipientEmails = User::query()
+            ->whereNotNull('email')
+            ->whereRaw('LOWER(usergroup) IN (?, ?)', ['admin', 'sysadmin'])
+            ->pluck('email')
+            ->filter()
+            ->unique()
+            ->values();
+
+        foreach ($recipientEmails as $recipientEmail) {
+            try {
+                Mail::to($recipientEmail)->send(
+                    new TicketCommentMail($ticket, $comment, (bool) $parentId)
+                );
+            } catch (\Throwable $exception) {
+                Log::error('Unable to send guest comment notification.', [
+                    'ticket_id' => $ticket->ticket_id,
+                    'recipient' => $recipientEmail,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
 
         return redirect()->route('guest.ticket.view', $ticket->ticket_id)->with('success', 'Comment posted.');
     }
@@ -982,10 +1014,21 @@ class TicketController extends Controller
             ->with('feedback_submitted', true);
     }
     public function complete(Ticket $ticket){
+        $previousStatus = $ticket->ticket_status;
         $ticket->update([
             'ticket_status' => 'completed',
             'ticket_completed_at' => now(),
         ]);
+
+        if ($previousStatus !== 'completed' && !empty($ticket->requestor_email)) {
+            try {
+                Mail::to($ticket->requestor_email)->send(new TicketCompletedMail($ticket));
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
+
+        session()->flash('open_feedback', true);
 
         return response()->json([
             'success' => true

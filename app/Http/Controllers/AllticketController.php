@@ -95,7 +95,7 @@ class AllticketController extends Controller
             ->orderBy('requestor_last_name')
             ->get();
 
-        $programs = Program::orderBy('program')->get();
+        $programs = Program::where('status', 'active')->orderBy('program')->get();
 
 
 

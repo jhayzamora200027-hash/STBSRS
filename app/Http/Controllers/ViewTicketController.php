@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketAcknowledgedMail;
+use App\Mail\TicketCommentMail;
 
 class ViewTicketController extends Controller
 {
@@ -19,7 +20,8 @@ class ViewTicketController extends Controller
                 'requestForRegion',
                 'requestProvince',
                 'requestCity',
-                'agency'
+                'agency',
+                'attachments'
                 ])->where('ticket_id', $ticket_id)->firstOrFail();
 
             $latestResolution = $ticket->resolutions()
@@ -90,6 +92,16 @@ class ViewTicketController extends Controller
             'performed_by' => Auth::user()?->name ?? $comment->guest_name,
         ]);
 
+        if (!empty($ticketModel->requestor_email)) {
+            try {
+                Mail::to($ticketModel->requestor_email)->send(
+                    new TicketCommentMail($ticketModel, $comment, (bool) $data['parent_id'])
+                );
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
+
         // Load attachments for response
         $comment->load('attachments');
 
@@ -133,7 +145,8 @@ class ViewTicketController extends Controller
             'requestRegion',
             'requestForRegion',
             'requestProvince',
-            'requestCity'
+            'requestCity',
+            'attachments'
         ])->where('ticket_id', $ticket_id)->firstOrFail();
 
         $latestResolution = $ticket->resolutions()

@@ -97,7 +97,19 @@
     .date-range {
         display: grid;
         gap: .5rem;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .date-range .form-control {
+        box-sizing: border-box;
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .filter-card .row > .col,
+    .filter-card .row > [class*="col-"] {
+        min-width: 0;
     }
 
     .filter-actions {
@@ -300,9 +312,22 @@
         }
     }
 
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+        .filter-fields-grid > .col-lg-4 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+    }
+
     @media (min-width: 576px) and (max-width: 767.98px) {
         .metrics-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1200px) and (max-width: 1799.98px) {
+        .metrics-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
@@ -746,7 +771,7 @@
 
         </div>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 filter-fields-grid">
 
             {{-- STATUS --}}
             <div class="col-12 col-sm-6 col-lg-4">
@@ -912,7 +937,7 @@
                 </div>
             </div>
 
-            <div class="col-12 filter-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-end gap-2">
+            <div class="col-12 filter-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-start gap-2">
 
                 <button type="submit" class="btn btn-primary w-100 w-sm-auto">
                     <i class="bi bi-search"></i>

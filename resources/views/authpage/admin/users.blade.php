@@ -198,7 +198,7 @@
 	}
 
 	.user-management .identity strong,
-	.user-management .identity span {
+	.user-management .identity > div > span {
 		display: block;
 	}
 
@@ -208,7 +208,7 @@
 		font-weight: 600;
 	}
 
-	.user-management .identity span {
+	.user-management .identity > div > span {
 		color: var(--muted);
 		font-size: .7rem;
 		margin-top: 2px;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Acknowledged</title>
+    <title>Ticket Completed</title>
 
     <style>
         body{
@@ -41,12 +41,12 @@
 
         .sub{
             margin:0;
-            font-size:15px;
             color:#6b7280;
+            font-size:15px;
             line-height:1.7;
         }
 
-        .ticket-wrap{
+        .completed-wrap{
             margin:30px 0;
             background:#f1f5f9;
             border-radius:10px;
@@ -56,37 +56,26 @@
         .ticket-card{
             background:#ffffff;
             border-radius:8px;
-            box-shadow:0 2px 6px rgba(2,6,23,.06);
             padding:22px;
-        }
-
-        .ticket-table{
-            width:100%;
-            border-collapse:collapse;
-            font-size:14px;
-        }
-
-        .ticket-table td{
-            padding:12px 0;
-            border-bottom:1px solid #f1f5f9;
-        }
-
-        .ticket-table tr:last-child td{
-            border-bottom:none;
+            box-shadow:0 2px 6px rgba(2,6,23,.06);
         }
 
         .label{
             color:#6b7280;
+            font-size:13px;
         }
 
-        .value{
-            text-align:right;
-            font-weight:600;
+        .ticket-id{
+            margin-top:8px;
             color:#111827;
+            font-size:24px;
+            font-weight:700;
+            letter-spacing:1px;
         }
 
-        .status{
+        .badge{
             display:inline-block;
+            margin-top:18px;
             padding:6px 14px;
             border-radius:999px;
             background:#ecfdf5;
@@ -97,10 +86,19 @@
         }
 
         .message{
+            color:#4b5563;
+            font-size:15px;
+            line-height:1.8;
+        }
+
+        .note{
             margin-top:25px;
+            background:#f8fafc;
+            border-radius:8px;
+            padding:18px;
             color:#4b5563;
             font-size:14px;
-            line-height:1.8;
+            line-height:1.7;
         }
 
         .footer{
@@ -123,21 +121,6 @@
                 padding:24px;
             }
 
-            .ticket-wrap{
-                padding:20px;
-            }
-
-            .ticket-table td{
-                display:block;
-                width:100%;
-                text-align:left;
-                padding:8px 0;
-            }
-
-            .value{
-                text-align:left;
-            }
-
         }
 
     </style>
@@ -152,68 +135,85 @@
 
         <div class="header">
 
-            <p class="title">Ticket Acknowledged</p>
+            <p class="title">
+                Ticket Completed
+            </p>
 
             <p class="sub">
-                Your service request has been successfully received and
-                acknowledged by the Social Technology Bureau.
+                Your service request has been successfully completed.
             </p>
 
         </div>
 
+
         <p style="font-size:15px;color:#374151;">
             Dear
-            <strong>{{ $ticket->requestor_first_name }} {{ $ticket->requestor_last_name }}</strong>,
+            <strong>
+                {{ $ticket->requestor_first_name }}
+                {{ $ticket->requestor_last_name }}
+            </strong>,
         </p>
 
-        <p style="font-size:15px;color:#4b5563;line-height:1.8;">
-            Thank you for submitting your request through
-            <strong>iSTaksyon</strong>. Your ticket has been
-            <strong>acknowledged</strong> and is now under review by our
-            technical team. We will notify you as soon as there are updates
-            regarding its progress or resolution.
+
+        <p class="message">
+
+            We are pleased to inform you that your service request has been
+            marked as <strong>Completed</strong>.
+
+            <br><br>
+
+            Thank you for using the <strong>iSTaksyon System</strong>.
+            We appreciate your cooperation and trust in our service.
+
         </p>
 
-        <div class="ticket-wrap">
+
+
+        <div class="completed-wrap">
 
             <div class="ticket-card">
 
-                <table class="ticket-table">
+                <div class="label">
+                    Ticket Number
+                </div>
 
-                    <tr>
-                        <td class="label">Ticket Number</td>
-                        <td class="value">#{{ $ticket->ticket_id }}</td>
-                    </tr>
+                <div class="ticket-id">
+                    #{{ $ticket->ticket_id }}
+                </div>
 
-                    <tr>
-                        <td class="label">Status</td>
-                        <td class="value">
-                            <span class="status">Acknowledged</span>
-                        </td>
-                    </tr>
 
-                    <tr>
-                        <td class="label">Submitted On</td>
-                        <td class="value">
-                            {{ $ticket->created_at->format('F d, Y h:i A') }}
-                        </td>
-                    </tr>
-
-                </table>
+                <span class="badge">
+                    Completed
+                </span>
 
             </div>
 
         </div>
 
-        <div class="message">
 
-            We appreciate your patience while we process your request.
-            Our team is committed to providing timely technical assistance
-            and will keep you informed throughout the ticket lifecycle.
+
+        <div class="note">
+
+            Your request has reached the end of its service workflow.
+            If you require further assistance, you may submit a new request
+            through the <strong>iSTaksyon System</strong>.
 
         </div>
 
+        <div style="margin:30px 0 0;text-align:center;">
+            <a href="{{ $ticketUrl }}"
+               style="display:inline-block;padding:15px 34px;background:#0d6efd;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;box-shadow:0 3px 10px rgba(13,110,253,.25);">
+                Open iSTaksyon
+            </a>
+            <p style="margin:12px 0 0;color:#6b7280;font-size:12px;">
+                This secure link expires in 30 minutes.
+            </p>
+        </div>
+
+
     </div>
+
+
 
     <div class="footer">
 
@@ -226,6 +226,7 @@
         © {{ date('Y') }} Department of Social Welfare and Development. All rights reserved.
 
     </div>
+
 
 </div>
 

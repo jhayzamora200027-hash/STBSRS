@@ -12,7 +12,9 @@
     border:1px solid #e5e7eb;
     border-radius:14px;
     padding:22px 18px;
-    height:200px;
+    height:100%;
+    min-height:200px;
+    box-sizing:border-box;
 
     display:flex;
     flex-direction:column;
@@ -28,10 +30,11 @@
 }
 
 .metric-title{
-    height:52px;                 /* Every title occupies same space */
+    min-height:52px;
     display:flex;
     justify-content:center;
     align-items:center;
+    line-height:1.35;
 
     text-align:center;
 
@@ -50,6 +53,12 @@
 }
 
 .metric-number{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-height:52px;
+    white-space:nowrap;
     font-size:52px;
     font-weight:700;
     color:#0b3b75;
@@ -63,7 +72,7 @@
 }
 
 .metric-footer{
-    height:42px;                 /* Equal footer height */
+    min-height:42px;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -71,6 +80,7 @@
     text-align:center;
 
     font-size:14px;
+    line-height:1.35;
     color:#94a3b8;
 
     margin:0;
@@ -1676,7 +1686,7 @@ gap:15px;
 <div class="row g-4 px-4 pb-4">
 
     <!-- Total Tickets -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="totalTickets" data-title="Total Tickets">
 
             <div class="metric-header">
@@ -1703,7 +1713,7 @@ gap:15px;
     </div>
 
     <!-- New Tickets -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="newTickets" data-title="New Tickets">
 
             <div class="metric-header">
@@ -1730,7 +1740,7 @@ gap:15px;
     </div>
 
     <!-- Resolved -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="resolvedTickets" data-title="Resolved Tickets">
 
             <div class="metric-header">
@@ -1757,7 +1767,7 @@ gap:15px;
     </div>
 
     <!-- Average Resolution -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="averageTickets" data-title="Average Resolution Time">
 
             <div class="metric-header">
@@ -1785,7 +1795,7 @@ gap:15px;
     </div>
 
     <!-- SLA -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="slaCompliance" data-title="SLA Compliance">
 
             <div class="metric-header">
@@ -1813,7 +1823,7 @@ gap:15px;
     </div>
 
     <!-- Overdue -->
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2">
+    <div class="col-12 col-sm-6 col-lg-4 col-xxl-2">
         <div class="metric-card" id="overdueTickets" data-title="Overdue Tickets">
 
             <div class="metric-header">

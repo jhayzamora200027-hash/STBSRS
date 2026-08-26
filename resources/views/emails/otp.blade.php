@@ -6,7 +6,7 @@
     <title>Verify your sign-in</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f7f8fa; margin:0; padding:0; }
-        .container { max-width:680px; margin:32px auto; background:#fff; border-radius:12px; padding:32px; box-shadow:0 6px 24px rgba(16,24,40,0.08); }
+        .container { max-width:680px; margin:32px auto; background:#fff; border: 1px solid #dbdbdb; border-radius:12px; padding:32px; box-shadow:0 6px 24px rgba(16,24,40,0.08); }
         .header { text-align:center; padding-bottom:18px; }
         .title { font-size:22px; font-weight:700; color:#111827; margin:0 0 8px; }
         .sub { color:#6b7280; font-size:14px; margin:0 0 18px; }

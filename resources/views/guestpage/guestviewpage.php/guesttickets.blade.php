@@ -862,7 +862,7 @@ body{
                             <td class="text-center">
     
                                 <a
-                                    href="{{ route('guest.ticket.view',$ticket->ticket_id) }}"
+                                    href="{{ route('guest.ticket.view', ['ticket_id' => $ticket->ticket_id, 'source' => 'email']) }}"
                                     class="ticket-action-btn"
                                 >
     
@@ -1076,5 +1076,6 @@ document.addEventListener('DOMContentLoaded', function () {
     tick();
 });
 </script>
+@include('partials.govph_footer')
 @endsection
 

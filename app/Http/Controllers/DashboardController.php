@@ -209,7 +209,7 @@ class DashboardController extends Controller
             ->paginate(3, ['*'], 'resolved_page')
             ->withQueryString();
 
-        $programs = Program::orderBy('program')->get();
+        $programs = Program::where('status', 'active')->orderBy('program')->get();
 
         $monthlySla = [];
 

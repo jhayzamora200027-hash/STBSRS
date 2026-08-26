@@ -15,7 +15,7 @@ class LandingpageController extends Controller
         }
 
         $regions = Region::orderBy('name')->get();
-        $programs = Program::orderBy('program')->get();
+        $programs = Program::where('status', 'active')->orderBy('program')->get();
         $agencies = Agency::orderBy('group_name')->get();
 
         return view('landingpage.home', compact('regions','programs','agencies'));

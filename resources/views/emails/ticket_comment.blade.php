@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Acknowledged</title>
+    <title>{{ $isReply ? 'New Reply' : 'New Comment' }}</title>
 
     <style>
         body{
@@ -41,62 +41,48 @@
 
         .sub{
             margin:0;
-            font-size:15px;
             color:#6b7280;
+            font-size:15px;
             line-height:1.7;
         }
 
-        .ticket-wrap{
+        .comment-wrap{
             margin:30px 0;
             background:#f1f5f9;
             border-radius:10px;
             padding:28px;
         }
 
-        .ticket-card{
+        .comment-card{
             background:#ffffff;
             border-radius:8px;
             box-shadow:0 2px 6px rgba(2,6,23,.06);
             padding:22px;
         }
 
-        .ticket-table{
-            width:100%;
-            border-collapse:collapse;
+        .meta{
+            margin-bottom:18px;
+            padding-bottom:16px;
+            border-bottom:1px solid #eef2f7;
             font-size:14px;
         }
 
-        .ticket-table td{
-            padding:12px 0;
-            border-bottom:1px solid #f1f5f9;
-        }
-
-        .ticket-table tr:last-child td{
-            border-bottom:none;
+        .meta strong{
+            color:#111827;
         }
 
         .label{
             color:#6b7280;
         }
 
-        .value{
-            text-align:right;
-            font-weight:600;
-            color:#111827;
-        }
-
-        .status{
-            display:inline-block;
-            padding:6px 14px;
-            border-radius:999px;
-            background:#ecfdf5;
-            border:1px solid #bbf7d0;
-            color:#166534;
-            font-size:12px;
-            font-weight:700;
-        }
-
         .message{
+            white-space:pre-line;
+            color:#374151;
+            line-height:1.8;
+            font-size:15px;
+        }
+
+        .note{
             margin-top:25px;
             color:#4b5563;
             font-size:14px;
@@ -123,19 +109,8 @@
                 padding:24px;
             }
 
-            .ticket-wrap{
+            .comment-wrap{
                 padding:20px;
-            }
-
-            .ticket-table td{
-                display:block;
-                width:100%;
-                text-align:left;
-                padding:8px 0;
-            }
-
-            .value{
-                text-align:left;
             }
 
         }
@@ -152,65 +127,56 @@
 
         <div class="header">
 
-            <p class="title">Ticket Acknowledged</p>
+            <p class="title">
+                {{ $isReply ? 'New Reply' : 'New Comment' }}
+            </p>
 
             <p class="sub">
-                Your service request has been successfully received and
-                acknowledged by the Social Technology Bureau.
+                There is a new {{ strtolower($isReply ? 'reply' : 'comment') }}
+                on your iSTaksyon service request.
             </p>
 
         </div>
 
         <p style="font-size:15px;color:#374151;">
-            Dear
+            Hello
             <strong>{{ $ticket->requestor_first_name }} {{ $ticket->requestor_last_name }}</strong>,
         </p>
 
         <p style="font-size:15px;color:#4b5563;line-height:1.8;">
-            Thank you for submitting your request through
-            <strong>iSTaksyon</strong>. Your ticket has been
-            <strong>acknowledged</strong> and is now under review by our
-            technical team. We will notify you as soon as there are updates
-            regarding its progress or resolution.
+            A new
+            <strong>{{ strtolower($isReply ? 'reply' : 'comment') }}</strong>
+            has been posted to your ticket. Please review the message below.
         </p>
 
-        <div class="ticket-wrap">
+        <div class="comment-wrap">
 
-            <div class="ticket-card">
+            <div class="comment-card">
 
-                <table class="ticket-table">
+                <div class="meta">
+                    <span class="label">Ticket Number</span><br>
+                    <strong>#{{ $ticket->ticket_id }}</strong>
+                </div>
 
-                    <tr>
-                        <td class="label">Ticket Number</td>
-                        <td class="value">#{{ $ticket->ticket_id }}</td>
-                    </tr>
-
-                    <tr>
-                        <td class="label">Status</td>
-                        <td class="value">
-                            <span class="status">Acknowledged</span>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="label">Submitted On</td>
-                        <td class="value">
-                            {{ $ticket->created_at->format('F d, Y h:i A') }}
-                        </td>
-                    </tr>
-
-                </table>
+                <div class="message">
+{{ $comment->comment }}
+                </div>
 
             </div>
 
         </div>
 
-        <div class="message">
+        <div class="note">
+            Use the button below to view the complete discussion, reply to this
+            conversation, and track your ticket's latest updates. This secure
+            link will expire in 30 minutes.
+        </div>
 
-            We appreciate your patience while we process your request.
-            Our team is committed to providing timely technical assistance
-            and will keep you informed throughout the ticket lifecycle.
-
+        <div style="margin:28px 0;text-align:center;">
+            <a href="{{ $ticketUrl }}"
+               style="display:inline-block;padding:13px 24px;border-radius:8px;background:#0d6efd;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;">
+                View Ticket
+            </a>
         </div>
 
     </div>

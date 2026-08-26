@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccountApprovedMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Throwable;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->ensureSysadmin();
+
         $search = trim((string) $request->input('search'));
         $role = (string) $request->input('role');
         $status = (string) $request->input('status');
@@ -56,11 +63,31 @@ class UserController extends Controller
     {
         $this->ensureSysadmin();
 
-        $user->update([
+        $temporaryPassword = $user->auth_provider === 'google' ? Str::random(12) : null;
+
+        $attributes = [
             'approved_at' => now(),
             'approved_by' => Auth::id(),
             'status' => 'active',
-        ]);
+        ];
+
+        if ($temporaryPassword !== null) {
+            $attributes['password'] = Hash::make($temporaryPassword);
+        }
+
+        $user->update($attributes);
+
+        if ($temporaryPassword !== null) {
+            try {
+                Mail::to($user->email)->send(new AccountApprovedMail(
+                    $user->name,
+                    $user->email,
+                    $temporaryPassword,
+                ));
+            } catch (Throwable $exception) {
+                report($exception);
+            }
+        }
 
         return back()->with('approval_success', 'The account has been approved.');
     }

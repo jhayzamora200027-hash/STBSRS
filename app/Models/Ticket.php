@@ -102,7 +102,7 @@ protected $casts = [
     {
         return $this->hasMany(TicketComment::class)
                     ->whereNull('parent_id')
-                    ->latest();
+                    ->oldest();
     }
 
     public function resolutions()

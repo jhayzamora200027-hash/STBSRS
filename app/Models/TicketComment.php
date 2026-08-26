@@ -35,7 +35,7 @@ class TicketComment extends Model
     public function replies()
     {
         return $this->hasMany(TicketComment::class, 'parent_id')
-                    ->latest();
+                    ->oldest();
     }
 
     public function attachments()

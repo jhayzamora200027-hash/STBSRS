@@ -400,7 +400,8 @@
     color: #2563eb;
     letter-spacing: .02em;
 }
-.guest-comments .attachment-chip { display: inline-flex; gap: .3rem; margin: .5rem .4rem 0 0; padding: .25rem .5rem; border-radius: 8px; background: #f1f3f5; color: #374151; font-size: .75rem; text-decoration: none; }
+.guest-comments .attachment-chip { display: inline-flex; align-items: center; gap: .3rem; max-width: 100%; margin: .5rem .4rem 0 0; padding: .25rem .5rem; border-radius: 8px; background: #f1f3f5; color: #374151; font-size: .75rem; text-decoration: none; }
+.guest-comments .attachment-chip > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .guest-comments .reply-toggle-btn {
     display: inline-flex;
     align-items: center;
@@ -426,6 +427,9 @@
     display: block;
 }
 .guest-comments .reply-form { display: flex; gap: .5rem; margin-top: .7rem; }
+.guest-comments .reply-form .reply-upload-label { display: inline-flex; align-items: center; gap: .35rem; flex: 0 0 auto; min-height: 40px; padding: .35rem .65rem; border: 1px solid #dfe3e8; border-radius: 10px; background: #fff; color: #1d4ed8; font-size: .75rem; cursor: pointer; }
+.guest-comments .reply-form .reply-upload-label:hover { background: #eff6ff; border-color: #bfdbfe; }
+.guest-comments .reply-form input[type="file"] { display: none; }
 .guest-comments .reply-form textarea { flex: 1; min-height: 55px; border: 1px solid #dfe3e8; border-radius: 10px; padding: .55rem; }
 .guest-comments .reply-form button { align-self: flex-end; }
 .guest-comments .reply-list { display: flex; flex-direction: column; gap: .55rem; margin-top: .5rem; }
@@ -571,6 +575,22 @@
     gap: .6rem;
     margin-top: .75rem;
 }
+.guest-thread-modal .reply-form .reply-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    flex: 0 0 auto;
+    min-height: 46px;
+    padding: .35rem .65rem;
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+    background: #fff;
+    color: #1d4ed8;
+    font-size: .75rem;
+    cursor: pointer;
+}
+.guest-thread-modal .reply-form .reply-upload-label:hover { background: #eff6ff; border-color: #bfdbfe; }
+.guest-thread-modal .reply-form input[type="file"] { display: none; }
 .guest-thread-modal .reply-form textarea {
     flex: 1;
     min-height: 54px;
@@ -1324,12 +1344,42 @@
     display: block;
     margin: 0 auto 15px;
 }
+
+.guest-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .65rem;
+    padding: .5rem .75rem;
+    border: 1px solid #cfe0ff;
+    border-radius: 10px;
+    background: #f5f9ff;
+    color: #1d4ed8;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.guest-back-link:hover,
+.guest-back-link:focus-visible {
+    border-color: #93b4f8;
+    background: #eaf2ff;
+    color: #1640a0;
+}
 </style>
 <div class=" p-5 ">
     <div class="row">
-        <div class="d-flex justify-content-between">
-            <div class="align-items-center">
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+            <div>
                 <h3>Ticket Details</h3>
+
+                @if(request()->query('source') === 'email')
+                    <a href="{{ route('guest.tickets.list') }}" class="guest-back-link">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        <span>Back to All Tickets</span>
+                    </a>
+                @endif
             </div>
 
             @if(!in_array($ticket->ticket_status, ['inprogress', 'review']))
@@ -2081,7 +2131,7 @@
                                     <div class="comment-meta"><span class="comment-author">{{ $comment->user->name ?? $comment->guest_name }}</span><span class="comment-time ps-2">{{ $comment->created_at->diffForHumans() }}</span></div>
                                     <div class="comment-text">{{ $comment->comment }}</div>
                                     @foreach($comment->attachments as $file)
-                                        <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i>{{ $file->original_name }}</a>
+                                        <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip"><i class="bi bi-paperclip"></i><span>{{ $file->original_name }}</span></a>
                                     @endforeach
 
                                     <button type="button" class="reply-toggle-btn" aria-expanded="false">
@@ -2094,6 +2144,11 @@
                                         <form method="POST" enctype="multipart/form-data" action="{{ route('guest.tickets.comments.store', $ticket->ticket_id) }}" class="reply-form">
                                             @csrf
                                             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                            <label class="reply-upload-label" title="Attach files">
+                                                <i class="bi bi-paperclip"></i>
+                                                Attach
+                                                <input type="file" name="attachments[]" multiple>
+                                            </label>
                                             <textarea name="comment" maxlength="1000" placeholder="Write a reply..." required></textarea>
                                             <button class="btn btn-outline-primary btn-sm" type="submit" title="Reply"><i class="bi bi-reply"></i></button>
                                         </form>
@@ -2108,7 +2163,7 @@
                                                             <div class="comment-meta"><span class="comment-author">{{ $reply->user->name ?? $reply->guest_name }}</span><span class="comment-time ps-3">{{ $reply->created_at->diffForHumans() }}</span></div>
                                                             <div class="comment-text">{{ $reply->comment }}</div>
                                                             @foreach($reply->attachments as $file)
-                                                                <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i>{{ $file->original_name }}</a>
+                                                                <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip"><i class="bi bi-paperclip"></i><span>{{ $file->original_name }}</span></a>
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -2188,7 +2243,7 @@
                             <div class="small fw-semibold text-muted mb-2">Attachments</div>
                             <div class="d-grid gap-2">
                                 @foreach($resolution->attachments as $attachment)
-                                    <a href="{{ Storage::url($attachment->attachment_path) }}" target="_blank" rel="noopener" class="resolution-file">
+                                    <a href="{{ Storage::url($attachment->attachment_path) }}" download="{{ $attachment->attachment }}" rel="noopener" class="resolution-file">
                                         <i class="bi bi-paperclip"></i>
                                         <span>{{ $attachment->attachment }}</span>
                                         <i class="bi bi-box-arrow-up-right ms-auto"></i>
@@ -2281,7 +2336,7 @@
 @endif
 
 @if(in_array($ticket->ticket_status, ['resolved', 'completed'], true) && !$ticket->feedback)
-<div class="modal fade guest-feedback-modal" id="guestFeedbackModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade guest-feedback-modal" id="guestFeedbackModal" tabindex="-1" aria-hidden="true" data-auto-show="{{ session('open_feedback') ? 'true' : 'false' }}" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content feedback-card">
 
@@ -2495,7 +2550,7 @@
                                 <div class="comment-meta"><span class="comment-author">{{ $comment->user->name ?? $comment->guest_name }}</span><span class="comment-time ps-3">{{ $comment->created_at->diffForHumans() }}</span></div>
                                 <div class="comment-text">{{ $comment->comment }}</div>
                                 @foreach($comment->attachments as $file)
-                                    <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i>{{ $file->original_name }}</a>
+                                    <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip"><i class="bi bi-paperclip"></i><span>{{ $file->original_name }}</span></a>
                                 @endforeach
 
                                 <button type="button" class="reply-toggle-btn" aria-expanded="false">
@@ -2508,6 +2563,11 @@
                                     <form method="POST" enctype="multipart/form-data" action="{{ route('guest.tickets.comments.store', $ticket->ticket_id) }}" class="reply-form">
                                         @csrf
                                         <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                        <label class="reply-upload-label" title="Attach files">
+                                            <i class="bi bi-paperclip"></i>
+                                            Attach
+                                            <input type="file" name="attachments[]" multiple>
+                                        </label>
                                         <textarea name="comment" maxlength="1000" placeholder="Write a reply..." required></textarea>
                                         <button class="btn btn-outline-primary btn-sm" type="submit" title="Reply"><i class="bi bi-reply"></i></button>
                                     </form>
@@ -2522,7 +2582,7 @@
                                                     <div class="comment-meta"><span class="comment-author">{{ $reply->user->name ?? $reply->guest_name }}</span><span class="comment-time ps-3">{{ $reply->created_at->diffForHumans() }}</span></div>
                                                     <div class="comment-text">{{ $reply->comment }}</div>
                                                     @foreach($reply->attachments as $file)
-                                                        <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i>{{ $file->original_name }}</a>
+                                                        <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip"><i class="bi bi-paperclip"></i><span>{{ $file->original_name }}</span></a>
                                                     @endforeach
                                                 </div>
                                             </div>
@@ -2648,7 +2708,7 @@
         });
     }
 
-    if (guestFeedbackModal && guestFeedbackModal.dataset.autoShow === 'true' && !wasFeedbackDismissed()) {
+    if (guestFeedbackModal && guestFeedbackModal.dataset.autoShow === 'true') {
         window.setTimeout(showGuestFeedback, 350);
     }
 
@@ -2843,4 +2903,5 @@
     });
     
 </script>
+@include('partials.govph_footer')
 @endsection

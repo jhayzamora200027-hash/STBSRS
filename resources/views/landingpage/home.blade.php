@@ -83,7 +83,7 @@
 
 .service-card{
     transition: all 0.3s ease;
-    border: 2x solid #dee2e6;
+    border: 2px solid #dee2e6;
     border-radius:12px;
 }
 
@@ -93,6 +93,60 @@
     box-shadow: 0 8px 20px rgba(6,44,82,0.15);
     border-color:#062c52;
     background-color:#ddecff;
+}
+
+.service-info-button {
+    position: absolute;
+    top: .65rem;
+    right: .7rem;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #f1f7ff;
+    color: #6c757d;
+    transition: color .2s ease, background-color .2s ease, transform .2s ease;
+}
+
+.service-info-button:hover,
+.service-info-button:focus-visible {
+    background: #dcecff;
+    color: #0d6efd;
+    transform: scale(1.1);
+}
+
+.service-info-button:focus-visible {
+    outline: 3px solid rgba(13, 110, 253, .25);
+    outline-offset: 2px;
+}
+
+.service-popover {
+    --bs-popover-max-width: min(360px, calc(100vw - 2rem));
+    --bs-popover-border-color: #d7e5f7;
+    --bs-popover-header-bg: #f1f7ff;
+    --bs-popover-header-color: #062c52;
+    --bs-popover-body-color: #425466;
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .9rem;
+    border: 1px solid #d7e5f7;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(6, 44, 82, .16);
+}
+
+.service-popover .popover-header {
+    border-bottom: 1px solid #d7e5f7;
+    font-size: .85rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.service-popover .popover-body {
+    font-size: .82rem;
+    line-height: 1.55;
 }
 
 .receiving-office-panel{
@@ -848,6 +902,35 @@ body.review-modal-open .modal-backdrop.show {
 }
 
 @media (max-width: 767.98px) {
+    .step-card {
+        height: 86px;
+        min-height: 86px;
+        display: flex;
+    }
+
+    .step-card > div {
+        width: 100%;
+        height: 100%;
+    }
+
+    .step-card .card-body {
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    #card1Rounded,
+    #card2Rounded {
+        width: 55px !important;
+        height: 55px;
+        flex: 0 0 55px;
+        box-sizing: border-box;
+    }
+
+    #stepFooter1.d-none,
+    #stepFooter2.d-none {
+        display: none !important;
+    }
+
     #stepFooter1,
     #stepFooter2 {
         display: flex !important;
@@ -1037,7 +1120,7 @@ body.review-modal-open .modal-backdrop.show {
                                         type="button"
                                         id="new_ticket"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#createTicketModal"
+                                        data-bs-target="#dataPrivacyModal"
                                         class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center"
                                         style="height: 60px; font-size: 1rem;">
                                         <i class="bi bi-plus-square me-2"></i>
@@ -1887,6 +1970,125 @@ body.review-modal-open .modal-backdrop.show {
 {{-- MODAL LOGIN --}}
 {{-- login modal now lives in layouts.app so it's available on every guest page --}}
 @push('modals')
+    {{-- DATA PRIVACY CONSENT MODAL --}}
+    <div class="modal fade" id="dataPrivacyModal" tabindex="-1" aria-labelledby="dataPrivacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="dataPrivacyModalLabel">Data Privacy Notice</h5>
+                        <p class="text-muted small mb-0">Please review the Data Privacy Notice before creating a request.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <iframe
+                        src="{{ asset('files/Data Privacy.pdf') }}"
+                        title="Data Privacy Notice"
+                        class="w-100 border rounded"
+                        style="height: min(65vh, 720px); min-height: 420px;"
+                    ></iframe>
+                    <div class="privacy-agreement-box mt-3" id="privacyAgreementBox">
+                        <span class="privacy-required-badge">Required</span>
+                        <input class="form-check-input" type="checkbox" id="dataPrivacyAgreement">
+                        <label class="form-check-label" for="dataPrivacyAgreement">
+                            <strong>I have read and agree to the Data Privacy Notice.</strong>
+                            <small>You must check this box before continuing.</small>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="agreeDataPrivacyBtn">Agree and Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .privacy-agreement-box {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid #dee2e6;
+            border-radius: .5rem;
+            background: #f8f9fa;
+        }
+
+        .privacy-agreement-box .form-check-input {
+            width: 1.35rem;
+            height: 1.35rem;
+            margin-top: .1rem;
+            flex: 0 0 auto;
+            border: 2px solid #adb5bd;
+        }
+
+        .privacy-agreement-box .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .privacy-agreement-box .form-check-label {
+            display: flex;
+            flex-direction: column;
+            gap: .2rem;
+            color: #343a40;
+            cursor: pointer;
+            line-height: 1.35;
+            padding-right: 4.5rem;
+        }
+
+        .privacy-agreement-box .form-check-label small {
+            color: #6c757d;
+            font-size: .8rem;
+        }
+
+        .privacy-required-badge {
+            position: absolute;
+            top: .7rem;
+            right: 1rem;
+            padding: .2rem .5rem;
+            border-radius: 999px;
+            background: #6c757d;
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .privacy-agreement-box.privacy-attention {
+            border: 2px solid #f0ad00;
+            background: #fff8df;
+            box-shadow: 0 4px 12px rgba(240, 173, 0, .18);
+            animation: privacyAgreementAttention .55s ease-in-out;
+        }
+
+        .privacy-agreement-box.privacy-attention .form-check-input {
+            border-color: #b77900;
+        }
+
+        .privacy-agreement-box.privacy-attention .form-check-label {
+            color: #513d00;
+        }
+
+        .privacy-agreement-box.privacy-attention .form-check-label small {
+            color: #765f1b;
+        }
+
+        .privacy-agreement-box.privacy-attention .privacy-required-badge {
+            background: #f0ad00;
+        }
+
+        @keyframes privacyAgreementAttention {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+    </style>
+
     {{-- MODAL NEW REQUEST --}}
     <div class="modal fade" id="createTicketModal" tabindex="-1" arialabelledby="createTicketLabel" aria-hideen="true">
         <form method="POST" id="ticketForm" action="{{route('tickets.store')}}" enctype="multipart/form-data" novalidate>
@@ -2216,8 +2418,22 @@ body.review-modal-open .modal-backdrop.show {
                                     
                                     <h5>What assistance do you need?</h5>
                                         <div class="col-md-6">
-                                            <div id="tacp" class="card service-card h-100" data-service="completed" style="cursor: pointer;">
-                                                <div class="card-body text-center" p-4>
+                                            <div id="tacp" class="card service-card h-100" data-service="completed" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="hover focus"
+                                                data-bs-placement="auto"
+                                                data-bs-custom-class="service-popover"
+                                                data-bs-title="On STB-developed Programs/Projects"
+                                                data-bs-content="Includes sharing of knowledge products on ST programs / projects and TA on ongoing and completed social technologies."
+                                                tabindex="0">
+                                                <div class="card-body text-center p-4">
+                                                    <button type="button" class="service-info-button" aria-label="More information about STB-developed Programs and Projects"
+                                                        data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="auto"
+                                                        data-bs-custom-class="service-popover"
+                                                        data-bs-title="On STB-developed Programs/Projects"
+                                                        data-bs-content="Includes sharing of knowledge products on ST programs / projects and TA on ongoing and completed social technologies.">
+                                                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                                    </button>
                                                     <i class="bi bi-tools fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Technical Assistance</h5>
                                                     <h6 style="color:#062c52"> On STB-developed Programs/Projects</h6> 
@@ -2225,8 +2441,22 @@ body.review-modal-open .modal-backdrop.show {
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div id="tapd" class="card service-card h-100" data-service="enhancement" style="cursor: pointer;">
-                                                <div class="card-body text-center" p-4>
+                                            <div id="tapd" class="card service-card h-100" data-service="enhancement" style="cursor: pointer;"
+                                                data-bs-toggle="popover"
+                                                data-bs-trigger="hover focus"
+                                                data-bs-placement="auto"
+                                                data-bs-custom-class="service-popover"
+                                                data-bs-title="On Program Development and Enhancement"
+                                                data-bs-content="Includes TA on the conduct of research, analysis, pilot implementation, evaluation, manualization, and social marketing."
+                                                tabindex="0">
+                                                <div class="card-body text-center p-4">
+                                                    <button type="button" class="service-info-button" aria-label="More information about Program Development and Enhancement"
+                                                        data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="auto"
+                                                        data-bs-custom-class="service-popover"
+                                                        data-bs-title="On Program Development and Enhancement"
+                                                        data-bs-content="Includes TA on the conduct of research, analysis, pilot implementation, evaluation, manualization, and social marketing.">
+                                                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                                    </button>
                                                     <i class="bi bi-graph-up-arrow fs-1 text-primary"></i>
                                                     <h5 class="mt-3">Technical Assistance</h5>
                                                     <h6 style="color:#062c52"> On Program Development and Enhancement</h6> 
@@ -3567,6 +3797,26 @@ body.review-modal-open .modal-backdrop.show {
 </div>
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function(){
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(popoverTrigger){
+            if (window.bootstrap && bootstrap.Popover) {
+                new bootstrap.Popover(popoverTrigger, {
+                    container: 'body',
+                    placement: 'auto',
+                    trigger: popoverTrigger.classList.contains('service-info-button')
+                        ? 'click'
+                        : (window.matchMedia('(hover: hover)').matches ? 'hover focus' : 'focus')
+                });
+            }
+        });
+
+        document.querySelectorAll('.service-info-button').forEach(function(infoButton){
+            infoButton.addEventListener('click', function(event){
+                event.stopPropagation();
+            });
+        });
+    });
 
     let step2Unlocked = false;
         const serviceCards = ['tacp', 'tapd'];
@@ -5118,6 +5368,45 @@ document.getElementById('blended').addEventListener('click', function(){
 const ticketForm = document.getElementById('ticketForm');
 const ticketEmailInput = document.getElementById('email');
 const createTicketModalEl = document.getElementById('createTicketModal');
+const dataPrivacyModalEl = document.getElementById('dataPrivacyModal');
+const dataPrivacyAgreement = document.getElementById('dataPrivacyAgreement');
+const agreeDataPrivacyBtn = document.getElementById('agreeDataPrivacyBtn');
+const privacyAgreementBox = document.getElementById('privacyAgreementBox');
+
+if (dataPrivacyModalEl && dataPrivacyAgreement && agreeDataPrivacyBtn) {
+    agreeDataPrivacyBtn.addEventListener('click', function () {
+        if (!dataPrivacyAgreement.checked) {
+            if (privacyAgreementBox) {
+                privacyAgreementBox.classList.remove('privacy-attention');
+                void privacyAgreementBox.offsetWidth;
+                privacyAgreementBox.classList.add('privacy-attention');
+            }
+
+            dataPrivacyAgreement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            dataPrivacyAgreement.focus({ preventScroll: true });
+
+            if (window.Swal && Swal.fire) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Agreement required',
+                    text: 'Please check the agreement box to continue with your request.',
+                    confirmButtonColor: '#062c52'
+                });
+            }
+
+            return;
+        }
+
+        const privacyModal = bootstrap.Modal.getOrCreateInstance(dataPrivacyModalEl);
+        const openRequestModal = function () {
+            dataPrivacyModalEl.removeEventListener('hidden.bs.modal', openRequestModal);
+            bootstrap.Modal.getOrCreateInstance(createTicketModalEl).show();
+        };
+
+        dataPrivacyModalEl.addEventListener('hidden.bs.modal', openRequestModal);
+        privacyModal.hide();
+    });
+}
 
 function resetOtpVerificationState() {
     if (!ticketForm) return;
@@ -5928,29 +6217,23 @@ document.addEventListener('DOMContentLoaded', function(){
             }
 
             if (selected === 'lgu') {
-                // show region/province/city
                 if (regionCol) regionCol.classList.remove('d-none');
                 if (provinceCol) provinceCol.classList.remove('d-none');
                 if (cityCol) cityCol.classList.remove('d-none');
                 ['region','province','city'].forEach(id => { const el = document.getElementById(id); if (el) { el.disabled = false; el.required = true; } });
-                // ensure directorate hidden
                 const dir = document.getElementById('directorate'); if (dir) { dir.classList.add('d-none'); dir.disabled = true; dir.required = false; }
             }
 
                 if (selected === 'field_office') {
-                // show region column but display directorate select instead of region
                 if (regionCol) regionCol.classList.remove('d-none');
-                // hide province/city
                 if (provinceCol) provinceCol.classList.add('d-none');
                 if (cityCol) cityCol.classList.add('d-none');
 
-                // swap: hide region select and show directorate
                 const regionSel = document.getElementById('region');
                 const dirSel = document.getElementById('directorate');
                 if (regionSel) { regionSel.classList.add('d-none'); regionSel.disabled = true; }
                 if (dirSel) { dirSel.classList.remove('d-none'); dirSel.disabled = false; dirSel.required = true; }
 
-                // change label to Directorate
                 const regionLabel = document.getElementById('region_label');
                 if (regionLabel) regionLabel.innerHTML = 'Directorate <i style="color:red">*</i>';
 
@@ -5998,17 +6281,202 @@ document.addEventListener('DOMContentLoaded', function(){
     })();
 </script>
 @endpush
+
+<footer class="govph-footer" aria-label="Government information footer">
+    <div class="container-fluid px-4 px-lg-5">
+        <div class="row g-4 g-xl-5 align-items-start">
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="govph-brand">
+                    <img src="{{ asset('images/logo/Footer image.png') }}" alt="Republic of the Philippines seal">
+                    <div>
+                        <h2>Republic of the<br>Philippines</h2>
+                        <p>All content is in the public domain unless otherwise stated.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-2">
+                <h2>About GOVPH</h2>
+                <p>Learn more about the Philippine government, its structure, how government works and the people behind it.</p>
+                <ul>
+                    <li><a href="https://www.gov.ph/" target="_blank" rel="noopener">GOV.PH</a></li>
+                    <li><a href="https://data.gov.ph/" target="_blank" rel="noopener">Open Data Portal</a></li>
+                    <li><a href="https://www.officialgazette.gov.ph/" target="_blank" rel="noopener">Official Gazette</a></li>
+                </ul>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-2">
+                <h2>Government Links</h2>
+                <ul>
+                    <li><a href="https://president.gov.ph/" target="_blank" rel="noopener">Office of the President</a></li>
+                    <li><a href="https://ovp.gov.ph/" target="_blank" rel="noopener">Office of the Vice President</a></li>
+                    <li><a href="https://www.senate.gov.ph/" target="_blank" rel="noopener">Senate of the Philippines</a></li>
+                    <li><a href="https://www.congress.gov.ph/" target="_blank" rel="noopener">House of Representatives</a></li>
+                    <li><a href="http://sc.judiciary.gov.ph/" target="_blank" rel="noopener">Supreme Court</a></li>
+                    <li><a href="https://ca.judiciary.gov.ph/" target="_blank" rel="noopener">Court of Appeals</a></li>
+                    <li><a href="https://sb.judiciary.gov.ph/" target="_blank" rel="noopener">Sandiganbayan</a></li>
+                    <li><a href="https://dswd.gov.ph/" target="_blank" rel="noopener">DSWD</a></li>
+                </ul>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-2">
+                <h2>Contact Us</h2>
+                <p>3RD Floor, Matapat Building Department Of Social Welfare And Development - Central Office IBP Road, Constitution Hills, Batasan Complex, Quezon City</p>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <h2>Email:</h2>
+                <p><a href="mailto:soctech@dswd.gov.ph">soctech@dswd.gov.ph</a></p>
+                <h2 class="govph-phone-heading">Telephone Number:</h2>
+                <ul class="govph-phone-list">
+                    <li><i class="bi bi-telephone-fill me-1" aria-hidden="true"></i>02-8951-7124</li>
+                    <li><i class="bi bi-telephone-fill me-1" aria-hidden="true"></i>02-8951-2802</li>
+                    <li><i class="bi bi-telephone-fill me-1" aria-hidden="true"></i>02-8931-8144</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .govph-footer {
+        border-top: 1px solid #d9d9d9;
+        background: #fff;
+        color: #7890a8;
+        font-family: "Trebuchet MS", Arial, sans-serif;
+        padding: 30px 0 34px;
+    }
+
+    .govph-footer h2 {
+        color: #7890a8;
+        font-size: 1.2rem;
+        font-weight: 400;
+        line-height: 1.1;
+        margin: 0 0 14px;
+    }
+
+    .govph-footer p,
+    .govph-footer li {
+        font-size: .7rem;
+        line-height: 1.5;
+    }
+
+    .govph-footer p {
+        margin: 0 0 14px;
+    }
+
+    .govph-footer ul {
+        margin: 0;
+        padding-left: 22px;
+    }
+
+    .govph-footer li {
+        padding-left: 2px;
+        margin-bottom: 2px;
+    }
+
+    .govph-footer a {
+        color: #06f;
+        text-decoration: none;
+    }
+
+    .govph-footer a:hover,
+    .govph-footer a:focus-visible {
+        text-decoration: underline;
+    }
+
+    .govph-brand {
+        position: relative;
+        min-height: 260px;
+    }
+
+    .govph-brand img {
+        position: absolute;
+        z-index: 0;
+        top: -12px;
+        left: -14px;
+        width: 270px;
+        max-width: none;
+        height: auto;
+        object-fit: contain;
+        opacity: .42;
+    }
+
+    .govph-brand > div {
+        position: relative;
+        z-index: 1;
+        padding: 0 0 0 142px;
+    }
+
+    .govph-brand h2 {
+        margin-top: 0;
+    }
+
+    .govph-phone-heading {
+        margin-top: 26px !important;
+    }
+
+    .govph-phone-list {
+        list-style: none;
+        padding-left: 0 !important;
+    }
+
+    @media (max-width: 767.98px) {
+        .govph-footer {
+            padding-top: 24px;
+        }
+
+        .govph-brand {
+            min-height: 220px;
+        }
+
+        .govph-brand img {
+            top: -6px;
+            left: -8px;
+            width: 220px;
+        }
+
+        .govph-brand > div {
+            padding-left: 112px;
+        }
+
+        .govph-footer h2 {
+            font-size: 1.2rem;
+        }
+    }
+</style>
 @endsection
 
-@if(session('success') || ($errors && $errors->any()))
+@if(session('success') || session('registration_pending') || session('registration_notice') || ($errors && $errors->any()))
     <script>
         (function(){
             const success = {!! json_encode(session('success') ?? null) !!};
+            const registrationPending = {!! json_encode(session('registration_pending') ? 'Registration submitted successfully. Your account is now waiting for administrator approval.' : null) !!};
+            const registrationNotice = {!! json_encode(session('registration_notice') ?? null) !!};
             const errors = {!! json_encode($errors->any() ? $errors->all() : []) !!};
-            if(success){
-                alert(success);
-            } else if(errors && errors.length){
-                alert(errors.join('\n'));
+            if (window.Swal && Swal.fire) {
+                if (success || registrationPending) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: success || registrationPending,
+                        confirmButtonColor: '#062c52'
+                    });
+                } else if (registrationNotice) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Registration notice',
+                        text: registrationNotice,
+                        confirmButtonColor: '#062c52'
+                    });
+                } else if (errors && errors.length) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Unable to register',
+                        text: errors.join('\n'),
+                        confirmButtonColor: '#062c52'
+                    });
+                }
             }
         })();
     </script>

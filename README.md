@@ -70,7 +70,5 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > npm install puppeteer
 > npm install bootstrap-icons
 
-
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/auth/google/callback
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret

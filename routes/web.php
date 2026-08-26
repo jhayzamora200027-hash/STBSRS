@@ -13,6 +13,8 @@ use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\ViewTicketController;
 use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\AuditLogController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
@@ -32,6 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/approvals', [UserController::class, 'approvalIndex'])->name('users.approvals');
     Route::patch('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
     Route::patch('/users/{user}/status', [UserController::class, 'toggleStatus'])->name('users.status');
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/programs', [ProgramController::class, 'index'])->name('programs.index');
+    Route::post('/programs', [ProgramController::class, 'store'])->name('programs.store');
+    Route::put('/programs/{program}', [ProgramController::class, 'update'])->name('programs.update');
+    Route::patch('/programs/{program}/status', [ProgramController::class, 'toggleStatus'])->name('programs.status');
 
     Route::get('/search/suggestions', [\App\Http\Controllers\NavbarSearchController::class, 'search'])->name('search.suggestions');
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
@@ -63,6 +70,11 @@ Route::get('/tickets/{ticket_id}/resolution/{resolution_id}/return', [\App\Http\
 
 //Login
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 Route::get('/login', function(){
     return redirect('/');
 })->name('login.page');

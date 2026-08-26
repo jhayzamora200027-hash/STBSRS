@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Ticket;
+use App\Mail\TicketCompletedMail;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class CompleteResolvedTickets extends Command
 {
@@ -37,6 +39,14 @@ class CompleteResolvedTickets extends Command
                 'description' => 'The ticket was automatically completed after remaining resolved for three days.',
                 'performed_by' => 'System',
             ]);
+
+            if (!empty($ticket->requestor_email)) {
+                try {
+                    Mail::to($ticket->requestor_email)->send(new TicketCompletedMail($ticket, 'automatic'));
+                } catch (\Throwable $exception) {
+                    report($exception);
+                }
+            }
         }
 
         $this->info($eligibleTickets->count() . ' ticket(s) completed.');

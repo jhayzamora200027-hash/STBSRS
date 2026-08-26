@@ -1907,8 +1907,8 @@ hr{
                             </div>
 
                         </div>
-                        <div class="row pt-3">
-                            <div class="col-6">
+                        <div class="row pt-3 g-3">
+                            <div class="col-12 col-sm-6">
                                 <small class="text-muted">
                                     <i class="bi bi-inbox me-1"></i>
                                     Request For
@@ -1934,6 +1934,26 @@ hr{
                                     </small>
                                 </div>
                             </div>
+
+                            @if($ticket->attachments->isNotEmpty())
+                                <div class="col-12 col-sm-6">
+                                <small class="text-muted">
+                                    <i class="bi bi-paperclip me-1"></i>
+                                    Ticket Attachment{{ $ticket->attachments->count() > 1 ? 's' : '' }}
+                                </small>
+                                <div class="d-grid gap-2 mt-2">
+                                    @foreach($ticket->attachments as $attachment)
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}"
+                                                         download="{{ $attachment->attachment }}"
+                                           rel="noopener"
+                                           class="d-flex align-items-center gap-2 text-decoration-none small">
+                                            <i class="bi bi-file-earmark-arrow-down text-primary"></i>
+                                            <span class="text-truncate">{{ $attachment->attachment }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                                </div>
+                            @endif
                         </div>
 
                     </div>
@@ -2093,7 +2113,7 @@ hr{
                                 @foreach($latestResolution->attachments as $attachment)
                                     <div class="d-flex align-items-center gap-2 py-1">
                                         <i class="bi bi-paperclip"></i>
-                                        <a href="{{ Storage::url($attachment->attachment_path) }}" target="_blank" rel="noopener">{{ $attachment->attachment }}</a>
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}" download="{{ $attachment->attachment }}" rel="noopener">{{ $attachment->attachment }}</a>
                                     </div>
                                 @endforeach
                             </div>
@@ -2734,7 +2754,7 @@ hr{
                         @if($comment->attachments->count())
                             <div>
                                 @foreach($comment->attachments as $file)
-                                    <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip">
+                                    <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip">
                                         <i class="bi bi-paperclip"></i>
                                         {{ $file->original_name }}
                                     </a>
@@ -2835,7 +2855,7 @@ hr{
                                     @if($reply->attachments->count())
                                         <div>
                                             @foreach($reply->attachments as $file)
-                                                <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="attachment-chip">
+                                                <a href="{{ Storage::url($file->file_path) }}" download="{{ $file->original_name }}" class="attachment-chip">
                                                     <i class="bi bi-paperclip"></i>
                                                     {{ $file->original_name }}
                                                 </a>
@@ -3005,7 +3025,7 @@ hr{
                                 <div class="small fw-semibold text-muted mb-2">Attachments</div>
                                 <div class="d-grid gap-2">
                                     @foreach($resolution->attachments as $attachment)
-                                        <a href="{{ Storage::url($attachment->attachment_path) }}" target="_blank" rel="noopener" class="resolution-file">
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}" download="{{ $attachment->attachment }}" rel="noopener" class="resolution-file">
                                             <i class="bi bi-paperclip"></i>
                                             <span>{{ $attachment->attachment }}</span>
                                             <i class="bi bi-box-arrow-up-right ms-auto"></i>
@@ -3501,7 +3521,7 @@ document.addEventListener('click', function(e){
         let attachHtml = '';
         if(d.attachments && d.attachments.length){
             attachHtml = '<div>' + d.attachments.map(a=>
-                `<a href="${a.url}" target="_blank" class="attachment-chip"><i class="bi bi-paperclip"></i> ${a.original_name}</a>`
+                `<a href="${a.url}" download="${a.original_name}" class="attachment-chip"><i class="bi bi-paperclip"></i> ${a.original_name}</a>`
             ).join(' ') + '</div>';
         }
         return `

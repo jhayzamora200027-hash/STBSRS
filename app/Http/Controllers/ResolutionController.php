@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use App\Mail\TicketResolvedMail;
 use App\Mail\TicketRejectedMail;
+use App\Mail\TicketCompletedMail;
 
 class ResolutionController extends Controller
 {
@@ -131,6 +132,14 @@ class ResolutionController extends Controller
                 }
             } catch (\Exception $e) {
                 // swallow email exceptions for now; consider logging
+            }
+        }
+
+        if ($previousStatus !== 'completed' && $data['ticket_status'] === 'completed' && !empty($ticket->requestor_email)) {
+            try {
+                Mail::to($ticket->requestor_email)->send(new TicketCompletedMail($ticket));
+            } catch (\Throwable $exception) {
+                report($exception);
             }
         }
 

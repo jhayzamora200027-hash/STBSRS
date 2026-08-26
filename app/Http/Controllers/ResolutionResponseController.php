@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\Resolution;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketCompletedMail;
 
 class ResolutionResponseController extends Controller
 {
@@ -30,6 +32,14 @@ class ResolutionResponseController extends Controller
             'description' => 'The resolution was confirmed and the ticket was completed.',
             'performed_by' => 'Requester',
         ]);
+
+        if (!empty($ticket->requestor_email)) {
+            try {
+                Mail::to($ticket->requestor_email)->send(new TicketCompletedMail($ticket, 'confirmed'));
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
 
         return view('tickets.resolution_response', [
             'message' => 'Thank you. The ticket has been marked as solved (completed).',
