@@ -17,30 +17,37 @@ use Throwable;
 
 class AuthController extends Controller
 {
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
-        return Socialite::driver('google')->redirect();
+        $request->session()->put('google_popup', true);
+
+        return Socialite::driver('google')
+            ->with(['prompt' => 'consent select_account'])
+            ->redirect();
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
-        $googleUser = Socialite::driver('google')->user();
+        $isPopup = (bool) $request->session()->pull('google_popup', false);
+        $googleUser = $isPopup
+            ? Socialite::driver('google')->stateless()->user()
+            : Socialite::driver('google')->user();
         $email = strtolower(trim((string) $googleUser->getEmail()));
 
         if (str_ends_with($email, '@dswd.gov.ph') === false) {
-            return redirect()->route('home')->with('google_rejected', true);
+            return $this->googleAuthResponse($isPopup, 'home', 'google_rejected');
         }
 
         $user = User::where('email', $email)->first();
 
         if ($user) {
             if ($user->status !== 'active') {
-                return redirect()->route('home')->with('google_pending', true);
+                return $this->googleAuthResponse($isPopup, 'home', 'google_pending');
             }
 
             Auth::login($user, true);
 
-            return redirect()->route('dashboard');
+            return $this->googleAuthResponse($isPopup, 'dashboard');
         }
 
         $fullName = trim($googleUser->getName() ?: 'Google User');
@@ -61,7 +68,26 @@ class AuthController extends Controller
             'status' => 'inactive',
         ]);
 
-        return redirect()->route('home')->with('google_pending', true);
+        return $this->googleAuthResponse($isPopup, 'home', 'google_pending');
+    }
+
+    private function googleAuthResponse(bool $isPopup, string $route, ?string $sessionKey = null)
+    {
+        if ($isPopup) {
+            if ($sessionKey) {
+                session()->flash($sessionKey, true);
+            }
+
+            return response()->view('auth.google-popup-complete');
+        }
+
+        $response = redirect()->route($route);
+
+        if ($sessionKey) {
+            $response->with($sessionKey, true);
+        }
+
+        return $response;
     }
 
     public function login(Request $Request)

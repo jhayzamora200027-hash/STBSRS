@@ -18,6 +18,38 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
+    <style>
+        #loginModal .login-input-wrap {
+            position: relative;
+        }
+
+        #loginModal .login-input {
+            height: 50px;
+            padding-left: 45px;
+            padding-right: 45px;
+            border-radius: 10px;
+        }
+
+        #loginModal .login-input-icon,
+        #loginModal .login-password-toggle {
+            position: absolute;
+            top: 50%;
+            z-index: 2;
+            color: #6c757d;
+            transform: translateY(-50%);
+        }
+
+        #loginModal .login-input-icon {
+            left: 15px;
+            pointer-events: none;
+        }
+
+        #loginModal .login-password-toggle {
+            right: 15px;
+            cursor: pointer;
+        }
+    </style>
+
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 
@@ -110,19 +142,19 @@
                                         <div class="mb-3">
                                             <label class="form-label">Email Address</label>
 
-                                            <div class="position-relative">
-                                                <i class="bi bi-envelope input-email-icon"></i>
-                                                <input type="email" name="email" class="form-control custom-input" placeholder="Enter your email address" required value="{{old('email')}}">
+                                            <div class="login-input-wrap">
+                                                <i class="bi bi-envelope login-input-icon" aria-hidden="true"></i>
+                                                <input type="email" name="email" class="form-control login-input" placeholder="Enter your email address" required value="{{old('email')}}">
                                             </div>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Password</label>
                                             
-                                            <div class="position-relative">
-                                            <i class="bi bi-lock input-password-icon" style="width:30px;"></i>
-                                            <input type="password" name="password" id="password" class="form-control custom-input"  placeholder="Enter your password"  required>
+                                            <div class="login-input-wrap">
+                                            <i class="bi bi-lock login-input-icon" aria-hidden="true"></i>
+                                            <input type="password" name="password" id="password" class="form-control login-input"  placeholder="Enter your password"  required>
                                             
-                                            <i class="bi bi-eye eye-icon" id="togglePassword"></i>
+                                            <i class="bi bi-eye login-password-toggle" id="togglePassword" role="button" aria-label="Show password" tabindex="0"></i>
 
                                             </div>
                                             <div class="d-flex justify-content-between">
@@ -146,9 +178,10 @@
                                             </span>
                                         <div class="flex-grow-1 border-top"> </div>
                                     </div>
-                                        <a class="btn w-100 d-submit-white-button" href="{{ route('google.redirect') }}">
-                                                <i class="bi bi-person-circle"></i>
-                                                Sign-In with Google
+                                        <a class="btn w-100 d-submit-white-button" href="{{ route('google.redirect') }}" onclick="return openGoogleLoginPopup(event, this, this.href);">
+                                            <i class="bi bi-person-circle google-login-icon"></i>
+                                            <span class="google-login-label">Sign-In with Google</span>
+                                            <span class="google-login-loading d-none"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Opening Google...</span>
                                         </a>
 
                                         <div class="text-center mt-3">
@@ -609,6 +642,54 @@
     });
 </script>
 
+<script>
+    function openGoogleLoginPopup(event, button, url) {
+        event.preventDefault();
+
+        if (button.classList.contains('disabled')) {
+            return false;
+        }
+
+        button.classList.add('disabled');
+        button.setAttribute('aria-busy', 'true');
+        button.setAttribute('aria-disabled', 'true');
+        button.querySelector('.google-login-icon').classList.add('d-none');
+        button.querySelector('.google-login-label').classList.add('d-none');
+        button.querySelector('.google-login-loading').classList.remove('d-none');
+
+        const popupWidth = 520;
+        const popupHeight = 700;
+        const popupLeft = Math.max(0, (window.screen.availWidth - popupWidth) / 2);
+        const popupTop = Math.max(0, (window.screen.availHeight - popupHeight) / 2);
+
+        const popup = window.open(
+            'about:blank',
+            'googleLoginPopup',
+            `width=${popupWidth},height=${popupHeight},left=${popupLeft},top=${popupTop},menubar=no,toolbar=no,location=yes,status=no,resizable=yes,scrollbars=yes`
+        );
+
+        if (!popup) {
+            button.classList.remove('disabled');
+            button.removeAttribute('aria-busy');
+            button.removeAttribute('aria-disabled');
+            button.querySelector('.google-login-icon').classList.remove('d-none');
+            button.querySelector('.google-login-label').classList.remove('d-none');
+            button.querySelector('.google-login-loading').classList.add('d-none');
+            window.alert('Please allow popups for this site to sign in with Google.');
+            return false;
+        }
+
+        popup.location.href = url;
+        popup.focus();
+        return false;
+    }
+
+    if (window.opener && window.opener !== window) {
+        window.opener.location.reload();
+        window.close();
+    }
+</script>
+
 <div class="modal fade" id="accountApprovalModal" tabindex="-1" aria-labelledby="accountApprovalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered approval-dialog">
         <div class="modal-content approval-modal border-0">
@@ -942,18 +1023,6 @@
                         <i class="bi bi-person me-2"></i>
 
                         Profile
-
-                    </a>
-
-                </li>
-
-                <li>
-
-                    <a class="dropdown-item" href="#">
-
-                        <i class="bi bi-gear me-2"></i>
-
-                        Settings
 
                     </a>
 

@@ -45,6 +45,8 @@ class ViewTicketController extends Controller
     }
 
     public function delete(string $ticket_id){
+        abort_unless(Auth::user()?->usergroup === 'sysadmin', 403);
+
         $ticket = Ticket::where('ticket_id', $ticket_id)->firstorFail();
 
         $ticket->delete();

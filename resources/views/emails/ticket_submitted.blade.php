@@ -135,7 +135,6 @@
         .notice{
             margin-top:30px;
             background:#fff9eb;
-            border-left:4px solid #f4b400;
             padding:18px;
             border-radius:8px;
             color:#6b7280;

@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Region;
 use App\Models\Province;
 use App\Models\City;
 use App\Models\TicketComment;
 use App\Models\TicketAttachment;
 use App\Models\Agency;
+use App\Models\Program;
 
 class Ticket extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
 
     'ticket_id',
@@ -75,6 +79,52 @@ protected $casts = [
 
     public function programs(){
         return $this->belongsTo(Program::class, 'program');
+    }
+
+    public function getProgramDisplayAttribute(): string
+    {
+        return implode(', ', $this->programDisplayItems);
+    }
+
+    public function getProgramDisplayItemsAttribute(): array
+    {
+        $programIds = json_decode((string) $this->program, true);
+        $programIds = is_array($programIds) ? $programIds : [$this->program];
+        $programIds = array_values(array_filter($programIds));
+
+        $programNames = Program::whereIn('program_id', $programIds)
+            ->pluck('program')
+            ->all();
+
+        if ($this->program_others) {
+            $programNames[] = $this->program_others;
+        }
+
+        return array_values(array_unique($programNames)) ?: ['-'];
+    }
+
+    public function getProgramCountAttribute(): int
+    {
+        $programIds = json_decode((string) $this->program, true);
+        $programIds = is_array($programIds) ? $programIds : [$this->program];
+        $programIds = array_values(array_filter($programIds));
+
+        return count(array_unique($programIds));
+    }
+
+    public function getKnowledgeProductDisplayItemsAttribute(): array
+    {
+        $items = json_decode((string) $this->type_of_knowledge_product, true);
+        $items = is_array($items) ? $items : [$this->type_of_knowledge_product];
+        $items = array_values(array_filter($items));
+
+        return array_map(function ($item) {
+            if ($item === 'Others') {
+                return $this->type_of_knowledge_product_others ?: 'Others';
+            }
+
+            return (string) $item;
+        }, $items) ?: ['-'];
     }
 
     public function requestRegion(){

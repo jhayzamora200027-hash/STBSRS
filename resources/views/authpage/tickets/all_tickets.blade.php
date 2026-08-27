@@ -17,19 +17,41 @@
         align-items: flex-end;
         justify-content: space-between;
         gap: 1rem;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
+        padding: .2rem 0 .35rem;
     }
 
     .tickets-page-header h1 {
-        font-size: clamp(1.45rem, 2vw, 1.9rem);
+        font-size: clamp(1.5rem, 2vw, 2.05rem);
         font-weight: 700;
-        letter-spacing: 0;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
         margin: 0;
     }
 
     .tickets-page-header p {
         color: var(--tickets-muted);
-        margin: .35rem 0 0;
+        font-size: .96rem;
+        margin: .25rem 0 0;
+    }
+
+    .tickets-page-header .text-sm-end {
+        min-width: 120px;
+        text-align: right;
+    }
+
+    .tickets-page-header .text-sm-end .small {
+        color: #6a7b8d !important;
+        font-size: .72rem;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .tickets-page-header .text-sm-end strong {
+        color: var(--tickets-ink);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
     }
 
     .metric-card,
@@ -49,6 +71,7 @@
         gap: 1rem;
         grid-template-columns: repeat(6, minmax(0, 1fr));
         margin-bottom: 1.5rem;
+        align-items: stretch;
     }
 
     .metrics-grid > .col {
@@ -62,36 +85,101 @@
 
     .metric-card {
         position: relative;
-        transition: transform .16s ease, box-shadow .16s ease;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(112, 131, 147, 0.18);
+        border-radius: .9rem;
+        box-shadow: 0 8px 18px rgba(18, 38, 63, 0.03);
+        transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .filter-card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.94));
+        border: 1px solid #dfeaf3;
+        border-radius: 0.95rem;
+        box-shadow: 0 14px 32px rgba(15, 34, 56, 0.04);
+        overflow: hidden;
     }
 
     .filter-card .card-header,
     .table-card .card-header {
-        background: #fff;
+        background: rgba(255,255,255,0.75);
         border-bottom: 1px solid var(--tickets-line);
-        padding: 1rem 1.25rem;
+        padding: .9rem 1.1rem;
     }
 
     .filter-card .card-body {
-        padding: 1.25rem;
+        padding: 1rem 1.1rem .8rem;
+    }
+
+    .filter-header-title {
+        color: var(--tickets-ink);
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin: 0;
     }
 
     .filter-card .form-label {
         color: var(--tickets-ink);
+        display: block;
         font-size: .78rem;
-        margin-bottom: .4rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: .38rem;
     }
 
     .filter-card .form-control,
     .filter-card .form-select {
-        border-color: #d7e1ea;
-        min-height: 42px;
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #d9e3ee;
+        border-radius: .7rem;
+        box-shadow: inset 0 1px 2px rgba(15, 34, 56, 0.02);
+        color: var(--tickets-ink);
+        min-height: 40px;
+        padding: .58rem .8rem;
+        transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+
+    .filter-card .form-control::placeholder {
+        color: #7f8fa3;
     }
 
     .filter-card .form-control:focus,
     .filter-card .form-select:focus {
         border-color: var(--tickets-blue);
-        box-shadow: 0 0 0 .2rem rgba(11, 92, 171, .12);
+        box-shadow: 0 0 0 .22rem rgba(11, 92, 171, .12);
+        background: #fff;
+    }
+
+    .filter-search-wrap {
+        position: relative;
+    }
+
+    .filter-search-wrap .input-group-text {
+        background: rgba(255,255,255,0.7);
+        border: 1px solid #d9e3ee;
+        border-right: 0;
+        border-radius: .7rem 0 0 .7rem;
+        color: #6f7f93;
+        min-height: 40px;
+        padding-inline: .8rem;
+    }
+
+    .filter-search-wrap .form-control {
+        border-left: 0;
+        padding-left: .25rem;
+    }
+
+    .filter-search-wrap .btn-clear-search {
+        border: 1px solid #d9e3ee;
+        border-left: 0;
+        border-radius: 0 .7rem .7rem 0;
+        min-height: 40px;
+        padding: 0 .75rem;
+    }
+
+    .filter-search-wrap .btn-clear-search:hover {
+        background: #f5f8fb;
     }
 
     .date-range {
@@ -112,15 +200,61 @@
         min-width: 0;
     }
 
+    .filter-grid {
+        gap: .8rem 1rem;
+        margin-bottom: 0;
+    }
+
     .filter-actions {
+        align-items: center;
         border-top: 1px solid var(--tickets-line);
-        margin-top: .25rem;
-        padding-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .7rem;
+        margin-top: .75rem;
+        padding-top: .8rem;
+    }
+
+    .filter-actions .btn {
+        border-radius: .7rem;
+        font-weight: 600;
+        min-height: 38px;
+        padding: .62rem 1rem;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .filter-actions .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .filter-actions .btn-primary {
+        background: linear-gradient(180deg, #1d78d3, #0f5faa);
+        border-color: #0f5faa;
+        box-shadow: 0 8px 18px rgba(15, 95, 170, .18);
+    }
+
+    .filter-actions .btn-outline-secondary {
+        background: rgba(255,255,255,0.7);
+        border-color: #d4dfe8;
+        color: #35516b;
     }
 
     .filter-count {
         color: var(--tickets-muted);
-        font-size: .82rem;
+        font-size: .76rem;
+    }
+
+    .filter-badge {
+        align-items: center;
+        background: linear-gradient(180deg, #eaf3ff, #dfeeff);
+        border: 1px solid rgba(22, 108, 191, 0.16);
+        border-radius: 999px;
+        color: var(--tickets-blue);
+        display: inline-flex;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .01em;
+        padding: .42rem .7rem;
     }
 
     .table-card {
@@ -348,12 +482,12 @@
     display:block;
     line-height:1.2;
     white-space: normal;
-    font-size:10px;
-    font-weight:600;
-    color:#34495e;
+    font-size:12px;
+    font-weight:700;
+    color:#33475b;
     margin:0;
     padding-right:0.25rem;
-    letter-spacing: .01em;
+    letter-spacing: -0.01em;
     text-transform: none;
 }
 .filter-title{
@@ -369,10 +503,11 @@
 }
 
 .metric-number{
-    font-size:30px;
-    font-weight:700;
+    font-size: clamp(2rem, 2.3vw, 2.8rem);
+    font-weight:800;
     color:#0b3b75;
     line-height:1;
+    letter-spacing: -0.04em;
 }
 
 
@@ -380,27 +515,52 @@
     border: 1px solid rgba(108,117,125,0.16);
     overflow: hidden;
     transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    transition: transform .16s ease, box-shadow .16s ease;
 }
 
 .card.metric-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 16px 40px rgba(13,110,253,0.08);
+    border-color: rgba(11, 92, 171, 0.18);
 }
 
 .card.metric-card .card-body {
-    min-height: 110px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    padding: 1.1rem 1.2rem;
+}
+
+.card.metric-card .card-body .container-fluid {
+    width: 100%;
+    gap: .9rem;
+    padding: 0;
 }
 
 .card.metric-card .card-body .ps-3 {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     min-height: 72px;
+    flex: 1;
 }
 
 .metric-title {
     margin-bottom: 0.35rem;
+}
+
+.card .rounded-circle {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.6);
+}
+
+.card .rounded-circle i {
+    font-size: 1.75rem !important;
+    padding: 0 !important;
 }
 
 .drag-scroll.dragging{
@@ -745,210 +905,112 @@
     @endphp
     <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div>
-            <h2 class="h6 mb-1">Find a ticket</h2>
+            <h2 class="filter-header-title">Find a ticket</h2>
             <div class="filter-count">Use one or more filters to narrow the list.</div>
         </div>
         @if($activeFilters)
-            <span class="badge rounded-pill text-bg-primary">{{ $activeFilters }} active {{ Str::plural('filter', $activeFilters) }}</span>
+            <span class="filter-badge">{{ $activeFilters }} active {{ Str::plural('filter', $activeFilters) }}</span>
         @endif
     </div>
     <div class="card-body">
 
         <div class="row mb-3">
-
             <div class="col-12">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <div class="input-group filter-search-wrap">
+                    <span class="input-group-text" aria-hidden="true"><i class="bi bi-search"></i></span>
                     <input id="search" name="search" type="search" class="form-control"
                         placeholder="Search by ticket number, requestor, purpose, or program" value="{{ request('search') }}" aria-label="Search tickets">
                     @if(request('search'))
-                        <a href="{{ request()->fullUrlWithoutQuery('search') }}" class="btn btn-outline-secondary" aria-label="Clear search">
+                        <a href="{{ request()->fullUrlWithoutQuery('search') }}" class="btn btn-outline-secondary btn-clear-search" aria-label="Clear search">
                             <i class="bi bi-x-lg"></i>
                         </a>
                     @endif
                 </div>
             </div>
-
         </div>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 filter-fields-grid">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 filter-grid filter-fields-grid">
 
             {{-- STATUS --}}
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    Status
-                </label>
-
-                <select
-                    name="status"
-                    class="form-select">
-
+                <label class="form-label" for="statusFilter">Status</label>
+                <select id="statusFilter" name="status" class="form-select">
                     <option value="">All</option>
-
-                    <option value="review"
-                        {{ request('status')=='review'?'selected':'' }}>
-                        For Review
-                    </option>
-
-                    <option value="inprogress"
-                        {{ request('status')=='inprogress'?'selected':'' }}>
-                        In Progress
-                    </option>
-
-                    <option value="resolved"
-                        {{ request('status')=='resolved'?'selected':'' }}>
-                        Resolved
-                    </option>
-
-                    <option value="completed"
-                        {{ request('status')=='completed'?'selected':'' }}>
-                        Completed
-                    </option>
-
-                    <option value="rejected"
-                        {{ request('status')=='rejected'?'selected':'' }}>
-                        Rejected
-                    </option>
-
+                    <option value="review" {{ request('status')=='review'?'selected':'' }}>For Review</option>
+                    <option value="inprogress" {{ request('status')=='inprogress'?'selected':'' }}>In Progress</option>
+                    <option value="resolved" {{ request('status')=='resolved'?'selected':'' }}>Resolved</option>
+                    <option value="completed" {{ request('status')=='completed'?'selected':'' }}>Completed</option>
+                    <option value="rejected" {{ request('status')=='rejected'?'selected':'' }}>Rejected</option>
                 </select>
-
             </div>
 
             {{-- CATEGORY --}}
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    Category
-                </label>
-
-                <select
-                    name="category"
-                    class="form-select">
-
+                <label class="form-label" for="categoryFilter">Category</label>
+                <select id="categoryFilter" name="category" class="form-select">
                     <option value="">All</option>
-
-                    <option value="completed"
-                        {{ request('category')=='completed'?'selected':'' }}>
-                        Completed Program
-                    </option>
-
-                    <option value="enhancement"
-                        {{ request('category')=='enhancement'?'selected':'' }}>
-                        Program Development
-                    </option>
-
-                    <option value="resource"
-                        {{ request('category')=='resource'?'selected':'' }}>
-                        Resource Person
-                    </option>
-
-                    <option value="knowledge"
-                        {{ request('category')=='knowledge'?'selected':'' }}>
-                        Knowledge Product
-                    </option>
-
+                    <option value="completed" {{ request('category')=='completed'?'selected':'' }}>Completed Program</option>
+                    <option value="enhancement" {{ request('category')=='enhancement'?'selected':'' }}>Program Development</option>
+                    <option value="resource" {{ request('category')=='resource'?'selected':'' }}>Resource Person</option>
+                    <option value="knowledge" {{ request('category')=='knowledge'?'selected':'' }}>Knowledge Product</option>
                 </select>
-
             </div>
 
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    Priority
-                </label>
-
-                <select
-                    name="priority"
-                    class="form-select">
-
+                <label class="form-label" for="priorityFilter">Priority</label>
+                <select id="priorityFilter" name="priority" class="form-select">
                     <option value="">All</option>
                     <option value="low" {{ request('priority')=='low'?'selected':'' }}>Low</option>
                     <option value="medium" {{ request('priority')=='medium'?'selected':'' }}>Medium</option>
                     <option value="high" {{ request('priority')=='high'?'selected':'' }}>High</option>
                     <option value="urgent" {{ request('priority')=='urgent'?'selected':'' }}>Urgent</option>
-
                 </select>
-
             </div>
 
             {{-- REQUESTOR --}}
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    Requestor
-                </label>
-
-                <select
-                    name="requestor"
-                    class="form-select">
-
-                    <option value="">
-                        All Requestors
-                    </option>
-
+                <label class="form-label" for="requestorFilter">Requestor</label>
+                <select id="requestorFilter" name="requestor" class="form-select">
+                    <option value="">All Requestors</option>
                     @foreach($requestors as $requestor)
-
-                    <option
-                        value="{{ $requestor->requestor_email }}"
-                        {{ request('requestor')==$requestor->requestor_email?'selected':'' }}>
-
-                        {{ $requestor->requestor_first_name }}
-                        {{ $requestor->requestor_last_name }}
-
-                    </option>
-
+                        <option value="{{ $requestor->requestor_email }}" {{ request('requestor')==$requestor->requestor_email?'selected':'' }}>
+                            {{ $requestor->requestor_first_name }}
+                            {{ $requestor->requestor_last_name }}
+                        </option>
                     @endforeach
-
                 </select>
-
             </div>
 
             {{-- PROGRAM --}}
             <div class="col-12 col-sm-6 col-lg-4">
-
-                <label class="form-label fw-semibold">
-                    Program
-                </label>
-                <select name="program" class="form-select">
+                <label class="form-label" for="programFilter">Program</label>
+                <select id="programFilter" name="program" class="form-select">
                     <option value="">All Program</option>
                     @foreach($programs as $program)
-                    <option value="{{$program->program_id}}" {{ request('program') == $program->program_id ? 'selected' : '' }}>{{$program->program}}</option>
+                        <option value="{{$program->program_id}}" {{ request('program') == $program->program_id ? 'selected' : '' }}>{{$program->program}}</option>
                     @endforeach
                 </select>
             </div>
 
             {{-- DATE RANGE --}}
             <div class="col-12 col-sm-6 col-lg-4">
-                <label class="form-label fw-semibold">Date range</label>
+                <label class="form-label">Date range</label>
                 <div class="date-range">
-                    <input
-                        type="date"
-                        class="form-control"
-                        name="date_from"
-                        value="{{ request('date_from') }}"
-                        aria-label="From date">
-                    <input
-                        type="date"
-                        class="form-control"
-                        name="date_to"
-                        value="{{ request('date_to') }}"
-                        aria-label="To date">
+                    <input id="dateFromFilter" type="date" class="form-control" name="date_from" value="{{ request('date_from') }}" aria-label="From date">
+                    <input id="dateToFilter" type="date" class="form-control" name="date_to" value="{{ request('date_to') }}" aria-label="To date">
                 </div>
             </div>
 
-            <div class="col-12 filter-actions d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-start gap-2">
-
-                <button type="submit" class="btn btn-primary w-100 w-sm-auto">
+            <div class="col-12 filter-actions">
+                <button type="submit" class="btn btn-primary">
                     <i class="bi bi-search"></i>
                     Apply Filters
                 </button>
 
-                <a href="{{ route('tickets') }}" class="btn btn-outline-secondary w-100 w-sm-auto text-center">
+                <a href="{{ route('tickets') }}" class="btn btn-outline-secondary text-center">
                     <i class="bi bi-arrow-clockwise"></i>
                     Clear
                 </a>
-
             </div>
 
         </div>
@@ -1004,7 +1066,9 @@
                 </div>
                 <div>
                     <span class="ticket-meta-label">Program</span>
-                    <strong class="ticket-meta-value">{{ Str::limit($ticket->programDetails->program ?? '-', 24) }}</strong>
+                    <strong class="ticket-meta-value">
+                        {{ $ticket->program_count > 1 ? $ticket->program_count . ' programs selected' : Str::limit($ticket->program_display, 24) }}
+                    </strong>
                 </div>
                 <div>
                     <span class="ticket-meta-label">Priority</span>
@@ -1031,11 +1095,13 @@
                         <li><a class="dropdown-item" href="{{ route('ticket.view', $ticket->ticket_id) }}"><i class="bi bi-eye me-2"></i> View Ticket</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form method="POST" action="{{ route('ticket.delete', $ticket->ticket_id) }}" class="delete-form m-0">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i> Delete</button>
-                            </form>
+                            @if(auth()->user()->usergroup === 'sysadmin')
+                                <form method="POST" action="{{ route('ticket.delete', $ticket->ticket_id) }}" class="delete-form m-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i> Delete</button>
+                                </form>
+                            @endif
                         </li>
                     </ul>
                 </div>

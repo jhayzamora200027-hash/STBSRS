@@ -11,6 +11,59 @@
     page-break-before: always;
     break-before: page;
 }
+.ticket-program-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .35rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.ticket-program-list li {
+    position: relative;
+    padding-left: 1rem;
+    overflow-wrap: anywhere;
+}
+.ticket-program-list li::before {
+    position: absolute;
+    top: .55em;
+    left: .15rem;
+    width: .35rem;
+    height: .35rem;
+    border-radius: 50%;
+    background: #2563eb;
+    content: '';
+}
+.print-program-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 8px;
+    row-gap: 0;
+    margin: 0;
+    padding: 2px 6px;
+    list-style: none;
+    font-size: 11px;
+    line-height: 1.15;
+}
+.print-program-list li {
+    padding-left: 0;
+    overflow-wrap: anywhere;
+}
+.print-program-list li::before {
+    position: static;
+    display: inline;
+    width: auto;
+    height: auto;
+    margin-right: 3px;
+    border-radius: 0;
+    background: none;
+    content: '•';
+}
+@media (max-width: 576px) {
+    .ticket-program-list {
+        grid-template-columns: 1fr;
+    }
+}
 @media print {
     .print-header { display: block; position: static; }
     .print-footer { display: block; position: static; }
@@ -37,13 +90,54 @@
     #printArea { padding-top: 0; padding-bottom: 0; }
 }
 .resolution-panel {
+    border-radius: 14px;
     border: 1px solid #e6e9ee;
     box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+    overflow: hidden;
+    height:100%;
 }
 
 .resolution-panel .card-header {
-    background: #fff;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     border-bottom: 1px solid #eef0f3;
+}
+
+.resolution-panel .card-header i {
+    color: #2563eb;
+    font-size: 1.05rem;
+}
+
+.resolution-panel .card-header small {
+    white-space: nowrap;
+}
+
+.resolution-state {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    padding: .75rem .8rem;
+    margin-bottom: 1.1rem;
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-size: .82rem;
+    line-height: 1.45;
+}
+
+.resolution-state i {
+    margin-top: .1rem;
+    color: #2563eb;
+}
+
+.resolution-state.is-locked {
+    border-color: #d1fae5;
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.resolution-state.is-locked i {
+    color: #059669;
 }
 
 .resolution-panel .form-label {
@@ -66,8 +160,103 @@
 }
 
 .resolution-panel textarea {
-    min-height: 8rem;
+    min-height: 7.5rem;
     resize: vertical;
+}
+
+.resolution-file-picker {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-height: 3.25rem;
+    padding: .45rem .65rem;
+    border: 1px dashed #b9c4d4;
+    border-radius: 10px;
+    background: #f8fafc;
+    transition: border-color .2s ease, background .2s ease;
+}
+
+.resolution-file-picker:focus-within,
+.resolution-file-picker:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.resolution-file-picker input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.resolution-file-picker label {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    flex: 0 0 auto;
+    padding: .45rem .65rem;
+    border-radius: 7px;
+    background: #1e293b;
+    color: #fff;
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.resolution-file-picker input:disabled + label {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.resolution-file-name {
+    min-width: 0;
+    overflow: hidden;
+    color: #64748b;
+    font-size: .82rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resolution-attachments {
+    display: grid;
+    gap: .35rem;
+    padding-top: .15rem;
+}
+
+.resolution-attachment-item {
+    min-width: 0;
+    padding: .45rem .55rem;
+    border-radius: 7px;
+    background: #f8fafc;
+}
+
+.resolution-attachment-item a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resolution-submit {
+    min-height: 2.75rem;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+@media (max-width: 575.98px) {
+    .resolution-panel .card-header {
+        align-items: flex-start !important;
+        gap: .5rem;
+    }
+
+    .resolution-panel .card-header small {
+        white-space: normal;
+        text-align: right;
+    }
 }
 
 .resolution-attachments a {
@@ -319,6 +508,185 @@
 
 }
 
+.knowledge-panel {
+    background: #f7f9fc;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+}
+
+.knowledge-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.25rem 0.9rem;
+    border-bottom: 1px solid #e7ebf1;
+    background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+}
+
+.knowledge-panel-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    font-size: 1.3rem;
+}
+
+.knowledge-panel-kicker {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.knowledge-panel-subtitle {
+    margin: 0.2rem 0 0;
+    color: #475569;
+    font-size: 0.94rem;
+    font-weight: 600;
+}
+
+.knowledge-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem 1rem;
+    padding: 1.1rem 1.25rem 1.2rem;
+}
+
+.knowledge-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.72rem 0.9rem;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.knowledge-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.25);
+}
+
+.resource-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.resource-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.resource-card {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-height: 118px;
+    padding: 1rem 1.15rem;
+    border-radius: 16px;
+    border: 1px solid #dfe5ee;
+    background: #f8fafc;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.02);
+}
+
+.resource-card-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
+    font-size: 1.3rem;
+}
+
+.resource-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.resource-label {
+    margin: 0;
+    color: #2563eb;
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.resource-value {
+    margin: 0;
+    color: #111827;
+    font-size: 1.02rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.resource-date-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.resource-date-card {
+    min-height: 118px;
+    padding: 1rem 1.15rem;
+    border-radius: 16px;
+    border: 1px solid #dfe5ee;
+    background: #f8fafc;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.resource-date-label {
+    margin: 0 0 0.55rem;
+    color: #0f172a;
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.resource-date-value {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
 .info-box:hover{
 
     transform:translateY(-3px);
@@ -357,6 +725,198 @@
 
     line-height:1.8;
 
+}
+
+.ticket-summary-card {
+    height: 100%;
+    border: 1px solid #e7ebf1 !important;
+    border-radius: 18px !important;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .06) !important;
+}
+
+.ticket-summary-header {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+}
+
+.ticket-summary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    flex: 0 0 3.5rem;
+    border-radius: 50%;
+    background: #eef4ff;
+    color: #2563eb;
+    font-size: 1.65rem;
+}
+
+.ticket-summary-kicker,
+.ticket-meta-label,
+.requester-label {
+    display: block;
+    margin-bottom: .3rem;
+    color: #64748b;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+.ticket-number {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(1.35rem, 2.5vw, 1.8rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+
+.copy-ticket {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+    padding: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 7px;
+    background: #fff;
+    color: #2563eb;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.copy-ticket:hover,
+.copy-ticket:focus-visible {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    transform: translateY(-1px);
+}
+
+.ticket-summary-divider {
+    margin: 1.35rem 0 1.45rem;
+    border-color: #e8edf3;
+    opacity: 1;
+}
+
+.ticket-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.ticket-meta-item {
+    min-width: 0;
+    padding: 1.05rem 0;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.ticket-meta-item:first-child {
+    padding-top: 0;
+}
+
+.ticket-meta-item:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.ticket-meta-value {
+    margin: 0;
+    color: #0f172a;
+    font-size: .94rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.ticket-meta-value.is-muted {
+    color: #475569;
+    font-weight: 500;
+}
+
+.ticket-meta-value .badge {
+    font-size: .73rem;
+    letter-spacing: .01em;
+}
+
+.ticket-attachments {
+    display: grid;
+    gap: .45rem;
+    margin-top: .55rem;
+}
+
+.ticket-attachment-link {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: 0;
+    color: #2563eb;
+    font-size: .82rem;
+}
+
+.ticket-attachment-link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.requester-card {
+    border: 1px solid #e4eaf2 !important;
+    border-radius: 14px !important;
+    background: #f8fafc !important;
+}
+
+.requester-card .card-body {
+    padding: 1.25rem;
+}
+
+.requester-heading {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin-bottom: 1.35rem;
+    color: #0f172a;
+}
+
+.requester-heading i {
+    color: #2563eb;
+    font-size: 1.05rem;
+}
+
+.requester-item + .requester-item {
+    margin-top: 1rem;
+}
+
+.requester-value {
+    display: flex;
+    align-items: flex-start;
+    gap: .55rem;
+    color: #0f172a;
+    font-size: .93rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.requester-value i {
+    width: 1rem;
+    flex: 0 0 1rem;
+    margin-top: .18rem;
+    text-align: center;
+}
+
+@media (max-width: 575.98px) {
+    .ticket-meta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ticket-summary-header {
+        align-items: flex-start;
+    }
 }
 
 
@@ -1723,61 +2283,41 @@ hr{
 <div class="row" id="requestInformationBody">
     <div class="col-12 col-md-8">
 
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card ticket-summary-card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">
 
                 <!-- Header -->
-                <div class="d-flex justify-content-between align-items-start mb-4">
-
-                    <div class="d-flex align-items-center">
-
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width:65px;height:65px;background:#EEF4FF;">
-                            <i class="bi bi-ticket-detailed-fill text-primary fs-2"></i>
-                        </div>
-
-                        <div class="ms-3">
-
-                            <small class="text-muted">
-                                Ticket Number
-                            </small>
-
-                            <h3 class="fw-bold mb-1">
-
-                                {{ $ticket->ticket_id }}
-
-                                <i class="bi bi-copy copy-ticket text-muted ms-2 fs-6"
-                                   role="button"
-                                   data-ticket="{{ $ticket->ticket_id }}"
-                                   title="Copy Ticket Number"></i>
-
-                            </h3>
-
-                            <small class="text-muted">
-                                Created {{ $ticket->created_at->format('F d, Y h:i A') }}
-                            </small>
-
-                        </div>
-
+                <div class="ticket-summary-header">
+                    <div class="ticket-summary-icon" aria-hidden="true">
+                        <i class="bi bi-ticket-detailed-fill"></i>
                     </div>
-
+                    <div class="min-w-0">
+                        <span class="ticket-summary-kicker">Ticket Number</span>
+                        <h3 class="ticket-number">
+                            <span>{{ $ticket->ticket_id }}</span>
+                            <button type="button" class="copy-ticket" data-ticket="{{ $ticket->ticket_id }}" title="Copy ticket number" aria-label="Copy ticket number">
+                                <i class="bi bi-copy" aria-hidden="true"></i>
+                            </button>
+                        </h3>
+                    </div>
                 </div>
 
-                <hr>
+                <hr class="ticket-summary-divider">
 
-                <div class="row mt-4">
+                <div class="row g-4">
 
                     <!-- LEFT -->
-                    <div class="col-12 col-md-6 border-md-end">
+                    <div class="col-12 col-md-6">
 
-                        <div class="mb-4">
+                        <div class="ticket-meta-grid">
+                        <div class="ticket-meta-item">
 
-                            <small class="text-muted">
+                            <span class="ticket-meta-label">
                                 <i class="bi bi-grid me-1"></i>
                                 Category
-                            </small>
+                            </span>
 
-                            <h6 class="fw-semibold mt-2">
+                            <p class="ticket-meta-value">
 
                                 @switch($ticket->ticket_category)
 
@@ -1799,31 +2339,31 @@ hr{
 
                                 @endswitch
 
-                            </h6>
+                            </p>
 
                         </div>
 
-                        <div class="mb-4">
+                        <div class="ticket-meta-item">
 
-                            <small class="text-muted">
+                            <span class="ticket-meta-label">
                                 <i class="bi bi-diagram-3 me-1"></i>
                                 Program
-                            </small>
+                            </span>
 
-                            <h6 class="fw-semibold mt-2">
-                                {{ optional($ticket->programDetails)->program ?? '-' }}
-                            </h6>
+                            <ul class="ticket-meta-value ticket-program-list">
+                                @foreach($ticket->program_display_items as $program)
+                                    <li>{{ $program }}</li>
+                                @endforeach
+                            </ul>
 
                         </div>
 
-                        <div class="row">
+                        <div class="ticket-meta-item">
 
-                            <div class="col-6">
-
-                                <small class="text-muted">
+                                <span class="ticket-meta-label">
                                     <i class="bi bi-flag me-1"></i>
                                     Priority
-                                </small>
+                                </span>
 
                                 <div class="mt-2">
 
@@ -1859,12 +2399,12 @@ hr{
 
                             </div>
 
-                            <div class="col-6">
+                        <div class="ticket-meta-item">
 
-                                <small class="text-muted">
+                                <span class="ticket-meta-label">
                                     <i class="bi bi-check2-square me-1"></i>
                                     Current Status
-                                </small>
+                                </span>
 
                                 <div class="mt-2">
 
@@ -1904,17 +2444,13 @@ hr{
 
                                 </div>
 
-                            </div>
-
                         </div>
-                        <div class="row pt-3 g-3">
-                            <div class="col-12 col-sm-6">
-                                <small class="text-muted">
+                        <div class="ticket-meta-item">
+                                <span class="ticket-meta-label">
                                     <i class="bi bi-inbox me-1"></i>
                                     Request For
-                                </small>
-                                <div class="mt-2">
-                                    <small>
+                                </span>
+                                <p class="ticket-meta-value is-muted">
                                     @switch($ticket->received_ticket_to)
                                     @case('CO')
                                     Central Office
@@ -1931,29 +2467,25 @@ hr{
                                     @else
                                     
                                     @endif
-                                    </small>
-                                </div>
-                            </div>
+                                </p>
+                        </div>
 
-                            @if($ticket->attachments->isNotEmpty())
-                                <div class="col-12 col-sm-6">
-                                <small class="text-muted">
+                        @if($ticket->attachments->isNotEmpty())
+                            <div class="ticket-meta-item">
+                                <span class="ticket-meta-label">
                                     <i class="bi bi-paperclip me-1"></i>
                                     Ticket Attachment{{ $ticket->attachments->count() > 1 ? 's' : '' }}
-                                </small>
-                                <div class="d-grid gap-2 mt-2">
+                                </span>
+                                <div class="ticket-attachments">
                                     @foreach($ticket->attachments as $attachment)
-                                        <a href="{{ Storage::url($attachment->attachment_path) }}"
-                                                         download="{{ $attachment->attachment }}"
-                                           rel="noopener"
-                                           class="d-flex align-items-center gap-2 text-decoration-none small">
-                                            <i class="bi bi-file-earmark-arrow-down text-primary"></i>
-                                            <span class="text-truncate">{{ $attachment->attachment }}</span>
+                                        <a href="{{ Storage::url($attachment->attachment_path) }}" download="{{ $attachment->attachment }}" rel="noopener" class="ticket-attachment-link text-decoration-none">
+                                            <i class="bi bi-file-earmark-arrow-down"></i>
+                                            <span>{{ $attachment->attachment }}</span>
                                         </a>
                                     @endforeach
                                 </div>
-                                </div>
-                            @endif
+                            </div>
+                        @endif
                         </div>
 
                     </div>
@@ -1961,11 +2493,11 @@ hr{
                     <!-- RIGHT -->
                     <div class="col-12 col-md-6 ps-md-4">
 
-                        <div class="card bg-light border-0 rounded-4">
+                        <div class="card requester-card bg-light border-0 rounded-4">
 
                             <div class="card-body">
 
-                                <h6 class="fw-bold mb-4">
+                                <h6 class="requester-heading fw-bold">
 
                                     <i class="bi bi-person-circle me-2"></i>
 
@@ -1973,13 +2505,13 @@ hr{
 
                                 </h6>
 
-                                <div class="mb-3">
+                                <div class="requester-item">
 
-                                    <small class="text-muted">
-                                        Full Name
-                                    </small>
+                                    <span class="requester-label">Full Name</span>
 
-                                    <h6 class="mb-0">
+                                    <div class="requester-value">
+                                        <i class="bi bi-person text-primary" aria-hidden="true"></i>
+                                        <span>
 
                                         {{ $ticket->requestor_first_name }}
 
@@ -1989,35 +2521,30 @@ hr{
 
                                         {{ $ticket->requestor_last_name }}
 
-                                    </h6>
+                                        </span>
+                                    </div>
 
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="requester-item">
 
-                                    <small class="text-muted">
-                                        Email Address
-                                    </small>
+                                    <span class="requester-label">Email Address</span>
 
-                                    <div>
-
-                                        <i class="bi bi-envelope text-primary me-2"></i>
-
-                                        {{ $ticket->requestor_email }}
+                                    <div class="requester-value">
+                                        <i class="bi bi-envelope text-primary" aria-hidden="true"></i>
+                                        <span>{{ $ticket->requestor_email }}</span>
 
                                     </div>
 
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="requester-item">
 
-                                    <small class="text-muted">
-                                        Location
-                                    </small>
+                                    <span class="requester-label">Location</span>
 
-                                    <div>
-
-                                        <i class="bi bi-geo-alt text-danger me-2"></i>
+                                    <div class="requester-value">
+                                        <i class="bi bi-geo-alt text-danger" aria-hidden="true"></i>
+                                        <span>
                                         @switch($ticket->requestor_organization)
                                         @case('field_office')
                                         {{ data_get($ticket, 'requestRegion.name', '-')}},
@@ -2039,21 +2566,18 @@ hr{
                                         
                                         @endswitch
 
+                                        </span>
                                     </div>
 
                                 </div>
 
-                                <div>
+                                <div class="requester-item">
 
-                                    <small class="text-muted">
-                                        Date Submitted
-                                    </small>
+                                    <span class="requester-label">Date Submitted</span>
 
-                                    <div>
-
-                                        <i class="bi bi-calendar-event text-success me-2"></i>
-
-                                        {{ $ticket->created_at->format('F d, Y h:i A') }}
+                                    <div class="requester-value">
+                                        <i class="bi bi-calendar-event text-success" aria-hidden="true"></i>
+                                        <span>{{ $ticket->created_at->format('F d, Y h:i A') }}</span>
 
                                     </div>
 
@@ -2089,6 +2613,11 @@ hr{
                 <form id="resolutionForm" method="POST" action="{{ route('ticket.resolve', $ticket->ticket_id) }}" enctype="multipart/form-data">
                     @csrf
 
+                    <div class="resolution-state {{ $resolutionLocked ? 'is-locked' : '' }}" role="status">
+                        <i class="bi {{ $resolutionLocked ? 'bi-lock-fill' : 'bi-info-circle-fill' }}" aria-hidden="true"></i>
+                        <span>{{ $resolutionLocked ? 'This ticket is closed. Its resolution can no longer be edited.' : 'Document what was done, then choose the next ticket status.' }}</span>
+                    </div>
+
                     <div class="mb-3">
                         <label for="resolution_text" class="form-label">Resolution details</label>
                         <textarea id="resolution_text" name="resolution_text" rows="4" class="form-control" placeholder="Describe the action taken or the final resolution." {{ $resolutionLocked ? 'disabled' : '' }}>{{ old('resolution_text', $latestResolution?->resolution_text) }}</textarea>
@@ -2099,8 +2628,12 @@ hr{
 
                     <div class="mb-3">
                         <label for="attachments" class="form-label">Resolution attachments</label>
-                        <input id="attachments" type="file" name="attachments[]" class="form-control" multiple data-existing-count="{{ $latestResolution?->attachments->count() ?? 0 }}" {{ $resolutionLocked ? 'disabled' : '' }}>
-                        <div class="form-text">You can select multiple supporting files.</div>
+                        <div class="resolution-file-picker">
+                            <input id="attachments" type="file" name="attachments[]" multiple data-existing-count="{{ $latestResolution?->attachments->count() ?? 0 }}" {{ $resolutionLocked ? 'disabled' : '' }}>
+                            <label for="attachments"><i class="bi bi-paperclip" aria-hidden="true"></i> Add files</label>
+                            <span class="resolution-file-name" id="resolutionFileName">No new files selected</span>
+                        </div>
+                        <div class="form-text">Optional while reviewing. Add supporting files before resolving.</div>
                         @error('attachments')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
@@ -2111,7 +2644,7 @@ hr{
                         @if($latestResolution?->attachments->isNotEmpty())
                             <div class="resolution-attachments mt-2 small">
                                 @foreach($latestResolution->attachments as $attachment)
-                                    <div class="d-flex align-items-center gap-2 py-1">
+                                    <div class="resolution-attachment-item d-flex align-items-center gap-2">
                                         <i class="bi bi-paperclip"></i>
                                         <a href="{{ Storage::url($attachment->attachment_path) }}" download="{{ $attachment->attachment }}" rel="noopener">{{ $attachment->attachment }}</a>
                                     </div>
@@ -2133,7 +2666,7 @@ hr{
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100" {{ $resolutionLocked ? 'disabled' : '' }}>
+                    <button type="submit" class="btn btn-dark w-100 resolution-submit" {{ $resolutionLocked ? 'disabled' : '' }}>
                         <i class="bi bi-check2-circle me-2"></i>
                         {{ $resolutionLocked ? 'Ticket Closed' : ($latestResolution ? 'Update Resolution' : 'Save Resolution') }}
                     </button>
@@ -2179,107 +2712,87 @@ hr{
                                     </div>
                                     <div class="col-md-4 pt-3">
                                         <div class="request-info-box">
-                                            <h5>Knowledge Product</h5>
-                                            <div class="row g-4">
-                                                <div class="col-md-12">
-                                                    <div class="info-box h-100">
-                                                        <div class="info-title">
-                                                            <i class="bi bi-journal-bookmark"></i>
-                                                            Knowledge Product Requested
-                                                        </div>
-                                                        <div class="info-content">
+                                            @php
+                                                $kp = $ticket->type_of_knowledge_product ?? null;
+                                                $kpItems = [];
+                                                if($kp) {
+                                                    if(is_array($kp)) {
+                                                        $kpItems = $kp;
+                                                    } else {
+                                                        $decoded = json_decode($kp, true);
+                                                        if(is_array($decoded)) {
+                                                            $kpItems = $decoded;
+                                                        } else {
+                                                            $kpItems = array_filter(array_map('trim', explode(',', $kp)));
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                            <div class="knowledge-panel h-100">
+                                                <div class="knowledge-panel-header">
+                                                    <div class="knowledge-panel-icon">
+                                                        <i class="bi bi-journal-text"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="knowledge-panel-kicker">Knowledge Product</p>
+                                                        <p class="knowledge-panel-subtitle">Knowledge Product Requested</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="knowledge-list">
+                                                    @if(empty($kpItems))
+                                                        <div class="knowledge-pill" style="grid-column: 1 / -1; background: rgba(148, 163, 184, 0.08); border-color: rgba(148, 163, 184, 0.25); color: #475569;">-</div>
+                                                    @else
+                                                        @foreach($kpItems as $item)
                                                             @php
-                                                                $kp = $ticket->type_of_knowledge_product ?? null;
-                                                                $kpItems = [];
-                                                                if($kp) {
-                                                                    if(is_array($kp)) {
-                                                                        $kpItems = $kp;
-                                                                    } else {
-                                                                        $decoded = json_decode($kp, true);
-                                                                        if(is_array($decoded)) {
-                                                                            $kpItems = $decoded;
-                                                                        } else {
-                                                                            $kpItems = array_filter(array_map('trim', explode(',', $kp)));
-                                                                        }
-                                                                    }
+                                                                $label = trim((string) $item);
+                                                                if ($label === 'Others') {
+                                                                    $label = trim((string) ($ticket->type_of_knowledge_product_others ?? 'Others'));
                                                                 }
                                                             @endphp
-                                                            @if(empty($kpItems))
-                                                                -
-                                                            @else
-                                                                <div class="d-flex flex-wrap gap-2">
-                                                                    @foreach($kpItems as $item)
-                                                                        <span class="badge bg-light text-dark">{{ e($item) }}</span>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
+                                                            <div class="knowledge-pill">{{ e($label) }}</div>
+                                                        @endforeach
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 pt-3">
                                         <div class="request-info-box">
-                                            <h5>Resource Person</h5>
-                                            <div class=row>
-                                                <div class="col-md-6 pt-3">
-                                                    <div class="info-box">
-                                                        <div class="info-title">
+                                            <div class="resource-section">
+                                                <h5 class="resource-title">Resource Person</h5>
+
+                                                <div class="resource-grid">
+                                                    <div class="resource-card">
+                                                        <div class="resource-card-icon">
                                                             <i class="bi bi-geo-alt-fill"></i>
-                                                            Venue
                                                         </div>
-                                                        <div class="info-content">
-                                                            {{ $ticket->venue ?? '-' }}
+                                                        <div class="resource-card-body">
+                                                            <p class="resource-label">Venue</p>
+                                                            <p class="resource-value">{{ $ticket->venue ?? '-' }}</p>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-6 pt-3">
-                                                    <div class="info-box">
-                                                        <div class="info-title">
+
+                                                    <div class="resource-card">
+                                                        <div class="resource-card-icon">
                                                             <i class="bi bi-calendar-event"></i>
-                                                            Type of activity
                                                         </div>
-                                                        <div class="info-content">
-                                                            {{$ticket->type_of_activity ?? '-'}}
+                                                        <div class="resource-card-body">
+                                                            <p class="resource-label">Type of activity</p>
+                                                            <p class="resource-value">{{ $ticket->type_of_activity ?? '-' }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row mt-3">
-                                                <div class="col-md-12">
-                                                    <div style="background:#f8fafc;
-                                                    border:1px solid #e5e7eb;
-                                                    border-radius:16px;
-                                                    padding:22px;
-                                                    transition:.3s;
-                                                    min-height:80px;">
-                                                        <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <h6>
-                                                                        Start of Acitivty
-    
-                                                                    </h6>
-    
-                                                                    <div class="info-content">
-    
-                                                                        {{ $ticket->date_of_activity ?? '-'}}
-    
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6 text-end">
-                                                                    <h6 >
-                                                                        End of Activity
-    
-                                                                    </h6>
-    
-                                                                    <div class="info-content">
-    
-                                                                        {{ $ticket->date_of_activity_end ?? '-'}}
-    
-                                                                </div>
-                                                            </div>
-                                                        </div>
+
+                                                <div class="resource-date-grid">
+                                                    <div class="resource-date-card">
+                                                        <p class="resource-date-label">Start of Activity</p>
+                                                        <p class="resource-date-value">{{ $ticket->date_of_activity ?? '-' }}</p>
+                                                    </div>
+
+                                                    <div class="resource-date-card">
+                                                        <p class="resource-date-label">End of Activity</p>
+                                                        <p class="resource-date-value">{{ $ticket->date_of_activity_end ?? '-' }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2454,7 +2967,7 @@ hr{
                                         <i>EMAIL ADDRESS
                                     </th>
                                     <td style="border:1px solid #000;">
-                                        {{ucfirst($ticket->requestor_email ?? 'N/A')}}
+                                        {{$ticket->requestor_email ?? 'N/A'}}
                                     </td>
                             </tr>   
                             <tr>
@@ -2508,11 +3021,17 @@ hr{
                         <table class="table table-bordered" style="padding-top: 30px;">
                                 <tr>
                                     <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">Purpose of the request</th>
-                                    <td height= '100' style="border:1px solid #000;">{{$ticket->purpose_of_request}}</td>
+                                    <td height= '80' style="border:1px solid #000;">{{$ticket->purpose_of_request}}</td>
                                 </tr>
                                 <tr>
                                     <th class="text-end" style="border:1px solid #000; background-color:#d8eaff">STB Developed Program / Project Requested for Technical Assistance: </th>
-                                    <td style="border:1px solid #000;">{{$ticket->programDetails->program}}</td>
+                                    <td style="border:1px solid #000;">
+                                        <ul class="print-program-list">
+                                            @foreach($ticket->program_display_items as $program)
+                                                <li>{{ $program }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </td>
                                 </tr>
                         </table>
                         <table class="table-table-bordered" style="margin-top: -20px;">
@@ -2596,19 +3115,16 @@ hr{
                                         font-size:11px;
                                         line-height:1.15;
                                     ">
-                                        @forelse(json_decode($ticket->type_of_knowledge_product, true) ?? [] as $item)
-                                            @if($item === 'Others')
-                                                <div style="white-space:nowrap;">
-                                                    • {{ Str::limit($ticket->type_of_knowledge_product_others, 18, '...') }}
-                                                </div>
-                                            @else
-                                                <div style="white-space:nowrap;">
-                                                    • {{ $item }}
-                                                </div>
-                                            @endif
-                                        @empty
-                                            <div style="grid-column:1 / -1;padding-top: 10px;"><span style="font-size: 13px; padding:5px;">N/A</span></div>
-                                        @endforelse
+                                        @foreach($ticket->knowledge_product_display_items as $item)
+                                            <div style="overflow-wrap:anywhere;">
+                                                @if($item === '-')
+                                                N/A
+
+                                                @else
+                                                • {{ $item }}
+                                                @endif
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </td>
                             </tr>
@@ -3611,6 +4127,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const resolutionStatus = document.getElementById('ticket_status');
     const resolutionText = document.getElementById('resolution_text');
     const resolutionAttachments = document.getElementById('attachments');
+    const resolutionFileName = document.getElementById('resolutionFileName');
     const loaderTitle = document.getElementById('ackLoaderTitle');
 
     function requiresResolution() {
@@ -3634,6 +4151,16 @@ document.addEventListener('DOMContentLoaded', function(){
     if (resolutionStatus) {
         updateResolutionRequirements();
         resolutionStatus.addEventListener('change', updateResolutionRequirements);
+    }
+
+    if (resolutionAttachments && resolutionFileName) {
+        resolutionAttachments.addEventListener('change', function() {
+            const files = Array.from(resolutionAttachments.files || []);
+            resolutionFileName.textContent = files.length
+                ? `${files.length} file${files.length === 1 ? '' : 's'} selected`
+                : 'No new files selected';
+            resolutionFileName.title = files.map(file => file.name).join(', ');
+        });
     }
 
     if (resolutionForm && ackLoader) {

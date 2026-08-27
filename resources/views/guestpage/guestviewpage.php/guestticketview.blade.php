@@ -44,6 +44,38 @@
     font-weight:500;
 }
 
+.program-list {
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:8px 18px;
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+
+.program-list li {
+    position:relative;
+    padding-left:16px;
+    overflow-wrap:anywhere;
+}
+
+.program-list li::before {
+    position:absolute;
+    left:0;
+    top:.45em;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#000099;
+    content:'';
+}
+
+@media (max-width: 576px) {
+    .program-list {
+        grid-template-columns:1fr;
+    }
+}
+
 .summary-item {
     display:flex;
     align-items:center;
@@ -1662,13 +1694,11 @@
                                     Program Requested
                                 </label>
 
-                                <span>
-                                    @if($ticket->program_others !== null)
-                                        {{$ticket->program_others}}
-                                    @else
-                                        {{$ticket->programDetails->program}}
-                                    @endif
-                                </span>
+                                <ul class="program-list">
+                                    @foreach($ticket->program_display_items as $program)
+                                        <li>{{ $program }}</li>
+                                    @endforeach
+                                </ul>
 
                             </div>
                         </div>

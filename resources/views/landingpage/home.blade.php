@@ -37,6 +37,69 @@
     color:#9e9e9e;
 }
 
+.program-picker { position: relative; }
+.program-picker-native {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+}
+.program-picker-control {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .75rem;
+    border: 1px solid #ced4da;
+    border-radius: .375rem;
+    background: #fff;
+    cursor: pointer;
+}
+.program-picker-control:focus { border-color: #86b7fe; box-shadow: 0 0 0 .2rem rgba(13,110,253,.15); outline: 0; }
+.program-picker-control > i { color: #6c757d; }
+.program-picker-chevron { margin-left: auto; transition: transform .2s ease; }
+.program-picker.is-open .program-picker-chevron { transform: rotate(180deg); }
+.program-picker-preview { display: flex; flex-wrap: wrap; gap: .35rem; min-width: 0; }
+.program-picker-chip {
+    max-width: 100%;
+    overflow: hidden;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    background: #eaf2ff;
+    color: #174a8b;
+    font-size: .8rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.program-picker-panel {
+    display: none;
+    grid-template-columns: minmax(150px,.8fr) minmax(0,1.2fr);
+    gap: .75rem;
+    position: absolute;
+    z-index: 20;
+    width: 100%;
+    margin-top: .35rem;
+    padding: .75rem;
+    border: 1px solid #dee2e6;
+    border-radius: .375rem;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+.program-picker.is-open .program-picker-panel { display: grid; }
+.program-picker-panel-title { margin-bottom: .4rem; color: #495057; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+.program-picker-selected-list, .program-picker-options { max-height: 180px; overflow-y: auto; }
+.program-picker-search-wrap { display: flex; align-items: center; gap: .5rem; padding: .4rem .6rem; border: 1px solid #ced4da; border-radius: .375rem; }
+.program-picker-search-wrap i { color: #6c757d; }
+.program-picker-search { width: 100%; min-width: 0; border: 0; outline: 0; }
+.program-picker-option { display: flex; align-items: flex-start; gap: .6rem; width: 100%; padding: .55rem .6rem; border: 0; border-radius: .25rem; background: transparent; text-align: left; cursor: pointer; }
+.program-picker-option:hover, .program-picker-option:focus-visible { background: #f1f6ff; outline: 0; }
+.program-picker-option:disabled { color: #adb5bd; cursor: not-allowed; opacity: .7; }
+.program-picker-option input { width: 1rem; height: 1rem; margin-top: .1rem; accent-color: #0d6efd; pointer-events: none; }
+.program-picker-empty { padding: .65rem; color: #6c757d; font-size: .875rem; }
+@media (max-width: 576px) { .program-picker-panel { grid-template-columns: 1fr; } }
+
 .input-email-icon{
     position:absolute;
     left:15px;
@@ -2673,7 +2736,7 @@ body.review-modal-open .modal-backdrop.show {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                    <select class="form-select" id="programSelectTACP" name="program">
+                                                    <select class="form-select" id="programSelectTACP" name="program[]" multiple>
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
                                                         <option value="{{$program->program_id}}">{{$program->program}}</option>
@@ -2796,7 +2859,7 @@ body.review-modal-open .modal-backdrop.show {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                    <select class="form-select" id="programSelectTAPD" name="program">
+                                                    <select class="form-select" id="programSelectTAPD" name="program[]" multiple>
                                                         <option value="">Select a program</option>
                                                         @foreach($programs as $program)
                                                         <option value="{{$program->program_id}}">{{$program->program}}</option>
@@ -2924,12 +2987,39 @@ body.review-modal-open .modal-backdrop.show {
                                                             <small class="text-muted">Input the participants needed for this activity.</small>
                                                         </div>
                                                     </div>
-                                                    <textarea
-                                                        id="targetParticipants"
-                                                        name="target_participants"
-                                                        class="form-control"
-                                                        placeholder="Input the target participants"
-                                                        required></textarea>
+                                                    <select id="targetParticipantOrganization" class="form-select mb-2" aria-label="Target participant organization" required>
+                                                        <option value="">Select organization</option>
+                                                        <option value="field_office">DSWD Field Office</option>
+                                                        <option value="offices">DSWD Offices, Bureaus, Services Units</option>
+                                                        <option value="lgu">Local Government Unit</option>
+                                                        <option value="cso">Civil Society Organization</option>
+                                                        <option value="ngo">Non-government Organization</option>
+                                                        <option value="po">People's Organization</option>
+                                                        <option value="academe">Academe</option>
+                                                    </select>
+                                                    <div id="targetParticipantOfficeFields" class="d-none">
+                                                        <select id="targetParticipantDirectorate" class="form-select mb-2" aria-label="Target participant directorate">
+                                                            <option value="">Select Directorate</option>
+                                                            @foreach($regions as $region)
+                                                                <option value="{{$region->region_code}}">{{$region->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <select id="targetParticipantOffice" class="form-select mb-2" aria-label="Target participant office">
+                                                            <option value="">Select Office/Bureau/Section/Unit</option>
+                                                            @foreach($agencies as $agency)
+                                                                <option value="{{$agency->group_code}}">{{$agency->group_name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div id="targetParticipantLguFields" class="d-none">
+                                                        <input id="targetParticipantRegion" class="form-control mb-2" placeholder="Input region">
+                                                        <input id="targetParticipantProvince" class="form-control mb-2" placeholder="Input province">
+                                                        <input id="targetParticipantCity" class="form-control mb-2" placeholder="Input city/municipality">
+                                                    </div>
+                                                    <div id="targetParticipantSpecificFields" class="d-none">
+                                                        <input id="targetParticipantSpecificOffice" class="form-control mb-2" placeholder="Input organization or office">
+                                                    </div>
+                                                    <input type="hidden" id="targetParticipants" name="target_participants" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -2941,7 +3031,7 @@ body.review-modal-open .modal-backdrop.show {
                                                                 <div>
                                                                     
                                                                     <h6 class="me-1">
-                                                                        Venue<span class="text-danger">*</span>
+                                                                        Venue <span class="text-muted">(Optional)</span>
                                                                     </h6>
 
                                                                     <small class="text-muted">
@@ -2954,7 +3044,7 @@ body.review-modal-open .modal-backdrop.show {
                                                                     <i class="bi bi-geo-alt-fill text-secondary"></i>
                                                                 </span>
 
-                                                                <input type="text" class="form-control border-start-0" id="venue" name="venue" placeholder="Input venue or location">
+                                                                <input type="text" class="form-control border-start-0" id="venue" name="venue" placeholder="Input venue or location (optional)">
                                                             </div>
                                                         </div>
                                             </div>
@@ -3185,33 +3275,6 @@ body.review-modal-open .modal-backdrop.show {
                                                                     </div>
                                         </div>
                                         <div class="col-md-6"> 
-                                                <div class="p-2 service-base-fields">
-                                                            <div class="d-flex align-item-center p-2">
-                                                                <div class="rounded-circle d-flex p-1 align-items-center justify-content-center flex-shrink-0 me-3" style="background-color:#cfe0ff; width:50px; height:50px;">
-                                                                        <i class="bi bi-activity fs-5 text-primary"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="me-1">
-                                                                        Program <span style="color:red">*</span>
-                                                                    </h6>
-                                                                    <small class="text-muted">
-                                                                        Select a program you want for this request
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                <select class="form-select service-base-fields" id="programSelectKP" name="program">
-                                                                <option value="">Select a program</option>
-                                                                @foreach($programs as $program)
-                                                                <option value="{{$program->program_id}}">{{$program->program}}</option>
-                                                                @endforeach
-                                                                <option value="others">Others</option>
-                                                </select>
-                                                    <div id="otherProgramFieldKP" class="service-base-fields mt-3 d-none">
-                                                        <label class="form-label">Specify Program <span style="color:red">*</span></label>
-                                                        <input type="text" class="form-control" id="otherProgramInputKP" name="program_others">
-                                                    </div> 
-                                                    
                                                 <div class="mb-0 mt-3">
                                                                     <h6>
                                                                         Type of knowledge product requesting: <span style="color:red">*</span>
@@ -4080,7 +4143,6 @@ if (proceedOtpBtn) {
 }
 
         function populateReviewSlip() {  
-            const program = document.getElementById('programSelectKP');
             document.getElementById('reviewRPSection').style.display = 'none';
             document.getElementById('reviewKPSection').style.display = 'none';
             
@@ -4253,10 +4315,10 @@ if (organizationConfig[organization]) {
     if(category === 'completed'){
         const program = document.getElementById('programSelectTACP');
 
-        document.getElementById('reviewProgram').textContent =
-            program.value === 'others'
-            ? document.getElementById('otherProgramInputTACP').value
-            : program.selectedOptions?.[0]?.text || '-';
+        const selectedPrograms = Array.from(program.selectedOptions || []);
+        document.getElementById('reviewProgram').textContent = selectedPrograms.some(option => option.value === 'others')
+            ? [...selectedPrograms.filter(option => option.value !== 'others').map(option => option.text), document.getElementById('otherProgramInputTACP').value].filter(Boolean).join(', ')
+            : selectedPrograms.map(option => option.text).join(', ') || '-';
 
         document.getElementById('reviewPurpose').textContent =
             document.getElementById('reasonRequestTACP').value;
@@ -4273,10 +4335,10 @@ if (organizationConfig[organization]) {
 
         const program = document.getElementById('programSelectTAPD');
 
-        document.getElementById('reviewProgram').textContent =
-            program.value === 'others'
-            ? document.getElementById('otherProgramInputTAPD').value
-            : program.selectedOptions?.[0]?.text || '-';
+        const selectedPrograms = Array.from(program.selectedOptions || []);
+        document.getElementById('reviewProgram').textContent = selectedPrograms.some(option => option.value === 'others')
+            ? [...selectedPrograms.filter(option => option.value !== 'others').map(option => option.text), document.getElementById('otherProgramInputTAPD').value].filter(Boolean).join(', ')
+            : selectedPrograms.map(option => option.text).join(', ') || '-';
 
         document.getElementById('reviewPurpose').textContent =
             document.getElementById('reasonRequestTAPD').value;
@@ -4410,12 +4472,12 @@ if (organizationConfig[organization]) {
                         const ta = document.getElementById(id);
                         if(ta) ta.removeAttribute('name');
                     });
-                    const initialSelects = ['programSelectTACP','programSelectTAPD','programSelectRP','programSelectKP'];
+                    const initialSelects = ['programSelectTACP','programSelectTAPD','programSelectRP'];
                     initialSelects.forEach(id => {
                         const sel = document.getElementById(id);
                         if(sel) sel.removeAttribute('name');
                     });
-                    const initialOtherInputs = ['otherProgramInputTACP','otherProgramInputTAPD','otherProgramInputRP','otherProgramInputKP'];
+                    const initialOtherInputs = ['otherProgramInputTACP','otherProgramInputTAPD','otherProgramInputRP'];
                     initialOtherInputs.forEach(id => {
                         const inp = document.getElementById(id);
                         if(inp) inp.removeAttribute('name');
@@ -4691,13 +4753,12 @@ if (organizationConfig[organization]) {
                     tacp: 'programSelectTACP',
                     tapd: 'programSelectTAPD',
                     rp: 'programSelectRP',
-                    kp: 'programSelectKP'
                 };
                 Object.keys(progMap).forEach(key => {
                     const sel = document.getElementById(progMap[key]);
                     if (!sel) return;
                     if (key === service) {
-                        sel.setAttribute('name', 'program');
+                        sel.setAttribute('name', 'program[]');
                     } else {
                         sel.removeAttribute('name');
                     }
@@ -4707,7 +4768,6 @@ if (organizationConfig[organization]) {
                     tacp: 'otherProgramInputTACP',
                     tapd: 'otherProgramInputTAPD',
                     rp: 'otherProgramInputRP',
-                    kp: 'otherProgramInputKP'
                 };
                 Object.keys(otherMap).forEach(key => {
                     const inp = document.getElementById(otherMap[key]);
@@ -4755,7 +4815,7 @@ if (organizationConfig[organization]) {
         };
         const technicalOnlyFields = [
             'reasonRequestRP', 'programSelectRP', 'otherProgramInputRP', 'prioritySelectRP', 'supportFileRP',
-            'reasonRequestKP', 'programSelectKP', 'otherProgramInputKP', 'prioritySelectKP', 'supportFileKP'
+            'reasonRequestKP', 'prioritySelectKP', 'supportFileKP'
         ];
 
         function setFieldSubmissionState(field, enabled) {
@@ -4859,11 +4919,160 @@ if (organizationConfig[organization]) {
 });
 });
 
+function initializeProgramPicker(select) {
+    if (!select || !select.multiple || select.dataset.pickerInitialized) return;
+    const maxPrograms = 6;
+    select.dataset.pickerInitialized = 'true';
+    const picker = document.createElement('div');
+    picker.className = 'program-picker';
+    select.parentNode.insertBefore(picker, select);
+    picker.appendChild(select);
+    select.classList.add('program-picker-native');
+
+    const control = document.createElement('div');
+    control.className = 'program-picker-control';
+    control.tabIndex = 0;
+    control.setAttribute('role', 'button');
+    control.setAttribute('aria-expanded', 'false');
+    control.innerHTML = '<i class="bi bi-list-check" aria-hidden="true"></i>';
+    const preview = document.createElement('div');
+    preview.className = 'program-picker-preview';
+    control.appendChild(preview);
+    const chevron = document.createElement('i');
+    chevron.className = 'bi bi-chevron-down program-picker-chevron';
+    chevron.setAttribute('aria-hidden', 'true');
+    control.appendChild(chevron);
+    picker.appendChild(control);
+
+    const panel = document.createElement('div');
+    panel.className = 'program-picker-panel';
+    const selectedPanel = document.createElement('div');
+    selectedPanel.innerHTML = '<div class="program-picker-panel-title">Selected programs</div>';
+    const selectedList = document.createElement('div');
+    selectedList.className = 'program-picker-selected-list';
+    selectedPanel.appendChild(selectedList);
+    panel.appendChild(selectedPanel);
+    const availablePanel = document.createElement('div');
+    availablePanel.innerHTML = '<div class="program-picker-panel-title">Search programs</div>';
+    const searchWrap = document.createElement('div');
+    searchWrap.className = 'program-picker-search-wrap';
+    searchWrap.innerHTML = '<i class="bi bi-search" aria-hidden="true"></i>';
+    const search = document.createElement('input');
+    search.type = 'search';
+    search.className = 'program-picker-search';
+    search.placeholder = 'Type to filter programs';
+    search.setAttribute('aria-label', 'Search programs');
+    searchWrap.appendChild(search);
+    availablePanel.appendChild(searchWrap);
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'program-picker-options';
+    optionsContainer.setAttribute('role', 'listbox');
+    optionsContainer.setAttribute('aria-multiselectable', 'true');
+    availablePanel.appendChild(optionsContainer);
+    panel.appendChild(availablePanel);
+    picker.appendChild(panel);
+
+    const programOptions = Array.from(select.options).filter(option => option.value);
+    const getSelectedPrograms = () => programOptions.filter(option => option.selected);
+    function renderOptions() {
+        const query = search.value.trim().toLowerCase();
+        optionsContainer.innerHTML = '';
+        const visibleOptions = programOptions.filter(option => option.text.toLowerCase().includes(query));
+        if (!visibleOptions.length) {
+            optionsContainer.innerHTML = '<div class="program-picker-empty">No programs found.</div>';
+            return;
+        }
+        visibleOptions.forEach(option => {
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.className = 'program-picker-option';
+            row.setAttribute('role', 'option');
+            row.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+            row.disabled = !option.selected && getSelectedPrograms().length >= maxPrograms;
+            if (row.disabled) row.title = 'You can select up to 6 programs';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = option.selected;
+            checkbox.tabIndex = -1;
+            checkbox.setAttribute('aria-hidden', 'true');
+            const label = document.createElement('span');
+            label.textContent = option.text;
+            row.append(checkbox, label);
+            row.addEventListener('click', () => {
+                option.selected = !option.selected;
+                if (option.selected && select.options[0]?.value === '') {
+                    select.options[0].selected = false;
+                }
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            optionsContainer.appendChild(row);
+        });
+    }
+    function renderSummary() {
+        const selected = getSelectedPrograms();
+        preview.innerHTML = '';
+        selected.forEach(option => {
+            const chip = document.createElement('span');
+            chip.className = 'program-picker-chip';
+            chip.textContent = option.text;
+            preview.appendChild(chip);
+        });
+        preview.setAttribute('aria-label', `${selected.length} of ${maxPrograms} programs selected`);
+        if (!selected.length) {
+            const placeholder = document.createElement('span');
+            placeholder.className = 'text-muted small';
+            placeholder.textContent = 'Select programs';
+            preview.appendChild(placeholder);
+        }
+        selectedList.innerHTML = '';
+        selected.forEach(option => {
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.className = 'program-picker-option';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.tabIndex = -1;
+            checkbox.setAttribute('aria-hidden', 'true');
+            const label = document.createElement('span');
+            label.textContent = option.text;
+            row.append(checkbox, label);
+            row.addEventListener('click', () => {
+                option.selected = false;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+            selectedList.appendChild(row);
+        });
+    }
+    function togglePanel(forceOpen) {
+        const isOpen = forceOpen ?? !picker.classList.contains('is-open');
+        picker.classList.toggle('is-open', isOpen);
+        control.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if (isOpen) search.focus();
+    }
+    search.addEventListener('input', renderOptions);
+    control.addEventListener('click', () => togglePanel());
+    control.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            togglePanel();
+        }
+    });
+    document.addEventListener('click', event => {
+        if (!event.composedPath().includes(picker)) togglePanel(false);
+    });
+    select.addEventListener('change', () => { renderOptions(); renderSummary(); });
+    renderOptions();
+    renderSummary();
+}
+
+['programSelectTACP', 'programSelectTAPD'].forEach(id => initializeProgramPicker(document.getElementById(id)));
+
 document.getElementById('programSelectTACP').addEventListener('change', function(){
     const otherFieldTACP = document.getElementById('otherProgramFieldTACP');
     const ProgramInputFieldTACP = document.getElementById('otherProgramInputTACP');
 
-    if(this.value==='others'){
+    if(Array.from(this.selectedOptions).some(option => option.value === 'others')){
         otherFieldTACP.classList.remove('d-none');
         ProgramInputFieldTACP.setAttribute('required', '');
     } else {
@@ -4877,7 +5086,7 @@ document.getElementById('programSelectTAPD').addEventListener('change', function
     const otherFieldTAPD = document.getElementById('otherProgramFieldTAPD');
     const ProgramInputFieldTAPD = document.getElementById('otherProgramInputTAPD');
 
-    if(this.value==='others'){
+    if(Array.from(this.selectedOptions).some(option => option.value === 'others')){
         otherFieldTAPD.classList.remove('d-none');
         ProgramInputFieldTAPD.setAttribute('required', '');
     } else {
@@ -4888,21 +5097,6 @@ document.getElementById('programSelectTAPD').addEventListener('change', function
 });
 
 
-
-document.getElementById('programSelectKP').addEventListener('change', function(){
-    const otherFieldKP = document.getElementById('otherProgramFieldKP');
-    const ProgramInputFieldKP = document.getElementById('otherProgramInputKP');
-
-    if(this.value==='others'){
-        otherFieldKP.classList.remove('d-none');
-        ProgramInputFieldKP.setAttribute('required', '');
-    } else {
-        otherFieldKP.classList.add('d-none');
-        ProgramInputFieldKP.removeAttribute('required');
-        ProgramInputFieldKP.value = '';                                                                                                                                                                                                 
-
-    }
-});
 
 function renderCheckSVG(){
     return `
@@ -5339,6 +5533,7 @@ document.getElementById('facetoface').addEventListener('click', function(){
     cardBodyChangeb.style.borderColor = "#dee2e6";
     const typeInput = document.getElementById('type_of_activity');
     if(typeInput) typeInput.value = 'Face to Face';
+    setVenueState(false);
 });
 
 document.getElementById('virtual').addEventListener('click', function(){
@@ -5351,6 +5546,7 @@ document.getElementById('virtual').addEventListener('click', function(){
     cardBodyChangeb.style.borderColor = "#dee2e6";
     const typeInput = document.getElementById('type_of_activity');
     if(typeInput) typeInput.value = 'Virtual';
+    setVenueState(true);
 });
 
 document.getElementById('blended').addEventListener('click', function(){
@@ -5363,7 +5559,68 @@ document.getElementById('blended').addEventListener('click', function(){
     cardBodyChangev.style.borderColor = "#dee2e6";
     const typeInput = document.getElementById('type_of_activity');
     if(typeInput) typeInput.value = 'Blended';
+    setVenueState(false);
 });
+
+function setVenueState(disabled) {
+    const venueInput = document.getElementById('venue');
+    if (!venueInput) return;
+    venueInput.disabled = disabled;
+    venueInput.required = false;
+    venueInput.classList.toggle('bg-light', disabled);
+    if (disabled) venueInput.value = '';
+}
+
+const targetParticipantOrganization = document.getElementById('targetParticipantOrganization');
+const targetParticipants = document.getElementById('targetParticipants');
+const targetParticipantOfficeFields = document.getElementById('targetParticipantOfficeFields');
+const targetParticipantLguFields = document.getElementById('targetParticipantLguFields');
+const targetParticipantSpecificFields = document.getElementById('targetParticipantSpecificFields');
+
+function updateTargetParticipantValue() {
+    if (!targetParticipantOrganization || !targetParticipants) return;
+    const organization = targetParticipantOrganization.options[targetParticipantOrganization.selectedIndex]?.text || '';
+    const selectedType = targetParticipantOrganization.value;
+    const values = [organization];
+
+    if (selectedType === 'field_office') {
+        values.push(document.getElementById('targetParticipantDirectorate')?.selectedOptions?.[0]?.text);
+        values.push(document.getElementById('targetParticipantOffice')?.selectedOptions?.[0]?.text);
+    } else if (selectedType === 'offices') {
+        values.push(document.getElementById('targetParticipantOffice')?.selectedOptions?.[0]?.text);
+    } else if (selectedType === 'lgu') {
+        values.push(document.getElementById('targetParticipantRegion')?.value);
+        values.push(document.getElementById('targetParticipantProvince')?.value);
+        values.push(document.getElementById('targetParticipantCity')?.value);
+    } else if (selectedType) {
+        values.push(document.getElementById('targetParticipantSpecificOffice')?.value);
+    }
+
+    targetParticipants.value = selectedType
+        ? values.filter(value => value && !value.toLowerCase().startsWith('select ')).join(', ')
+        : '';
+}
+
+function updateTargetParticipantFields() {
+    const selectedType = targetParticipantOrganization?.value || '';
+    const targetParticipantDirectorate = document.getElementById('targetParticipantDirectorate');
+    targetParticipantOfficeFields?.classList.toggle('d-none', !['field_office', 'offices'].includes(selectedType));
+    targetParticipantLguFields?.classList.toggle('d-none', selectedType !== 'lgu');
+    targetParticipantSpecificFields?.classList.toggle('d-none', !selectedType || ['field_office', 'offices', 'lgu'].includes(selectedType));
+    targetParticipantDirectorate?.classList.toggle('d-none', selectedType !== 'field_office');
+    if (selectedType === 'offices' && targetParticipantDirectorate) {
+        targetParticipantDirectorate.value = '';
+    }
+    updateTargetParticipantValue();
+}
+
+[targetParticipantOrganization, document.getElementById('targetParticipantDirectorate'), document.getElementById('targetParticipantOffice'), document.getElementById('targetParticipantRegion'), document.getElementById('targetParticipantProvince'), document.getElementById('targetParticipantCity'), document.getElementById('targetParticipantSpecificOffice')]
+    .filter(Boolean)
+    .forEach(field => field.addEventListener('input', updateTargetParticipantValue));
+targetParticipantOrganization?.addEventListener('change', updateTargetParticipantFields);
+document.getElementById('targetParticipantDirectorate')?.addEventListener('change', updateTargetParticipantValue);
+document.getElementById('targetParticipantOffice')?.addEventListener('change', updateTargetParticipantValue);
+updateTargetParticipantFields();
 
 const ticketForm = document.getElementById('ticketForm');
 const ticketEmailInput = document.getElementById('email');
@@ -5469,9 +5726,11 @@ if (ticketForm) {
         if (!ticketCat) missing.push('Service selection');
 
         const activeProgram = ticketForm.querySelector(
-            '#programSelectTACP[name="program"], #programSelectTAPD[name="program"]'
+            '#programSelectTACP[name="program[]"], #programSelectTAPD[name="program[]"]'
         );
-        if (activeProgram && (!activeProgram.value || activeProgram.value === '')) {
+        if (activeProgram && Array.from(activeProgram.selectedOptions).filter(option => option.value).length > 6) {
+            missing.push('No more than 6 programs may be selected');
+        } else if (activeProgram && Array.from(activeProgram.selectedOptions).filter(option => option.value).length === 0) {
             missing.push('Program selection');
         }
 
@@ -5561,7 +5820,6 @@ if (ticketForm) {
             const resourceFields = [
                 ['titleOfActivity', 'the title of the activity'],
                 ['targetParticipants', 'the target participants'],
-                ['venue', 'the venue'],
                 ['type_of_activity', 'the activity type'],
                 ['dateOfActivity', 'the activity start date'],
                 ['dateOfActivityEnd', 'the activity end date']
@@ -5963,9 +6221,6 @@ function clearKPFields(){
     document.querySelectorAll('#kpBody select').forEach(select =>{
         select.selectedIndex = 0;
     });
-
-    document.getElementById('otherProgramFieldKP').classList.add('d-none');
-    document.getElementById('otherProgramInputKP').value = '';
 
     document.querySelectorAll('#kpBody .kp-input').forEach(input => {
     input.checked = false;

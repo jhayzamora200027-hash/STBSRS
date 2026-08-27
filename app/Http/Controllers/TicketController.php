@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Mail\TicketReturnedMail;
 use App\Mail\TicketCommentMail;
 use App\Mail\TicketCompletedMail;
+use App\Mail\NewTicketAdminMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -64,7 +65,7 @@ class TicketController extends Controller
         if ($request->input('ticket_category') === 'resource' || $request->has('title_of_activity')) {
             $rules['title_of_activity'] = 'required|string|max:255';
             $rules['target_participants'] = 'required|string|max:255';
-            $rules['venue'] = 'required|string|max:255';
+            $rules['venue'] = 'nullable|string|max:255';
             $rules['type_of_activity'] = 'required|string|max:255';
             $rules['date_of_activity'] = 'required|date';
             $rules['date_of_activity_end'] = 'required|date|after_or_equal:date_of_activity';
@@ -225,6 +226,26 @@ class TicketController extends Controller
                 Log::warning('Failed to send ticket confirmation email', ['error' => $e->getMessage()]);
             }
 
+            $sysadminEmails = User::query()
+                ->whereNotNull('email')
+                ->whereRaw('LOWER(usergroup) = ?', ['sysadmin'])
+                ->pluck('email')
+                ->filter()
+                ->unique()
+                ->values();
+
+            foreach ($sysadminEmails as $sysadminEmail) {
+                try {
+                    Mail::to($sysadminEmail)->send(new NewTicketAdminMail($ticket));
+                } catch (\Throwable $exception) {
+                    Log::error('Failed to send new ticket notification to sysadmin.', [
+                        'ticket_id' => $ticket->ticket_id,
+                        'recipient' => $sysadminEmail,
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
+            }
+
             Session::forget(['ticket_otp', 'ticket_otp_verified', 'ticket_otp_email']);
 
             if ($request->ajax() || $request->wantsJson()) {
@@ -287,7 +308,7 @@ class TicketController extends Controller
         if ($request->input('ticket_category') === 'resource' || $request->has('title_of_activity')) {
             $rules['title_of_activity'] = 'required|string|max:255';
             $rules['target_participants'] = 'required|string|max:255';
-            $rules['venue'] = 'required|string|max:255';
+            $rules['venue'] = 'nullable|string|max:255';
             $rules['type_of_activity'] = 'required|string|max:255';
             $rules['date_of_activity'] = 'required|date';
             $rules['date_of_activity_end'] = 'required|date|after_or_equal:date_of_activity';

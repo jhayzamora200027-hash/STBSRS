@@ -22,6 +22,17 @@ class GoogleAuthenticationTest extends TestCase
 
     }
 
+    public function test_google_login_requires_account_selection(): void
+    {
+        $response = $this->get(route('google.redirect'));
+
+        $response->assertRedirect();
+
+        parse_str(parse_url($response->headers->get('Location'), PHP_URL_QUERY), $parameters);
+
+        $this->assertSame('consent select_account', $parameters['prompt'] ?? null);
+    }
+
     public function test_non_dswd_google_account_is_rejected_without_creating_a_user(): void
     {
         Socialite::fake('google', SocialiteUser::fake([
