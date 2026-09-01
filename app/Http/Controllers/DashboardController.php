@@ -49,6 +49,7 @@ class DashboardController extends Controller
             'resolved' => $ticketQuery()->where('ticket_status', 'resolved')->count(),
             'completed' => $ticketQuery()->where('ticket_status', 'completed')->count(),
             'rejected' => $ticketQuery()->where('ticket_status', 'rejected')->count(),
+            'overdue' => $ticketQuery()->where('ticket_status', 'overdue')->count(),
         ];
 
         $statusChangedStart = Carbon::now()->copy()->subMonths(5)->startOfMonth();

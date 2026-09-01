@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\URL;
 
 class TicketResolvedMail extends Mailable
 {
@@ -14,6 +15,7 @@ class TicketResolvedMail extends Mailable
     public $resolution;
     public $confirmUrl;
     public $returnUrl;
+    public $ticketUrl;
 
     /**
      * Create a new message instance.
@@ -24,6 +26,11 @@ class TicketResolvedMail extends Mailable
         $this->resolution = $resolution;
         $this->confirmUrl = $confirmUrl;
         $this->returnUrl = $returnUrl;
+        $this->ticketUrl = URL::temporarySignedRoute(
+            'ticket.email.redirect',
+            now()->addMinutes(30),
+            ['ticket_id' => $ticket->ticket_id]
+        );
     }
 
     /**

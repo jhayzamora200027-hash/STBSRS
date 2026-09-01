@@ -203,7 +203,7 @@
         <div style="margin:30px 0 0;text-align:center;">
             <a href="{{ $ticketUrl }}"
                style="display:inline-block;padding:15px 34px;background:#0d6efd;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;box-shadow:0 3px 10px rgba(13,110,253,.25);">
-                Open iSTaksyon
+                View Ticket #{{ $ticket->ticket_id }}
             </a>
             <p style="margin:12px 0 0;color:#6b7280;font-size:12px;">
                 This secure link expires in 30 minutes.

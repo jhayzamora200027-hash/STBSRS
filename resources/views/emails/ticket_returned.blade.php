@@ -281,6 +281,13 @@
 
         </div>
 
+        <div style="margin:28px 0 0;text-align:center;">
+            <a href="{{ $ticketUrl }}"
+               style="display:inline-block;padding:13px 24px;background:#0d6efd;color:#ffffff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:700;">
+                View Ticket #{{ $ticket->ticket_id }}
+            </a>
+        </div>
+
 
     </div>
 

@@ -20,7 +20,7 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 - [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
+ollama
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
@@ -69,6 +69,24 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > composer require spatie/browsershot
 > npm install puppeteer
 > npm install bootstrap-icons
+> winget install --id Ollama.Ollama --exact --accept-source-agreements --accept-package-agreements
 
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+## Local Data Privacy Assistant
+
+
+
+The home page includes a chatbot grounded in `public/files/Data Privacy.pdf`.
+It uses Ollama locally, so no document or question is sent to a cloud AI provider.
+
+Install Ollama from https://ollama.com/download, then run:
+
+```powershell
+ollama pull gemma3:4b
+ollama serve
+```
+
+Keep `ollama serve` running while using the assistant. The model can be changed with
+`OLLAMA_MODEL` in `.env`; after changing environment values, run `php artisan config:clear`.

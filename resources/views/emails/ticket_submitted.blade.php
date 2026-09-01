@@ -352,8 +352,8 @@
 
         <div class="button-wrap">
 
-            <a href="{{ url('/') }}" class="btn">
-                Track My Request
+            <a href="{{ $ticketUrl }}" class="btn">
+                View Ticket #{{ $ticket->ticket_id }}
             </a>
 
         </div>

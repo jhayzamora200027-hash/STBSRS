@@ -1613,6 +1613,14 @@
                                         @break
 
 
+                                        @case('overdue')
+                                            <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                                Overdue
+                                            </span>
+                                        @break
+
+
                                         @default
                                             <span class="badge rounded-pill bg-light text-dark px-3 py-2">
                                                 <i class="bi bi-question-circle me-1"></i>

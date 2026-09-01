@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
 
 class TicketController extends Controller
@@ -216,8 +217,14 @@ class TicketController extends Controller
             DB::commit();
 
             try {
-                Mail::send('emails.ticket_submitted', ['ticket' => $ticket], function ($m) use ($ticket) {
-                    $m->to($ticket->requestor_email)->subject('STBSRS - Request Submitted: ' . $ticket->ticket_id);
+                $ticketUrl = URL::temporarySignedRoute(
+                    'ticket.email.redirect',
+                    now()->addMinutes(30),
+                    ['ticket_id' => $ticket->ticket_id]
+                );
+
+                Mail::send('emails.ticket_submitted', ['ticket' => $ticket, 'ticketUrl' => $ticketUrl], function ($m) use ($ticket) {
+                    $m->to($ticket->requestor_email)->subject('iSTaksyon - Request Submitted: ' . $ticket->ticket_id);
                     if (config('mail.from.address')) {
                         $m->from(config('mail.from.address'), config('mail.from.name'));
                     }

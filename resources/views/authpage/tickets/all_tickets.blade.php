@@ -941,6 +941,7 @@
                     <option value="resolved" {{ request('status')=='resolved'?'selected':'' }}>Resolved</option>
                     <option value="completed" {{ request('status')=='completed'?'selected':'' }}>Completed</option>
                     <option value="rejected" {{ request('status')=='rejected'?'selected':'' }}>Rejected</option>
+                    <option value="overdue" {{ request('status')=='overdue'?'selected':'' }}>Overdue</option>
                 </select>
             </div>
 
@@ -1043,6 +1044,7 @@
                     @case('resolved') <span class="badge rounded-pill bg-info">Resolved</span> @break
                     @case('completed') <span class="badge rounded-pill bg-success">Completed</span> @break
                     @case('rejected') <span class="badge rounded-pill bg-danger">Rejected</span> @break
+                    @case('overdue') <span class="badge rounded-pill bg-danger">Overdue</span> @break
                     @default <span class="badge rounded-pill bg-secondary">Unknown</span>
                 @endswitch
             </div>

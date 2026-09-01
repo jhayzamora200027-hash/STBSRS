@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\LandingpageController;
 use App\Models\Region;
@@ -15,8 +16,12 @@ use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\OllamaController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
+Route::post('/assistant/chat', [OllamaController::class, 'chat'])
+    ->middleware('throttle:20,1')
+    ->name('assistant.chat');
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
@@ -104,6 +109,18 @@ Route::post('/guest/tickets/verify-otp-by-email', [TicketController::class, 'ver
 Route::get('/guest/tickets', [TicketController::class, 'guestListByEmail'])->name('guest.tickets.list');
 
 Route::get('/guest/tickets/{ticket_id}', [TicketController::class, 'guestView'])->name('guest.ticket.view');
+Route::get('/ticket-email/{ticket_id}', function (\Illuminate\Http\Request $request, string $ticket_id) {
+    if (Auth::check()) {
+        return redirect()->route('ticket.view', $ticket_id);
+    }
+
+    return redirect()->away(URL::temporarySignedRoute(
+        'guest.ticket.view',
+        now()->addMinutes(30),
+        ['ticket_id' => $ticket_id]
+    ));
+})->name('ticket.email.redirect')->middleware('signed');
+
 Route::post('/guest/tickets/{ticket_id}/comments', [TicketController::class, 'storeGuestComment'])->name('guest.tickets.comments.store');
 Route::post('/guest/tickets/{ticket_id}/return', [TicketController::class, 'returnGuestTicket'])->name('guest.tickets.return');
 Route::post('/guest/tickets/{ticket_id}/feedback', [TicketController::class, 'storeGuestFeedback'])->name('guest.tickets.feedback');

@@ -2440,6 +2440,12 @@ hr{
                                             </span>
                                         @break
 
+                                        @case('overdue')
+                                            <span class="badge bg-danger px-3 py-2">
+                                                Overdue
+                                            </span>
+                                        @break
+
                                     @endswitch
 
                                 </div>
