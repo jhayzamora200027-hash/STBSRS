@@ -223,6 +223,14 @@
     min-height:42px;
 }
 
+.target-participant-label {
+    display: block;
+    margin: .35rem 0 .25rem;
+    color: #495057;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
 #fieldOfficeSelection{
     animation: fieldOfficeReveal .2s ease-out;
 }
@@ -1285,6 +1293,87 @@ body.review-modal-open .modal-backdrop.show {
                                 <div class="modal-header border-0 pb-0">
                                     <div>
                                         <small class="text-uppercase otp-label">Secure Sign-In</small>
+                                    <style>
+                                        .privacy-assistant { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 1040; font-family: Poppins, sans-serif; }
+                                        .privacy-assistant-toggle { display: inline-flex; align-items: center; gap: .55rem; padding: .8rem 1rem; border: 0; border-radius: 999px; background: #062c52; color: #fff; box-shadow: 0 10px 24px rgba(6,44,82,.25); font-size: .82rem; font-weight: 600; }
+                                        .privacy-assistant-toggle:hover { background: #0b477f; }
+                                        .privacy-assistant-panel { display: flex; flex-direction: column; width: min(380px, calc(100vw - 2rem)); height: min(520px, calc(100vh - 7rem)); margin-bottom: .75rem; overflow: hidden; border: 1px solid #dbe5f0; border-radius: 16px; background: #fff; box-shadow: 0 18px 45px rgba(6,44,82,.2); }
+                                        .privacy-assistant-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 1.1rem; background: #062c52; color: #fff; }
+                                        .privacy-assistant-header h2 { margin: 0; font-size: 1rem; font-weight: 700; }
+                                        .privacy-assistant-header p { margin: .25rem 0 0; color: #d7e8f8; font-size: .7rem; }
+                                        .privacy-assistant-close { border: 0; background: transparent; color: #fff; font-size: 1rem; }
+                                        .privacy-assistant-messages { display: flex; flex: 1; flex-direction: column; gap: .65rem; padding: 1rem; overflow-y: auto; background: #f5f9fd; }
+                                        .privacy-assistant-message { max-width: 88%; padding: .65rem .75rem; border-radius: 12px; font-size: .78rem; line-height: 1.5; white-space: pre-wrap; }
+                                        .privacy-assistant-message.assistant { align-self: flex-start; border: 1px solid #dbe5f0; background: #fff; color: #243b53; }
+                                        .privacy-assistant-message.user { align-self: flex-end; background: #0d6efd; color: #fff; }
+                                        .privacy-assistant-form { display: flex; gap: .5rem; padding: .75rem; border-top: 1px solid #e2e8f0; background: #fff; }
+                                        .privacy-assistant-form input { min-width: 0; flex: 1; padding: .65rem .75rem; border: 1px solid #ced8e4; border-radius: 8px; font-size: .8rem; }
+                                        .privacy-assistant-form button { width: 40px; border: 0; border-radius: 8px; background: #0d6efd; color: #fff; }
+                                        .privacy-assistant-form button:disabled { opacity: .6; }
+                                        @media (max-width: 576px) { .privacy-assistant { right: 1rem; bottom: 1rem; left: 1rem; } .privacy-assistant-toggle { width: 100%; justify-content: center; } .privacy-assistant-panel { width: 100%; height: min(520px, calc(100vh - 6rem)); } }
+                                    </style>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const toggle = document.getElementById('privacyAssistantToggle');
+                                            const close = document.getElementById('privacyAssistantClose');
+                                            const panel = document.getElementById('privacyAssistantPanel');
+                                            const form = document.getElementById('privacyAssistantForm');
+                                            const input = document.getElementById('privacyAssistantInput');
+                                            const messages = document.getElementById('privacyAssistantMessages');
+                                            if (!toggle || !close || !panel || !form || !input || !messages) return;
+
+                                            function setOpen(open) {
+                                                panel.hidden = !open;
+                                                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                                                if (open) input.focus();
+                                            }
+
+                                            function addMessage(text, type) {
+                                                const message = document.createElement('div');
+                                                message.className = `privacy-assistant-message ${type}`;
+                                                message.textContent = text;
+                                                messages.appendChild(message);
+                                                messages.scrollTop = messages.scrollHeight;
+                                                return message;
+                                            }
+
+                                            toggle.addEventListener('click', () => setOpen(!panel.hidden));
+                                            close.addEventListener('click', () => setOpen(false));
+                                            form.addEventListener('submit', async function (event) {
+                                                event.preventDefault();
+                                                const question = input.value.trim();
+                                                if (!question) return;
+
+                                                addMessage(question, 'user');
+                                                input.value = '';
+                                                input.disabled = true;
+                                                const sendButton = form.querySelector('button');
+                                                sendButton.disabled = true;
+                                                const loading = addMessage('Checking the Data Privacy Notice...', 'assistant');
+
+                                                try {
+                                                    const response = await fetch('{{ route('assistant.chat') }}', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'Accept': 'application/json',
+                                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                                        },
+                                                        body: JSON.stringify({ message: question })
+                                                    });
+                                                    const data = await response.json().catch(() => ({}));
+                                                    loading.remove();
+                                                    addMessage(response.ok ? data.answer : (data.message || 'The assistant is temporarily unavailable.'), 'assistant');
+                                                } catch (error) {
+                                                    loading.textContent = 'Unable to connect to the local assistant. Make sure Ollama is running.';
+                                                } finally {
+                                                    input.disabled = false;
+                                                    sendButton.disabled = false;
+                                                    input.focus();
+                                                }
+                                            });
+                                        });
+                                    </script>
                                     <style>
                                         .recent-ticket-item {
                                             display: flex;
@@ -2987,6 +3076,7 @@ body.review-modal-open .modal-backdrop.show {
                                                             <small class="text-muted">Input the participants needed for this activity.</small>
                                                         </div>
                                                     </div>
+                                                    <label class="target-participant-label" for="targetParticipantOrganization">Organization <span class="text-danger">*</span></label>
                                                     <select id="targetParticipantOrganization" class="form-select mb-2" aria-label="Target participant organization" required>
                                                         <option value="">Select organization</option>
                                                         <option value="field_office">DSWD Field Office</option>
@@ -2998,12 +3088,14 @@ body.review-modal-open .modal-backdrop.show {
                                                         <option value="academe">Academe</option>
                                                     </select>
                                                     <div id="targetParticipantOfficeFields" class="d-none">
+                                                        <label class="target-participant-label" for="targetParticipantDirectorate">Directorate <span class="text-danger">*</span></label>
                                                         <select id="targetParticipantDirectorate" class="form-select mb-2" aria-label="Target participant directorate">
                                                             <option value="">Select Directorate</option>
                                                             @foreach($regions as $region)
                                                                 <option value="{{$region->region_code}}">{{$region->name}}</option>
                                                             @endforeach
                                                         </select>
+                                                        <label class="target-participant-label" for="targetParticipantOffice">Office/Bureau/Section/Unit <span class="text-danger">*</span></label>
                                                         <select id="targetParticipantOffice" class="form-select mb-2" aria-label="Target participant office">
                                                             <option value="">Select Office/Bureau/Section/Unit</option>
                                                             @foreach($agencies as $agency)
@@ -3012,11 +3104,15 @@ body.review-modal-open .modal-backdrop.show {
                                                         </select>
                                                     </div>
                                                     <div id="targetParticipantLguFields" class="d-none">
+                                                        <label class="target-participant-label" for="targetParticipantRegion">Region <span class="text-danger">*</span></label>
                                                         <input id="targetParticipantRegion" class="form-control mb-2" placeholder="Input region">
+                                                        <label class="target-participant-label" for="targetParticipantProvince">Province <span class="text-danger">*</span></label>
                                                         <input id="targetParticipantProvince" class="form-control mb-2" placeholder="Input province">
+                                                        <label class="target-participant-label" for="targetParticipantCity">City/Municipality <span class="text-danger">*</span></label>
                                                         <input id="targetParticipantCity" class="form-control mb-2" placeholder="Input city/municipality">
                                                     </div>
                                                     <div id="targetParticipantSpecificFields" class="d-none">
+                                                        <label class="target-participant-label" for="targetParticipantSpecificOffice">Organization or Office <span class="text-danger">*</span></label>
                                                         <input id="targetParticipantSpecificOffice" class="form-control mb-2" placeholder="Input organization or office">
                                                     </div>
                                                     <input type="hidden" id="targetParticipants" name="target_participants" required>
@@ -4102,10 +4198,10 @@ window._preventAutoReload = false;
 
     if(fileInput.files.length){
 
-        attachment.innerHTML = `
+        attachment.innerHTML = DOMPurify.sanitize(`
             <i class="bi bi-paperclip me-2"></i>
             ${fileInput.files[0].name}
-        `;
+        `);
 
     }else{
 
@@ -4392,12 +4488,12 @@ if (organizationConfig[organization]) {
                     value = document.getElementById('otherKnowledgeProduct').value;
                 }
 
-                kpContainer.innerHTML += `
+                kpContainer.innerHTML += DOMPurify.sanitize(`
                     <div class="mb-1">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
                         ${value}
                     </div>
-                `;
+                `);
             });
 
             // Priority for KP
@@ -4423,10 +4519,11 @@ if (organizationConfig[organization]) {
             '<option value="">Select City</option>';
 
             data.forEach(function(item){
-                province.innerHTML +=
+                province.innerHTML += DOMPurify.sanitize(
                 `<option value="${item.province_code}">
                 ${item.name}
                 </option>`;
+                );
             });
         }).catch(error => console.error(error));
     });
@@ -4449,10 +4546,10 @@ if (organizationConfig[organization]) {
             city.innerHTML = '<option value="">Select City</option>';
 
             data.forEach(function(item) {
-                city.innerHTML += `
+                city.innerHTML += DOMPurify.sanitize(`
                     <option value="${item.city_code}">
                         ${item.name}
-                    </option>`;
+                    </option>`);
             });
         })
         .catch(error => console.error(error));
@@ -4546,7 +4643,7 @@ if (organizationConfig[organization]) {
             document.getElementById('nextBtn').addEventListener('click', function () {
             const check = validateStep1();
             if(!check.ok){
-                const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m=>`<li>${m}</li>`).join('') + '</ul>';
+                const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m=>`<li>${DOMPurify.sanitize(m)}</li>`).join('') + '</ul>';
                 Swal.fire({
                     icon: 'warning',
                     title: 'Incomplete Information',
@@ -4617,7 +4714,7 @@ if (organizationConfig[organization]) {
                 if (!step2Unlocked) {
                     const check = validateStep1();
                     if(!check.ok){
-                        const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m => `<li>${m}</li>`).join('') + '</ul>';
+                        const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m => `<li>${DOMPurify.sanitize(m)}</li>`).join('') + '</ul>';
                         Swal.fire({
                             icon: 'warning',
                             title: 'Incomplete Information',
@@ -5488,7 +5585,7 @@ async function startOtpFlow(email) {
                 if (this.files && this.files.length) {
                     if (fn) {
                         fn.classList.remove('d-none');
-                        fn.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`;
+                        fn.innerHTML = DOMPurify.sanitize(`<i class="bi bi-check-circle-fill me-2"></i>${this.files[0].name}`);
                     }
                 } else if (fn) {
                     fn.classList.add('d-none');
@@ -5604,19 +5701,47 @@ function updateTargetParticipantValue() {
 function updateTargetParticipantFields() {
     const selectedType = targetParticipantOrganization?.value || '';
     const targetParticipantDirectorate = document.getElementById('targetParticipantDirectorate');
+    const targetParticipantOffice = document.getElementById('targetParticipantOffice');
     targetParticipantOfficeFields?.classList.toggle('d-none', !['field_office', 'offices'].includes(selectedType));
     targetParticipantLguFields?.classList.toggle('d-none', selectedType !== 'lgu');
     targetParticipantSpecificFields?.classList.toggle('d-none', !selectedType || ['field_office', 'offices', 'lgu'].includes(selectedType));
     targetParticipantDirectorate?.classList.toggle('d-none', selectedType !== 'field_office');
+    if (targetParticipantOrganization) targetParticipantOrganization.required = true;
+    if (targetParticipantDirectorate) targetParticipantDirectorate.required = selectedType === 'field_office';
+    if (targetParticipantOffice) targetParticipantOffice.required = ['field_office', 'offices'].includes(selectedType);
+    ['targetParticipantRegion', 'targetParticipantProvince', 'targetParticipantCity'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) field.required = selectedType === 'lgu';
+    });
+    const specificOffice = document.getElementById('targetParticipantSpecificOffice');
+    if (specificOffice) specificOffice.required = Boolean(selectedType && !['field_office', 'offices', 'lgu'].includes(selectedType));
     if (selectedType === 'offices' && targetParticipantDirectorate) {
         targetParticipantDirectorate.value = '';
     }
     updateTargetParticipantValue();
 }
 
+function focusTargetParticipantField(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (!field) return;
+
+    field.classList.add('is-invalid');
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => field.focus(), 250);
+}
+
 [targetParticipantOrganization, document.getElementById('targetParticipantDirectorate'), document.getElementById('targetParticipantOffice'), document.getElementById('targetParticipantRegion'), document.getElementById('targetParticipantProvince'), document.getElementById('targetParticipantCity'), document.getElementById('targetParticipantSpecificOffice')]
     .filter(Boolean)
-    .forEach(field => field.addEventListener('input', updateTargetParticipantValue));
+    .forEach(field => {
+        field.addEventListener('input', () => {
+            field.classList.remove('is-invalid');
+            updateTargetParticipantValue();
+        });
+        field.addEventListener('change', () => {
+            field.classList.remove('is-invalid');
+            updateTargetParticipantValue();
+        });
+    });
 targetParticipantOrganization?.addEventListener('change', updateTargetParticipantFields);
 document.getElementById('targetParticipantDirectorate')?.addEventListener('change', updateTargetParticipantValue);
 document.getElementById('targetParticipantOffice')?.addEventListener('change', updateTargetParticipantValue);
@@ -5707,6 +5832,19 @@ function resetTicketFormToCreateMode() {
 if (ticketForm) {
     ticketForm.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        const markupField = Array.from(ticketForm.querySelectorAll('input:not([type="password"]):not([type="hidden"]), textarea'))
+            .find((field) => /<\/?[a-z][^>]*>/i.test(field.value));
+        if (markupField) {
+            markupField.focus();
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid input',
+                text: 'HTML and script markup are not allowed in this field.',
+                confirmButtonColor: '#062c52'
+            });
+            return;
+        }
 
         const ticketCat = document.getElementById('ticket_category')?.value || '';
         const first = document.getElementById('first_name')?.value.trim() || '';
@@ -5819,7 +5957,6 @@ if (ticketForm) {
         if (selectedAssistance.has('rp')) {
             const resourceFields = [
                 ['titleOfActivity', 'the title of the activity'],
-                ['targetParticipants', 'the target participants'],
                 ['type_of_activity', 'the activity type'],
                 ['dateOfActivity', 'the activity start date'],
                 ['dateOfActivityEnd', 'the activity end date']
@@ -5833,6 +5970,37 @@ if (ticketForm) {
                     confirmButtonColor: '#062c52'
                 });
                 document.getElementById(missingResourceField[0])?.focus();
+                return false;
+            }
+
+            const participantType = targetParticipantOrganization?.value || '';
+            const participantFields = participantType === 'field_office'
+                ? [
+                    ['targetParticipantDirectorate', 'the target participant directorate'],
+                    ['targetParticipantOffice', 'the target participant office']
+                ]
+                : participantType === 'offices'
+                    ? [['targetParticipantOffice', 'the target participant office']]
+                    : participantType === 'lgu'
+                        ? [
+                            ['targetParticipantRegion', 'the target participant region'],
+                            ['targetParticipantProvince', 'the target participant province'],
+                            ['targetParticipantCity', 'the target participant city or municipality']
+                        ]
+                        : participantType
+                            ? [['targetParticipantSpecificOffice', 'the target participant organization or office']]
+                            : [['targetParticipantOrganization', 'the target participant organization']];
+            const missingParticipantField = participantFields.find(([id]) => {
+                const field = document.getElementById(id);
+                return !field?.value.trim();
+            });
+            if (missingParticipantField) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Target Participants Required',
+                    text: 'Please select or enter ' + missingParticipantField[1] + '.',
+                    confirmButtonColor: '#062c52'
+                }).then(() => focusTargetParticipantField(missingParticipantField[0]));
                 return false;
             }
         }
@@ -5994,7 +6162,7 @@ if (ticketForm) {
                     Swal.fire({
                         icon: 'success',
                         title: title,
-                        html: swalHtml,
+                        html: DOMPurify.sanitize(swalHtml),
                         showConfirmButton: true,
                         confirmButtonColor: '#062c52',
                         confirmButtonText: 'OK',
@@ -6068,6 +6236,7 @@ if (ticketForm) {
                 } catch (e) {
                     console.error('Post-OTP submission failed', e);
                 } finally {
+                    window._preventAutoReload = false;
                     ticketForm._otpVerifiedHandler = null;
                 }
             };
@@ -6383,7 +6552,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 const res = await fetch(url);
                 if (!res.ok) throw new Error('Failed to load agencies');
                 const list = await res.json();
-                sel.innerHTML = '<option value="">Select agency</option>' + list.map(a => `<option value="${a.group_code}">${a.group_name}</option>`).join('');
+                sel.replaceChildren(new Option('Select agency', ''));
+                list.forEach(a => sel.add(new Option(a.group_name, a.group_code)));
                 sel.disabled = false;
                 sel.required = true;
                 // auto-select if only one agency returned
@@ -6401,7 +6571,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const sel = document.getElementById('requestor_office_field');
             if (!sel) return;
             if (!enabled) {
-                sel.innerHTML = `<option value="">${message || 'Select Region/Directorate first'}</option>`;
+                sel.replaceChildren(new Option(message || 'Select Region/Directorate first', ''));
                 sel.disabled = true;
                 sel.required = false;
             } else {
@@ -7010,10 +7180,10 @@ document.addEventListener('DOMContentLoaded', function(){
 @if(session('success') || session('registration_pending') || session('registration_notice') || ($errors && $errors->any()))
     <script>
         (function(){
-            const success = {!! json_encode(session('success') ?? null) !!};
-            const registrationPending = {!! json_encode(session('registration_pending') ? 'Registration submitted successfully. Your account is now waiting for administrator approval.' : null) !!};
-            const registrationNotice = {!! json_encode(session('registration_notice') ?? null) !!};
-            const errors = {!! json_encode($errors->any() ? $errors->all() : []) !!};
+            const success = @json(session('success') ?? null);
+            const registrationPending = @json(session('registration_pending') ? 'Registration submitted successfully. Your account is now waiting for administrator approval.' : null);
+            const registrationNotice = @json(session('registration_notice') ?? null);
+            const errors = @json($errors->any() ? $errors->all() : []);
             if (window.Swal && Swal.fire) {
                 if (success || registrationPending) {
                     Swal.fire({

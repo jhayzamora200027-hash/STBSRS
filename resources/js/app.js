@@ -3,8 +3,10 @@ import '../css/app.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import Swal from 'sweetalert2';
+import DOMPurify from 'dompurify';
 
 window.Swal = Swal;
+window.DOMPurify = DOMPurify;
 
 import $ from 'jquery';
 
@@ -25,7 +27,7 @@ $(document).on('click', '.pagination a', function (e) {
 
             let html = $(response).find('#ticketTableContainer').html();
 
-            $('#ticketTableContainer').html(html);
+            $('#ticketTableContainer').html(DOMPurify.sanitize(html));
 
         }
     });

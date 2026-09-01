@@ -1934,6 +1934,7 @@ gap:15px;
                     'resolved' => 'Resolved',
                     'completed' => 'Completed',
                     'rejected' => 'Rejected',
+                    'overdue' => 'Overdue',
                 ];
 
                 $ticketStatusColors = [
@@ -1942,11 +1943,12 @@ gap:15px;
                     'resolved' => '#8b5cf6',
                     'completed' => '#22c55e',
                     'rejected' => '#ef4444',
+                    'overdue' => '#dc2626',
                 ];
 
                 $ticketStatusTotal = array_sum($ticketStatusCounts ?? []);
 
-                $statusKeyList = ['inprogress', 'review', 'resolved', 'completed', 'rejected'];
+                $statusKeyList = ['inprogress', 'review', 'resolved', 'completed', 'rejected', 'overdue'];
 
                 $statusChangedMonthlyPercent = $statusChangedMonthlyPercent ?? [];
                 $statusChangedMaxPercent = max(1, collect($statusChangedMonthlyPercent)->max('percentage') ?? 0);
@@ -2569,7 +2571,8 @@ document.addEventListener('DOMContentLoaded', function () {
         review: 'For Review',
         resolved: 'Resolved',
         completed: 'Completed',
-        rejected: 'Rejected'
+        rejected: 'Rejected',
+        overdue: 'Overdue'
     };
 
     const statusColors = {
@@ -2577,10 +2580,11 @@ document.addEventListener('DOMContentLoaded', function () {
         review: '#f59e0b',
         resolved: '#8b5cf6',
         completed: '#22c55e',
-        rejected: '#ef4444'
+        rejected: '#ef4444',
+        overdue: '#dc2626'
     };
 
-    const statusKeys = ['inprogress', 'review', 'resolved', 'completed', 'rejected'];
+    const statusKeys = ['inprogress', 'review', 'resolved', 'completed', 'rejected', 'overdue'];
 
     const existingChart = window.Chart.getChart(canvas);
 

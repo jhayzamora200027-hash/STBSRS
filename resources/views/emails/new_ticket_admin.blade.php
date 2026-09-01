@@ -47,6 +47,13 @@
                 </table>
             </div>
 
+            <div style="margin:28px 0 0;text-align:center;">
+                <a href="{{ $ticketUrl }}"
+                   style="display:inline-block;padding:13px 24px;background:#0d6efd;color:#ffffff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:700;">
+                    View Ticket #{{ $ticket->ticket_id }}
+                </a>
+            </div>
+
             <p style="margin:24px 0 0;color:#4b5563;line-height:1.7;">
                 Please sign in to the admin portal to review and acknowledge this ticket.
             </p>

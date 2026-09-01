@@ -22,7 +22,7 @@ class TicketCommentMail extends Mailable
         $this->comment = $comment;
         $this->isReply = $isReply;
         $this->ticketUrl = URL::temporarySignedRoute(
-            'guest.ticket.view',
+            'ticket.email.redirect',
             now()->addMinutes(30),
             ['ticket_id' => $ticket->ticket_id]
         );

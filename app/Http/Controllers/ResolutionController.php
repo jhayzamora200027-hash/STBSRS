@@ -28,7 +28,7 @@ class ResolutionController extends Controller
 
         $data = $request->validate([
             'resolution_text' => [Rule::requiredIf($requiresResolution), 'nullable', 'string'],
-            'ticket_status' => ['required', 'in:review,inprogress,resolved,completed,rejected'],
+            'ticket_status' => ['required', 'in:review,inprogress,overdue,resolved,completed,rejected'],
             'attachments' => [
                 Rule::requiredIf($createResolution && ! $latestResolution?->attachments()->exists()),
                 'nullable',

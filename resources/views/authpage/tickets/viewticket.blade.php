@@ -2440,6 +2440,12 @@ hr{
                                             </span>
                                         @break
 
+                                        @case('overdue')
+                                            <span class="badge bg-danger px-3 py-2">
+                                                Overdue
+                                            </span>
+                                        @break
+
                                     @endswitch
 
                                 </div>
@@ -3592,7 +3598,9 @@ hr{
                     Array.from(this.files).forEach(function (file) {
                         const chip = document.createElement('span');
                         chip.className = 'file-chip';
-                        chip.innerHTML = '<i class="bi bi-paperclip"></i> ' + file.name;
+                        const icon = document.createElement('i');
+                        icon.className = 'bi bi-paperclip';
+                        chip.append(icon, document.createTextNode(' ' + file.name));
                         chipRow.appendChild(chip);
                     });
                 });
@@ -3802,8 +3810,8 @@ hr{
                 if(indicator) indicator.style.transform = `translateX(${Number(idx) * 100}%)`;
             }
         }
-const flashSuccess = {!! json_encode(session('success')) !!};
-const flashSuccessTitle = {!! json_encode(session('success_title', 'Success')) !!};
+const flashSuccess = @json(session('success'));
+const flashSuccessTitle = @json(session('success_title', 'Success'));
 
 if (flashSuccess) {
     const showFlash = () => {
@@ -3994,15 +4002,16 @@ document.addEventListener('click', function(e){
     function insertRenderedComment(data){
         const container = document.querySelector('#commentBody');
         if(!container) return;
+        const safeHtml = window.DOMPurify ? window.DOMPurify.sanitize(data.html || '') : '';
         // find the composer/form card where new comments should be inserted after
         const formCard = container.querySelector('.composer-card') || container.querySelector('#commentForm') || container.querySelector('form');
 
         if(!data.parent_id){
             // main comment: insert after form if available, otherwise append to container
             if(formCard && typeof formCard.insertAdjacentHTML === 'function'){
-                formCard.insertAdjacentHTML('afterend', data.html);
+                formCard.insertAdjacentHTML('afterend', safeHtml);
             } else {
-                container.insertAdjacentHTML('beforeend', data.html);
+                container.insertAdjacentHTML('beforeend', safeHtml);
             }
             return;
         }
@@ -4011,23 +4020,23 @@ document.addEventListener('click', function(e){
         const parentByData = document.querySelector(`[data-comment-id="${data.parent_id}"]`);
         const repliesList = document.getElementById(`replies-${data.parent_id}`);
         if(repliesList){
-            repliesList.insertAdjacentHTML('beforeend', data.html);
+            repliesList.insertAdjacentHTML('beforeend', safeHtml);
             return;
         }
         if(parentByData){
             // prefer an inner replies container if present
             const innerReplies = parentByData.querySelector('.replies-container') || parentByData.querySelector('.replies-list');
             if(innerReplies){
-                innerReplies.insertAdjacentHTML('beforeend', data.html);
+                innerReplies.insertAdjacentHTML('beforeend', safeHtml);
                 return;
             }
             // otherwise append after parent node
-            parentByData.insertAdjacentHTML('afterend', data.html);
+            parentByData.insertAdjacentHTML('afterend', safeHtml);
             return;
         }
 
         // fallback: append to main container
-        container.insertAdjacentHTML('beforeend', data.html);
+        container.insertAdjacentHTML('beforeend', safeHtml);
     }
 
     // Fallback: build minimal comment HTML when server returns JSON instead of rendered HTML

@@ -1613,6 +1613,14 @@
                                         @break
 
 
+                                        @case('overdue')
+                                            <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                                Overdue
+                                            </span>
+                                        @break
+
+
                                         @default
                                             <span class="badge rounded-pill bg-light text-dark px-3 py-2">
                                                 <i class="bi bi-question-circle me-1"></i>
@@ -1634,7 +1642,7 @@
                                     <button 
                                         type="button"
                                         class="btn btn-sm btn-light copy-btn"
-                                        onclick="copyTicket('{{ $ticket->ticket_id }}')">
+                                        data-ticket-id="{{ $ticket->ticket_id }}">
 
                                         <i class="bi bi-copy"></i>
 
@@ -2837,6 +2845,10 @@
 
             });
     }
+
+    document.querySelector('.copy-btn')?.addEventListener('click', function () {
+        copyTicket(this.dataset.ticketId);
+    });
 
     switch(@json($ticket->ticket_status)){
         case 'review': 

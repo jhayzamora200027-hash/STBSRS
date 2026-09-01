@@ -7,18 +7,16 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
-class TicketReturnedMail extends Mailable
+class TicketSlaWarningMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $ticket;
-    public $ticketReturn;
     public $ticketUrl;
 
-    public function __construct($ticket, $ticketReturn)
+    public function __construct($ticket)
     {
         $this->ticket = $ticket;
-        $this->ticketReturn = $ticketReturn;
         $this->ticketUrl = URL::temporarySignedRoute(
             'ticket.email.redirect',
             now()->addMinutes(30),
@@ -28,7 +26,7 @@ class TicketReturnedMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Ticket #' . ($this->ticket->ticket_id ?? '') . ' has been returned')
-            ->view('emails.ticket_returned');
+        return $this->subject('Action required: Ticket #' . $this->ticket->ticket_id . ' is approaching its 21-day deadline')
+            ->view('emails.ticket_sla_warning');
     }
 }

@@ -253,8 +253,8 @@
 
         <div class="button-wrap">
 
-            <a href="{{ config('app.url') }}" class="btn">
-                Open iSTaksyon
+            <a href="{{ $ticketUrl }}" class="btn">
+                View Ticket #{{ $ticket->ticket_id }}
             </a>
 
         </div>

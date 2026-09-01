@@ -20,7 +20,7 @@ class TicketCompletedMail extends Mailable
         $this->ticket = $ticket;
         $this->completionType = $completionType;
         $this->ticketUrl = URL::temporarySignedRoute(
-            'guest.ticket.view',
+            'ticket.email.redirect',
             now()->addMinutes(30),
             ['ticket_id' => $ticket->ticket_id]
         );

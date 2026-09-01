@@ -941,6 +941,7 @@
                     <option value="resolved" {{ request('status')=='resolved'?'selected':'' }}>Resolved</option>
                     <option value="completed" {{ request('status')=='completed'?'selected':'' }}>Completed</option>
                     <option value="rejected" {{ request('status')=='rejected'?'selected':'' }}>Rejected</option>
+                    <option value="overdue" {{ request('status')=='overdue'?'selected':'' }}>Overdue</option>
                 </select>
             </div>
 
@@ -1043,6 +1044,7 @@
                     @case('resolved') <span class="badge rounded-pill bg-info">Resolved</span> @break
                     @case('completed') <span class="badge rounded-pill bg-success">Completed</span> @break
                     @case('rejected') <span class="badge rounded-pill bg-danger">Rejected</span> @break
+                    @case('overdue') <span class="badge rounded-pill bg-danger">Overdue</span> @break
                     @default <span class="badge rounded-pill bg-secondary">Unknown</span>
                 @endswitch
             </div>
@@ -1142,7 +1144,7 @@ document.addEventListener('click', function(e){
             const doc = parser.parseFromString(html, 'text/html');
             const newContainer = doc.querySelector('#tickets-container');
             if(newContainer && current){
-                current.innerHTML = newContainer.innerHTML;
+                current.innerHTML = window.DOMPurify ? window.DOMPurify.sanitize(newContainer.innerHTML) : '';
                 window.history.pushState({}, '', url);
                 current.scrollIntoView({behavior:'smooth'});
             }
@@ -1163,7 +1165,7 @@ window.addEventListener('popstate', function(){
             const newContainer = doc.querySelector('#tickets-container');
             const current = document.querySelector('#tickets-container');
             if(newContainer && current){
-                current.innerHTML = newContainer.innerHTML;
+                current.innerHTML = window.DOMPurify ? window.DOMPurify.sanitize(newContainer.innerHTML) : '';
             }
         })
         .catch(err => console.error(err));
@@ -1189,7 +1191,7 @@ window.addEventListener('popstate', function(){
                 const newContainer = doc.querySelector('#tickets-container');
                 const current = document.querySelector('#tickets-container');
                 if(newContainer && current){
-                    current.innerHTML = newContainer.innerHTML;
+                    current.innerHTML = window.DOMPurify ? window.DOMPurify.sanitize(newContainer.innerHTML) : '';
                     window.history.pushState({}, '', url);
                 }
             })

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'STBSRS')</title>
+    <title>@yield('title', 'iSTaksyon')</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1292,9 +1292,6 @@
 @endif
 
 <style>
-    /* =====================================================
-   STBSRS APP LAYOUT
-===================================================== */
 
 :root{
 
@@ -2992,7 +2989,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     window.location.href = data.redirect;
                 } else {
-                    loginError.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    loginError.replaceChildren();
+                    const error = document.createElement('div');
+                    error.className = 'alert alert-danger';
+                    error.textContent = data.message || 'Unable to sign in.';
+                    loginError.appendChild(error);
                 }
             })
             .catch(error => {
@@ -3019,6 +3020,21 @@ document.addEventListener('DOMContentLoaded', function () {
     let activeIndex = -1;
     let currentItems = [];
 
+    function safeSearchUrl(value) {
+        try {
+            const url = new URL(value, window.location.origin);
+            return url.origin === window.location.origin ? url.href : '#';
+        } catch (error) {
+            return '#';
+        }
+    }
+
+    function escapeSearchText(value) {
+        return String(value || '').replace(/[&<>"']/g, function (character) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[character];
+        });
+    }
+
     function closeSuggestions() {
         suggestionsBox.classList.remove('show');
         suggestionsBox.innerHTML = '';
@@ -3044,11 +3060,11 @@ document.addEventListener('DOMContentLoaded', function () {
             html += '<div class="suggestion-group-title">Tickets</div>';
             tickets.forEach(function (ticket) {
                 html += `
-                    <a href="${ticket.url}" class="suggestion-item" data-url="${ticket.url}">
+                    <a href="${safeSearchUrl(ticket.url)}" class="suggestion-item" data-url="${safeSearchUrl(ticket.url)}">
                         <span class="suggestion-icon"><i class="bi bi-file-earmark-text"></i></span>
                         <span class="flex-grow-1 min-width-0">
-                            <span class="suggestion-title d-block">${ticket.ticket_id}</span>
-                            <span class="suggestion-subtitle d-block">${ticket.requestor || ''}${ticket.purpose ? ' • ' + ticket.purpose : ''}</span>
+                            <span class="suggestion-title d-block">${escapeSearchText(ticket.ticket_id)}</span>
+                            <span class="suggestion-subtitle d-block">${escapeSearchText(ticket.requestor)}${ticket.purpose ? ' • ' + escapeSearchText(ticket.purpose) : ''}</span>
                         </span>
                     </a>
                 `;
@@ -3062,8 +3078,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="suggestion-item" data-static="true">
                         <span class="suggestion-icon"><i class="bi bi-person"></i></span>
                         <span class="flex-grow-1 min-width-0">
-                            <span class="suggestion-title d-block">${user.name}</span>
-                            <span class="suggestion-subtitle d-block">${user.email}</span>
+                            <span class="suggestion-title d-block">${escapeSearchText(user.name)}</span>
+                            <span class="suggestion-subtitle d-block">${escapeSearchText(user.email)}</span>
                         </span>
                     </div>
                 `;

@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('tickets:complete-resolved')->dailyAt('00:05');
+Schedule::command('tickets:enforce-sla')->dailyAt('00:10');
