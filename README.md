@@ -62,6 +62,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > composer install
 > composer require doctrine/dbal
 > composer require laravel/socialite
+> composer require smalot/pdfparser --no-interaction
 > copy .env.example .env
 > npm install chart.js
 > npm install jquery
@@ -69,6 +70,16 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 > composer require spatie/browsershot
 > npm install puppeteer
 > npm install bootstrap-icons
+> nomic-embed-text
 
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+
+## INSTALLATION OF OLLAMA
+> curl -fsSL https://ollama.com/install.sh | sh
+> ~~ CHECKING OF OLLAMA IF INSTALLED 
+> ollama --version
+
+> ollama pull qwen3:8b
+> ollama serve

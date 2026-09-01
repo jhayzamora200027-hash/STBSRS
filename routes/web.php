@@ -110,3 +110,12 @@ Route::post('/guest/tickets/{ticket_id}/feedback', [TicketController::class, 'st
 Route::post('tickets/{ticket}/complete', [TicketController::class, 'complete'])->name('tickets.complete');
 
 
+//CHAT BOT
+use App\Http\Controllers\ChatbotController;
+
+Route::post('/chatbot', [
+    ChatbotController::class,
+    'chat'
+]);
+
+

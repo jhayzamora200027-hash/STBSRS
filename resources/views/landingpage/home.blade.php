@@ -6537,6 +6537,311 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 @endpush
 
+<style>
+    .chatbot-widget {
+        position: fixed;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        z-index: 1040;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .chatbot-launcher {
+        display: inline-flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .8rem 1.05rem;
+        border: 0;
+        border-radius: 999px;
+        background: #0b63ce;
+        color: #fff;
+        font-size: .88rem;
+        font-weight: 600;
+        box-shadow: 0 10px 24px rgba(11, 99, 206, .3);
+        transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease;
+    }
+
+    .chatbot-launcher:hover,
+    .chatbot-launcher:focus-visible {
+        background: #084f9f;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(11, 99, 206, .36);
+    }
+
+    .chatbot-launcher:focus-visible,
+    .chatbot-send:focus-visible,
+    .chatbot-close:focus-visible {
+        outline: 3px solid rgba(11, 99, 206, .25);
+        outline-offset: 3px;
+    }
+
+    .chatbot-launcher i { font-size: 1.15rem; }
+
+    .chatbot-panel {
+        display: none;
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + .8rem);
+        width: min(360px, calc(100vw - 2rem));
+        overflow: hidden;
+        border: 1px solid #d8e4f2;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 18px 45px rgba(7, 46, 89, .2);
+        transform-origin: bottom right;
+    }
+
+    .chatbot-panel.is-open {
+        display: block;
+        animation: chatbotPanelIn .22s ease-out;
+    }
+
+    @keyframes chatbotPanelIn {
+        from { opacity: 0; transform: translateY(8px) scale(.97); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .chatbot-header {
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        padding: .95rem 1rem;
+        background: #0b63ce;
+        color: #fff;
+    }
+
+    .chatbot-avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.35rem;
+        height: 2.35rem;
+        flex: 0 0 2.35rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #0b63ce;
+        font-size: 1.2rem;
+    }
+
+    .chatbot-header-copy { min-width: 0; flex: 1; }
+    .chatbot-header-copy strong { display: block; font-size: .9rem; }
+    .chatbot-status { display: flex; align-items: center; gap: .3rem; margin-top: .1rem; color: #d8edff; font-size: .7rem; }
+    .chatbot-status::before { width: .42rem; height: .42rem; border-radius: 50%; background: #56e39f; content: ''; }
+
+    .chatbot-close {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: #fff;
+        font-size: 1.05rem;
+    }
+
+    .chatbot-close:hover { background: rgba(255, 255, 255, .15); }
+
+    .chatbot-messages {
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+        height: 285px;
+        overflow-y: auto;
+        padding: 1rem .85rem;
+        background: #f5f8fc;
+    }
+
+    .chatbot-message {
+        max-width: 84%;
+        padding: .62rem .78rem;
+        border-radius: 15px;
+        font-size: .78rem;
+        line-height: 1.5;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+    }
+
+    .chatbot-message.bot {
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        background: #fff;
+        color: #31445a;
+        box-shadow: 0 2px 8px rgba(25, 64, 103, .08);
+    }
+
+    .chatbot-message.user {
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        background: #0b63ce;
+        color: #fff;
+    }
+
+    .chatbot-message.typing { color: #7a8da3; font-style: italic; }
+
+    .chatbot-composer {
+        display: flex;
+        align-items: flex-end;
+        gap: .55rem;
+        padding: .7rem;
+        border-top: 1px solid #e3ebf4;
+        background: #fff;
+    }
+
+    .chatbot-input {
+        min-height: 2.35rem;
+        max-height: 6rem;
+        flex: 1;
+        resize: none;
+        border: 1px solid #d7e2ee;
+        border-radius: 18px;
+        padding: .55rem .8rem;
+        color: #26384d;
+        font-size: .78rem;
+        line-height: 1.35;
+    }
+
+    .chatbot-input:focus { border-color: #0b63ce; box-shadow: 0 0 0 .2rem rgba(11, 99, 206, .12); outline: 0; }
+
+    .chatbot-send {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.35rem;
+        height: 2.35rem;
+        flex: 0 0 2.35rem;
+        border: 0;
+        border-radius: 50%;
+        background: #0b63ce;
+        color: #fff;
+    }
+
+    .chatbot-send:hover { background: #084f9f; }
+    .chatbot-send:disabled { cursor: wait; opacity: .6; }
+
+    @media (max-width: 576px) {
+        .chatbot-widget { right: .8rem; bottom: .8rem; }
+        .chatbot-launcher { padding: .75rem .9rem; }
+        .chatbot-panel { right: -.1rem; width: min(360px, calc(100vw - 1.6rem)); }
+    }
+</style>
+
+<div class="chatbot-widget" id="chatbotWidget">
+    <section class="chatbot-panel" id="chatbotPanel" aria-label="Chat with iSTaksyon" aria-hidden="true">
+        <header class="chatbot-header">
+            <div class="chatbot-avatar" aria-hidden="true"><i class="bi bi-chat-dots-fill"></i></div>
+            <div class="chatbot-header-copy">
+                <strong>iSTaksyon Assistant</strong>
+                <span class="chatbot-status">Online</span>
+            </div>
+            <button type="button" class="chatbot-close" id="chatbotClose" aria-label="Close chat">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </header>
+        <div class="chatbot-messages" id="chatbotMessages" aria-live="polite">
+            <div class="chatbot-message bot">Hi! I am the iSTaksyon Assistant. How can I help you today?</div>
+        </div>
+        <form class="chatbot-composer" id="chatbotForm">
+            <textarea class="chatbot-input" id="chatbotInput" rows="1" maxlength="1000" placeholder="Type a message..." aria-label="Type a message"></textarea>
+            <button type="submit" class="chatbot-send" id="chatbotSend" aria-label="Send message">
+                <i class="bi bi-send-fill" aria-hidden="true"></i>
+            </button>
+        </form>
+    </section>
+    <button type="button" class="chatbot-launcher" id="chatbotLauncher" aria-expanded="false" aria-controls="chatbotPanel">
+        <i class="bi bi-messenger" aria-hidden="true"></i>
+        <span>Chat with me</span>
+    </button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const widget = document.getElementById('chatbotWidget');
+        const launcher = document.getElementById('chatbotLauncher');
+        const panel = document.getElementById('chatbotPanel');
+        const closeButton = document.getElementById('chatbotClose');
+        const form = document.getElementById('chatbotForm');
+        const input = document.getElementById('chatbotInput');
+        const sendButton = document.getElementById('chatbotSend');
+        const messages = document.getElementById('chatbotMessages');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+        function setChatOpen(isOpen) {
+            panel.classList.toggle('is-open', isOpen);
+            panel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            launcher.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            if (isOpen) input.focus();
+        }
+
+        function addMessage(text, sender) {
+            const message = document.createElement('div');
+            message.className = `chatbot-message ${sender}`;
+            message.textContent = text;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+            return message;
+        }
+
+        function getReply(data) {
+            return data?.message?.content || data?.response || data?.reply || data?.content || 'I could not create a response right now.';
+        }
+
+        launcher.addEventListener('click', () => setChatOpen(!panel.classList.contains('is-open')));
+        closeButton.addEventListener('click', () => setChatOpen(false));
+
+        document.addEventListener('click', event => {
+            if (!widget.contains(event.target)) setChatOpen(false);
+        });
+
+        input.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = `${Math.min(this.scrollHeight, 96)}px`;
+        });
+
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                form.requestSubmit();
+            }
+        });
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const text = input.value.trim();
+            if (!text || sendButton.disabled) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            sendButton.disabled = true;
+            const typingMessage = addMessage('Typing...', 'bot typing');
+
+            try {
+                const response = await fetch('{{ url('/chatbot') }}', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.message || 'The assistant could not respond.');
+                typingMessage.remove();
+                addMessage(getReply(data), 'bot');
+            } catch (error) {
+                typingMessage.textContent = error.message || 'The assistant is unavailable right now.';
+            } finally {
+                sendButton.disabled = false;
+                input.focus();
+            }
+        });
+    });
+</script>
+
 <footer class="govph-footer" aria-label="Government information footer">
     <div class="container-fluid px-4 px-lg-5">
         <div class="row g-4 g-xl-5 align-items-start">
