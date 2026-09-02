@@ -20,6 +20,7 @@ class UserController extends Controller
         $search = trim((string) $request->input('search'));
         $role = (string) $request->input('role');
         $status = (string) $request->input('status');
+        $search = addcslashes($search, '\\%_');
 
         $usersQuery = User::query()
             ->when($search, function ($query) use ($search) {

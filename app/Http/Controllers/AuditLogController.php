@@ -15,6 +15,7 @@ class AuditLogController extends Controller
 
         $search = trim((string) $request->input('search'));
         $event = (string) $request->input('event');
+        $search = addcslashes($search, '\\%_');
 
         $logs = AuditLog::with('user')
             ->when($search, function ($query) use ($search) {

@@ -16,6 +16,8 @@ class NavbarSearchController extends Controller
             return response()->json(['tickets' => [], 'users' => []]);
         }
 
+        $query = addcslashes($query, '\\%_');
+
         $tickets = Ticket::query()
             ->where('ticket_id', 'like', "%{$query}%")
             ->orWhere('requestor_first_name', 'like', "%{$query}%")

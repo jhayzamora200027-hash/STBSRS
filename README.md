@@ -98,3 +98,189 @@ ollama serve
 
 Keep `ollama serve` running while using the assistant. The model can be changed with
 `OLLAMA_MODEL` in `.env`; after changing environment values, run `php artisan config:clear`.
+
+## Staging Deployment
+
+For an Apache staging server, point the virtual host document root to the
+`public` directory, enable HTTPS, and enable the required modules:
+
+```bash
+a2enmod headers rewrite
+```
+
+Configure the HTTPS virtual host with TLS 1.2 and TLS 1.3 only. The TLS 1.2
+cipher list below permits only forward-secret ECDHE AEAD suites; it excludes
+CBC and static-RSA key-exchange suites. TLS 1.3 cipher suites are AEAD-only
+and are enabled by the TLS 1.3 protocol setting.
+
+```apache
+<VirtualHost *:443>
+	ServerName staging.example.gov.ph
+	DocumentRoot /var/www/istaksyon/STBSRS/public
+
+	SSLEngine on
+	SSLCertificateFile /etc/ssl/certs/staging.example.gov.ph/fullchain.pem
+	SSLCertificateKeyFile /etc/ssl/private/staging.example.gov.ph.key
+	SSLProtocol -all +TLSv1.2 +TLSv1.3
+	SSLCipherSuite TLSv1.2 ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305
+	SSLHonorCipherOrder on
+
+	<Directory "/var/www/istaksyon/STBSRS/public">
+		AllowOverride FileInfo Limit
+		Require all granted
+	</Directory>
+</VirtualHost>
+```
+
+Replace the certificate paths and hostname with the staging values. Do not
+add `TLS_RSA_*` or `*_CBC_*` suites to this configuration. If TLS is
+terminated by a load balancer or reverse proxy instead of Apache, apply the
+equivalent protocol and cipher policy there and keep the origin connection
+encrypted as required by the deployment architecture.
+
+Allow the `public/.htaccess` file to manage headers and URL rewriting:
+
+```apache
+<Directory "/var/www/istaksyon/STBSRS/public">
+	AllowOverride FileInfo Limit
+	Require all granted
+</Directory>
+```
+
+The staging host must use a valid HTTPS certificate. HSTS is only sent on HTTPS
+responses and includes subdomains, so every subdomain of the staging domain
+must also support HTTPS.
+
+Set the staging environment values in `.env` without committing the file:
+
+```dotenv
+APP_ENV=staging
+APP_DEBUG=false
+APP_URL=https://staging.example.gov.ph
+SESSION_SECURE_COOKIE=true
+```
+
+Use the staging database and mail provider credentials, then run the deployment
+commands from the project directory:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan key:generate
+php artisan migrate --force
+php artisan storage:link
+npm ci
+npm run build
+php artisan config:cache
+php artisan view:cache
+```
+
+Run Ollama on the staging host or on a private internal host, and configure the
+model in `.env`:
+
+```dotenv
+OLLAMA_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=gemma3:4b
+OLLAMA_TIMEOUT=90
+```
+
+Install the model and keep Ollama running before testing the assistant:
+
+```bash
+ollama pull gemma3:4b
+ollama serve
+```
+
+The assistant is intended to use a local or private Ollama endpoint. Do not
+point `OLLAMA_URL` at a public AI provider when staging privacy-sensitive data.
+
+## IT Execution Checklist
+
+### 1. Web Server
+
+- Set the Apache virtual host document root to `STBSRS/public`.
+- Enable the required Apache modules:
+
+```bash
+a2enmod ssl headers rewrite
+```
+
+- Verify that `public/.htaccess` is present on the server.
+- Add the following Apache directory permissions:
+
+```apache
+<Directory "/var/www/istaksyon/STBSRS/public">
+	AllowOverride FileInfo Limit
+	Require all granted
+</Directory>
+```
+
+- Configure HTTP to redirect to HTTPS.
+- Install the TLS certificate and private key.
+- Set `SSLProtocol -all +TLSv1.2 +TLSv1.3`.
+- Set the TLS 1.2 cipher list to ECDHE AEAD suites only.
+- Disable CBC and static-RSA (`TLS_RSA_*`) cipher suites.
+- Apply the same TLS settings on the load balancer or reverse proxy if it
+  terminates HTTPS.
+- Enable HTTPS for all staging subdomains.
+- Run `sudo apache2ctl configtest`.
+- Run `sudo systemctl reload apache2`.
+
+### 2. Runtime and Permissions
+
+- Install the PHP version and extensions listed in `composer.json`.
+- Install Composer and Node.js/npm.
+- Configure the staging database, mail service, cache, queue, and filesystem.
+- Grant the web-server user write access to `storage/` and `bootstrap/cache/`.
+- Keep `.env`, database credentials, OAuth secrets, and mail credentials out of
+  version control.
+
+### 3. Application Deployment
+
+Run these commands from the project directory after the source code is deployed:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan storage:link
+npm ci
+npm run build
+php artisan config:cache
+php artisan view:cache
+```
+
+- Set `APP_ENV=staging`, `APP_DEBUG=false`, the HTTPS `APP_URL`, and
+	`SESSION_SECURE_COOKIE=true` in `.env`.
+- Run `php artisan key:generate` only if the staging environment has no
+	application key.
+
+### 4. Local Privacy Assistant
+
+- Run Ollama on the staging server or on a private internal host.
+- Do not expose the Ollama port publicly.
+- Set `OLLAMA_URL`, `OLLAMA_MODEL`, and `OLLAMA_TIMEOUT` in `.env`.
+- Install the configured model and keep the Ollama service running.
+
+```bash
+ollama pull gemma3:4b
+ollama serve
+```
+
+### 5. Verification
+
+- Test the HTTPS endpoint and a static file:
+
+```bash
+curl -I https://staging.example.gov.ph/
+curl -I https://staging.example.gov.ph/robots.txt
+```
+
+- Confirm that both responses contain `Strict-Transport-Security`,
+  `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
+  `Permissions-Policy`, and `Content-Security-Policy`.
+- Test the assistant.
+- Confirm that HTTP redirects to HTTPS.
+- Run the TLS scan:
+
+```bash
+nmap --script ssl-enum-ciphers -p 443 <hostname>
+```

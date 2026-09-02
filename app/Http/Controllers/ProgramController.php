@@ -14,6 +14,7 @@ class ProgramController extends Controller
 
         $search = trim((string) $request->input('search'));
         $status = (string) $request->input('status');
+        $search = addcslashes($search, '\\%_');
 
         $programs = Program::query()
             ->when($search, function ($query) use ($search) {

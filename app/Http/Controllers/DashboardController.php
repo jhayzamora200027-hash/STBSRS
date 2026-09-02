@@ -368,7 +368,7 @@ public function filterTickets(Request $request)
         })
 
         ->when($request->search, function ($query) use ($request) {
-            $search = $request->search;
+            $search = addcslashes((string) $request->search, '\\%_');
 
             $query->where(function ($q) use ($search) {
                 $q->where('ticket_id', 'like', "%{$search}%")

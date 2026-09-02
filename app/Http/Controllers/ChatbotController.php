@@ -7,10 +7,14 @@ use Illuminate\Http\Request;
 
 class ChatbotController extends Controller
 {
-    public function chat(Request $request, OllamaService $ollama)
+    public function chat(Request $request, OllamaService $ollama): array
     {
+        $data = $request->validate([
+            'message' => ['required', 'string', 'max:1000'],
+        ]);
+
         return $ollama->chat(
-            $request->message
+            $data['message']
         );
     }
 }

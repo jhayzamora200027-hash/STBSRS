@@ -66,7 +66,7 @@ class AllticketController extends Controller
         }
 
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = addcslashes((string) $request->search, '\\%_');
 
             $tickets->where(function ($q) use ($search) {
                 $q->where('ticket_id', 'like', "%{$search}%")

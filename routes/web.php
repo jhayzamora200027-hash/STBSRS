@@ -133,6 +133,6 @@ use App\Http\Controllers\ChatbotController;
 Route::post('/chatbot', [
     ChatbotController::class,
     'chat'
-]);
+])->middleware('throttle:20,1');
 
 

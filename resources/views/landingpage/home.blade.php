@@ -4522,7 +4522,7 @@ if (organizationConfig[organization]) {
                 province.innerHTML += DOMPurify.sanitize(
                 `<option value="${item.province_code}">
                 ${item.name}
-                </option>`;
+                </option>`
                 );
             });
         }).catch(error => console.error(error));
@@ -6707,6 +6707,7 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 @endpush
 
+{{-- Chatbot temporarily disabled.
 <style>
     .chatbot-widget {
         position: fixed;
@@ -7011,6 +7012,7 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     });
 </script>
+--}}
 
 <footer class="govph-footer" aria-label="Government information footer">
     <div class="container-fluid px-4 px-lg-5">
