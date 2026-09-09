@@ -2083,6 +2083,22 @@ body.review-modal-open .modal-backdrop.show {
                                             showEmailOtpError(data.message || 'Invalid code.');
                                             return;
                                         }
+
+                                        if (data.no_existing_ticket) {
+                                            if (emailBsModal) emailBsModal.hide();
+                                            if (typeof Swal !== 'undefined' && Swal.fire) {
+                                                await Swal.fire({
+                                                    icon: 'info',
+                                                    title: 'No existing ticket',
+                                                    text: 'You have no existing ticket for this email. Kindly create your ticket first.',
+                                                    confirmButtonColor: '#062c52'
+                                                });
+                                            } else {
+                                                alert('You have no existing ticket for this email. Kindly create your ticket first.');
+                                            }
+                                            return;
+                                        }
+
                                         // verified -> redirect to guest tickets list
                                         window.location = '/guest/tickets';
                                     } catch (e) {
@@ -2870,23 +2886,6 @@ body.review-modal-open .modal-backdrop.show {
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
                                                         <input type="text" class="form-control" id="otherProgramInputTACP" name="program_others">
                                                 </div>
-                                                <div class="mt-3">
-                                                    <div>
-                                                        <h6 class="me-2">
-                                                            Priority <i style="color:red">*</i>
-                                                        </h6>
-                                                        <span class="text-muted">
-                                                            Select priority of this request.
-                                                        </span>
-                                                    </div>
-                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTACP" required>
-                                                        <option value="">Select priority</option>
-                                                        <option value="low">Low</option>
-                                                        <option value="medium">Medium</option>
-                                                        <option value="high">High</option>
-                                                        <option value="urgent">Urgent</option>
-                                                    </select>
-                                                </div>
                                              </div>
                                         </div>
                                     </div>                                
@@ -2988,45 +2987,10 @@ body.review-modal-open .modal-backdrop.show {
                                                     </div>
                                                 </div>
                                              </div>
-                                             {{-- <div class="col-md-6"> 
-                                                <div class="p-2">
-                                                    <div>
-                                                        <h6 class="me-2">
-                                                            Priority <i style="color:red">*</i>
-                                                        </h6>
-                                                        <span class="text-muted">
-                                                            Select priority of this request.
-                                                        </span>
-                                                    </div>
-                                                    <select class="form-select" name="priority" id="prioritySelectTAPD">
-                                                        <option value="">Select priority</option>
-                                                        <option value="low">Low</option>
-                                                        <option value="medium">Medium</option>
-                                                        <option value="urgent">Urgent</option>
-                                                    </select>
-                                                </div>
-                                             </div> --}}
                                              <div class="col-md-6">
                                                 <div id="otherProgramFieldTAPD" class="mt-3 d-none">
                                                         <label class="form-label">Specify Program <span style="color:red">*</span></label>
                                                         <input type="text" class="form-control" id="otherProgramInputTAPD" name="program_others">
-                                                </div>
-                                                <div class="mt-3">
-                                                    <div>
-                                                        <h6 class="me-2">
-                                                            Priority <i style="color:red">*</i>
-                                                        </h6>
-                                                        <span class="text-muted">
-                                                            Select priority of this request.
-                                                        </span>
-                                                    </div>
-                                                    <select class="form-select" name="ticket_priority" id="prioritySelectTADP" required>
-                                                        <option value="">Select priority</option>
-                                                        <option value="low">Low</option>
-                                                        <option value="medium">Medium</option>
-                                                        <option value="high">High</option>
-                                                        <option value="urgent">Urgent</option>
-                                                    </select>
                                                 </div>
                                              </div>
                                              
@@ -3201,23 +3165,6 @@ body.review-modal-open .modal-backdrop.show {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="p-3 service-base-fields">
-                                                                <div>
-                                                                    <h6 class="me-2">
-                                                                        Priority <i style="color:red">*</i>
-                                                                    </h6>
-                                                                    <span class="text-muted">
-                                                                        Select priority of this request.
-                                                                    </span>
-                                                                </div>
-                                                                <select class="form-select" name="ticket_priority" id="prioritySelectRP" required>
-                                                                    <option value="">Select priority</option>
-                                                                    <option value="low">Low</option>
-                                                                    <option value="medium">Medium</option>
-                                                                    <option value="high">High</option>
-                                                                    <option value="urgent">Urgent</option>
-                                                                </select>
-                                                            </div>
                                                           </div>
 
                                                         <div class='col-md-4 d-flex flex-column'>
@@ -3351,23 +3298,6 @@ body.review-modal-open .modal-backdrop.show {
                                                                         <input type="file" id="supportFileKP" class="d-none" accept=".pdf,.jpg,.png" name="attachment">
 
                                                                         <div class="file-name mt-3 text-success fw-semibold d-none"></div>
-                                                                    </div>
-                                                                    <div class="service-base-fields mt-3">
-                                                                        <div>
-                                                                            <h6 class="me-2">
-                                                                                Priority <i style="color:red">*</i>
-                                                                            </h6>
-                                                                            <span class="text-muted">
-                                                                                Select priority of this request.
-                                                                            </span>
-                                                                        </div>
-                                                                        <select class="form-select" name="ticket_priority" id="prioritySelectKP" required>
-                                                                            <option value="">Select priority</option>
-                                                                            <option value="low">Low</option>
-                                                                            <option value="medium">Medium</option>
-                                                                            <option value="high">High</option>
-                                                                            <option value="urgent">Urgent</option>
-                                                                        </select>
                                                                     </div>
                                         </div>
                                         <div class="col-md-6"> 
@@ -3859,11 +3789,6 @@ body.review-modal-open .modal-backdrop.show {
                     <div class="review-item">
                         <span>Program</span>
                         <strong id="reviewProgram"></strong>
-                    </div>
-
-                    <div class="review-item">
-                        <span>Priority</span>
-                        <strong id="reviewPriority"></strong>
                     </div>
 
                     <div class="review-item">
@@ -4406,7 +4331,6 @@ if (organizationConfig[organization]) {
     document.getElementById('reviewDate').textContent = '-';
     document.getElementById('reviewKnowledgeProduct').innerHTML = '-';
     document.getElementById('reviewAttachment').innerHTML = '-';
-    document.getElementById('reviewPriority').textContent = '-';
 
     if(category === 'completed'){
         const program = document.getElementById('programSelectTACP');
@@ -4420,10 +4344,6 @@ if (organizationConfig[organization]) {
             document.getElementById('reasonRequestTACP').value;
 
         showAttachment('supportFileTACP');
-
-        // Priority for TACP
-        const prTACP = document.getElementById('prioritySelectTACP');
-        document.getElementById('reviewPriority').textContent = prTACP?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -4440,10 +4360,6 @@ if (organizationConfig[organization]) {
             document.getElementById('reasonRequestTAPD').value;
 
         showAttachment('supportFileTAPD');
-
-        // Priority for TAPD
-        const prTAPD = document.getElementById('prioritySelectTADP');
-        document.getElementById('reviewPriority').textContent = prTAPD?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -4495,10 +4411,6 @@ if (organizationConfig[organization]) {
                     </div>
                 `);
             });
-
-            // Priority for KP
-            const prKP = document.getElementById('prioritySelectKP');
-            document.getElementById('reviewPriority').textContent = prKP?.selectedOptions?.[0]?.text || '-';
 
     }
 
@@ -4876,25 +4788,6 @@ if (organizationConfig[organization]) {
                     }
                 });
 
-                // Priority selects: only the active service's priority should be submitted;
-                // clear values for others when switching category.
-                const priorityMap = {
-                    tacp: 'prioritySelectTACP',
-                    tapd: 'prioritySelectTADP',
-                    rp: 'prioritySelectRP',
-                    kp: 'prioritySelectKP'
-                };
-                Object.keys(priorityMap).forEach(key => {
-                    const sel = document.getElementById(priorityMap[key]);
-                    if (!sel) return;
-                    if (key === service) {
-                        sel.setAttribute('name', 'ticket_priority');
-                    } else {
-                        sel.removeAttribute('name');
-                        try { sel.value = ''; } catch(e){}
-                    }
-                });
-
                 const activePurpose = document.querySelector('textarea[name="purpose_of_request"]');
                 if (activePurpose) {
                     activePurpose.classList.remove('is-invalid');
@@ -4911,8 +4804,8 @@ if (organizationConfig[organization]) {
             kp: ['type_of_knowledge_product[]', 'type_of_knowledge_product_others']
         };
         const technicalOnlyFields = [
-            'reasonRequestRP', 'programSelectRP', 'otherProgramInputRP', 'prioritySelectRP', 'supportFileRP',
-            'reasonRequestKP', 'prioritySelectKP', 'supportFileKP'
+            'reasonRequestRP', 'programSelectRP', 'otherProgramInputRP', 'supportFileRP',
+            'reasonRequestKP', 'supportFileKP'
         ];
 
         function setFieldSubmissionState(field, enabled) {
@@ -6413,67 +6306,6 @@ document.getElementById('tapd').addEventListener('click', function() {
     clearTACPFields();
     clearRPFields();
     clearKPFields();
-});
-
-document.addEventListener('DOMContentLoaded', function(){
-    function showInvalid(el, msg){
-        el.classList.add('is-invalid');
-        var next = el.nextElementSibling;
-        if(!next || !next.classList || !next.classList.contains('invalid-feedback')){
-            var fb = document.createElement('div');
-            fb.className = 'invalid-feedback';
-            fb.textContent = msg || 'Please select priority.';
-            el.parentNode.insertBefore(fb, el.nextSibling);
-        }
-        el.focus();
-    }
-
-    function clearInvalid(el){
-        if(!el) return;
-        el.classList.remove('is-invalid');
-        var next = el.nextElementSibling;
-        if(next && next.classList && next.classList.contains('invalid-feedback')){
-            next.remove();
-        }
-    }
-
-    var submitBtn = document.getElementById('submitBtn');
-    if(!submitBtn) return;
-
-    submitBtn.addEventListener('click', function(e){
-        var bodies = [
-            {id:'tacpBody', select:'prioritySelectTACP'},
-            {id:'tapdBody', select:'prioritySelectTADP'}
-        ];
-
-        // clear previous invalid states
-        bodies.forEach(function(b){ var s=document.getElementById(b.select); if(s) clearInvalid(s); });
-
-        for(var i=0;i<bodies.length;i++){
-            var body = document.getElementById(bodies[i].id);
-            if(body && body.classList && !body.classList.contains('d-none')){
-                var select = document.getElementById(bodies[i].select);
-                if(select && (!select.value || select.value.trim() === '')){
-                    e.preventDefault();
-                    showInvalid(select, 'Please select a priority for this request.');
-                    
-                    Swal.fire({
-                    icon: 'warning',
-                    title: 'Incomplete Information',
-                    text: 'Please complete all required fields before proceeding.',
-                    confirmButtonColor: '#062c52',
-                    confirmButtonText: 'OK'
-                });
-
-                return;
-
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    });
 });
 
     (function(){

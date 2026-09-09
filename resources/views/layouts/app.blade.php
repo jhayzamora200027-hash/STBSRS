@@ -48,6 +48,220 @@
             right: 15px;
             cursor: pointer;
         }
+
+        #loginModal .login-pending-panel {
+            display: none;
+            padding: 1.25rem;
+            border: 1px solid #b8d3f5;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #f5f9ff 0%, #eef6ff 100%);
+            color: #243b53;
+        }
+
+        #loginModal .login-pending-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 50%;
+            background: #d9eaff;
+            color: #1268ed;
+            font-size: 1.55rem;
+        }
+
+        #loginModal .login-pending-panel h5 {
+            color: #062c52;
+            font-weight: 700;
+        }
+
+        #loginModal .login-pending-panel p,
+        #loginModal .login-pending-panel li {
+            font-size: .82rem;
+            line-height: 1.55;
+        }
+
+        #loginModal .login-pending-steps {
+            margin: 1rem 0 0;
+            padding: .85rem .9rem .85rem 2rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .8);
+        }
+
+        #loginModal .login-pending-back {
+            border-color: #1268ed;
+            color: #1268ed;
+            font-weight: 600;
+        }
+
+        #loginModal .login-pending-back:hover,
+        #loginModal .login-pending-back:focus-visible {
+            background: #1268ed;
+            color: #fff;
+        }
+
+        #loginModal .login-send-status {
+            display: none;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: 1rem;
+            padding: .85rem 1rem;
+            border: 1px solid #c9d9ff;
+            border-radius: 12px;
+            background: #f3f7ff;
+            color: #244b8f;
+            font-size: .78rem;
+            line-height: 1.4;
+        }
+
+        #loginModal .login-send-status.is-visible {
+            display: flex;
+        }
+
+        #loginModal .login-send-status .spinner-border {
+            width: 1.2rem;
+            height: 1.2rem;
+            flex: 0 0 1.2rem;
+            border-width: 2px;
+        }
+
+        #loginModal .login-send-status strong {
+            display: block;
+            color: #0b3ea9;
+            font-size: .82rem;
+        }
+
+        #adLoginOtpModal .modal-dialog {
+            max-width: 510px;
+            padding: .75rem;
+        }
+
+        #adLoginOtpModal .modal-content {
+            overflow: hidden;
+            border-radius: 18px;
+        }
+
+        #adLoginOtpModal .modal-header {
+            padding: 1.5rem 1.5rem .75rem;
+        }
+
+        #adLoginOtpModal .modal-body {
+            padding: 0 1.5rem 1.25rem;
+        }
+
+        #adLoginOtpModal .otp-label {
+            color: #0b3ea9;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+
+        #adLoginOtpModal .otp-title {
+            color: #0b3ea9;
+            font-weight: 600;
+        }
+
+        #adLoginOtpModal .otp-info-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: .5rem;
+            padding: 1rem;
+            border: 1px solid #c9d9ff;
+            border-radius: 12px;
+            background: #f3f7ff;
+        }
+
+        #adLoginOtpModal .otp-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            flex: 0 0 3.5rem;
+            border-radius: 14px;
+            background: #4c7ff7;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        #adLoginOtpModal .otp-info-copy {
+            margin: 0;
+            color: #526174;
+            font-size: .84rem;
+            line-height: 1.5;
+        }
+
+        #adLoginOtpModal .otp-info-copy strong {
+            color: #243b53;
+            overflow-wrap: anywhere;
+        }
+
+        #adLoginOtpModal .otp-code-card {
+            margin-top: 1rem;
+            padding: 1.25rem 1rem 1rem;
+            border: 1px solid #e1e5eb;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        #adLoginOtpModal .otp-code-title {
+            margin-bottom: 1rem;
+            color: #1f4fa3;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        #adLoginOtpModal .otp-input {
+            width: 3.25rem;
+            height: 3.5rem;
+            border: 1px solid #d7dee8;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        #adLoginOtpModal .otp-input:focus {
+            border-color: #4c7ff7;
+            box-shadow: 0 0 0 .2rem rgba(76, 127, 247, .16);
+        }
+
+        #adLoginOtpModal .otp-help {
+            margin: .85rem 0 0;
+            color: #6c757d;
+            font-size: .78rem;
+            text-align: center;
+        }
+
+        #adLoginOtpModal .modal-footer {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: .65rem;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        #adLoginOtpModal .otp-action {
+            min-height: 3.1rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 430px) {
+            #adLoginOtpModal .modal-header,
+            #adLoginOtpModal .modal-body,
+            #adLoginOtpModal .modal-footer {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            #adLoginOtpModal .otp-input {
+                width: 2.65rem;
+                height: 3.15rem;
+            }
+        }
     </style>
 
     @vite(['resources/css/app.css','resources/js/app.js'])
@@ -139,12 +353,40 @@
                                     <form method="POST" id="loginForm" action="{{ route('login')}}">
                                         @csrf
                                         <div id="loginError"></div>
+                                        <div id="loginSendStatus" class="login-send-status" role="status" aria-live="polite" aria-atomic="true">
+                                            <span class="spinner-border text-primary" aria-hidden="true"></span>
+                                            <span>
+                                                <strong id="loginSendStatusTitle">Sending verification code</strong>
+                                                <span id="loginSendStatusMessage">Please wait while we verify your credentials and send the code to your AD email.</span>
+                                            </span>
+                                        </div>
+                                        <div id="loginPendingPanel" class="login-pending-panel" role="status" aria-live="polite">
+                                            <div class="d-flex align-items-start gap-3">
+                                                <span class="login-pending-icon" aria-hidden="true">
+                                                    <i class="bi bi-hourglass-split"></i>
+                                                </span>
+                                                <div>
+                                                    <h5 class="mb-1">Your account is awaiting approval</h5>
+                                                    <p class="mb-0">Your DSWD account was verified successfully. An administrator still needs to approve your iSTaksyon access.</p>
+                                                </div>
+                                            </div>
+                                            <ol class="login-pending-steps mb-0">
+                                                <li>Your account has been registered in iSTaksyon.</li>
+                                                <li>The system administrator will review and activate it.</li>
+                                                <li>Try signing in again once your account has been approved.</li>
+                                            </ol>
+                                            <p class="text-muted mb-3 mt-3">Need an update? Contact your system administrator and provide your AD username.</p>
+                                            <button type="button" id="loginPendingBack" class="btn btn-outline-primary login-pending-back w-100">
+                                                <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+                                                Back to sign in
+                                            </button>
+                                        </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Email Address</label>
+                                            <label class="form-label">AD Username</label>
 
                                             <div class="login-input-wrap">
                                                 <i class="bi bi-envelope login-input-icon" aria-hidden="true"></i>
-                                                <input type="email" name="email" class="form-control login-input" placeholder="Enter your email address" required value="{{old('email')}}">
+                                                <input type="text" name="email" class="form-control login-input" placeholder="Enter your AD username" required value="{{old('email')}}" autocomplete="username" pattern="^[^@]+$" title="Enter your AD username, not an email address.">
                                             </div>
                                         </div>
                                         <div class="mb-3">
@@ -157,18 +399,10 @@
                                             <i class="bi bi-eye login-password-toggle" id="togglePassword" role="button" aria-label="Show password" tabindex="0"></i>
 
                                             </div>
-                                            <div class="d-flex justify-content-between">
-                                                <div class="text-start mt-2">
-                                                    <a href="#registrationModal" class="forgot-link" data-bs-toggle="modal" data-bs-target="#registrationModal" data-bs-dismiss="modal">Don't have account?</a>
-                                                </div>
-                                                <div class="text-end mt-2">
-                                                    <a href="#forgotPasswordModal" class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">Forgot Password?</a>
-                                                </div>
-                                            </div>
                                         </div>
-                                        <button class="btn w-100 d-submit-button" type="submit">
-                                            <i class="bi bi-lock"></i>
-                                            Sign-In
+                                        <button class="btn w-100 d-submit-button" type="submit" id="loginSubmitButton">
+                                            <span class="login-submit-default"><i class="bi bi-lock"></i> Sign-In</span>
+                                            <span class="login-submit-loading d-none"><span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending code...</span>
                                         </button>
                                     </form>
                                     <div class="d-flex align-items-center my-4">
@@ -190,6 +424,46 @@
                                 </div>
                             </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="adLoginOtpModal" tabindex="-1" aria-labelledby="adLoginOtpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <div>
+                    <small class="text-uppercase otp-label">Secure sign-in</small>
+                    <h2 class="modal-title otp-title mb-0" id="adLoginOtpModalLabel">Two-step verification</h2>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="otp-info-card">
+                    <div class="otp-icon" aria-hidden="true">2FA</div>
+                    <p class="otp-info-copy">
+                        Verification code sent to
+                        <strong id="adLoginOtpEmailMasked"></strong>.
+                        Use the code to complete your sign-in.
+                    </p>
+                </div>
+
+                <div class="otp-code-card">
+                    <h3 class="otp-code-title">Verification code</h3>
+                    <div class="d-flex justify-content-center gap-2" id="adLoginOtpInputs" role="group" aria-label="Six-digit verification code">
+                        @for ($index = 0; $index < 6; $index++)
+                            <input type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="1" class="form-control otp-input" aria-label="Verification code digit {{ $index + 1 }}">
+                        @endfor
+                    </div>
+                    <p class="otp-help">Enter the 6-digit code you received by email.</p>
+                </div>
+
+                <div id="adLoginOtpError" class="alert alert-danger d-none mt-3 mb-0" role="alert" aria-live="polite"></div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-primary otp-action w-100" id="adLoginVerifyOtpBtn">Verify and sign in</button>
+                <button type="button" class="btn btn-outline-secondary otp-action w-100" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
@@ -2954,6 +3228,83 @@ document.addEventListener('DOMContentLoaded', function () {
     const passwordToggle = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     const loginForm = document.getElementById('loginForm');
+    const adLoginOtpModalEl = document.getElementById('adLoginOtpModal');
+    const adLoginOtpModal = adLoginOtpModalEl && window.bootstrap
+        ? bootstrap.Modal.getOrCreateInstance(adLoginOtpModalEl, { backdrop: 'static', keyboard: false })
+        : null;
+    const adLoginOtpInputs = adLoginOtpModalEl
+        ? Array.from(adLoginOtpModalEl.querySelectorAll('.otp-input'))
+        : [];
+    const adLoginVerifyOtpBtn = document.getElementById('adLoginVerifyOtpBtn');
+    const adLoginOtpError = document.getElementById('adLoginOtpError');
+
+    function showAdLoginOtpError(message) {
+        if (!adLoginOtpError) return;
+        adLoginOtpError.textContent = message;
+        adLoginOtpError.classList.remove('d-none');
+    }
+
+    function clearAdLoginOtpError() {
+        if (!adLoginOtpError) return;
+        adLoginOtpError.textContent = '';
+        adLoginOtpError.classList.add('d-none');
+    }
+
+    function openAdLoginOtp(data) {
+        clearAdLoginOtpError();
+        const maskedEmail = document.getElementById('adLoginOtpEmailMasked');
+        if (maskedEmail) maskedEmail.textContent = data.masked_email || '';
+        adLoginOtpInputs.forEach(input => { input.value = ''; input.disabled = false; });
+        adLoginOtpModal?.show();
+        setTimeout(() => adLoginOtpInputs[0]?.focus(), 150);
+    }
+
+    adLoginOtpInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            clearAdLoginOtpError();
+            input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+            if (input.value && index < adLoginOtpInputs.length - 1) adLoginOtpInputs[index + 1].focus();
+        });
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Backspace' && !input.value && index > 0) adLoginOtpInputs[index - 1].focus();
+            if (event.key === 'Enter' && index === adLoginOtpInputs.length - 1) adLoginVerifyOtpBtn?.click();
+        });
+        input.addEventListener('paste', event => {
+            event.preventDefault();
+            const code = (event.clipboardData?.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+            code.split('').forEach((digit, digitIndex) => { if (adLoginOtpInputs[digitIndex]) adLoginOtpInputs[digitIndex].value = digit; });
+            adLoginOtpInputs[Math.min(code.length, adLoginOtpInputs.length - 1)]?.focus();
+        });
+    });
+
+    adLoginVerifyOtpBtn?.addEventListener('click', async () => {
+        clearAdLoginOtpError();
+        const otp = adLoginOtpInputs.map(input => input.value).join('');
+        if (!/^\d{6}$/.test(otp)) return showAdLoginOtpError('Enter the 6-digit verification code.');
+
+        adLoginVerifyOtpBtn.disabled = true;
+        const originalText = adLoginVerifyOtpBtn.textContent;
+        adLoginVerifyOtpBtn.textContent = 'Verifying...';
+        try {
+            const response = await fetch('{{ route('login.verify-otp') }}', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ otp })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.message || 'Unable to verify the code.');
+            window.location.href = data.redirect;
+        } catch (error) {
+            showAdLoginOtpError(error.message || 'Unable to verify the code.');
+        } finally {
+            adLoginVerifyOtpBtn.disabled = false;
+            adLoginVerifyOtpBtn.textContent = originalText;
+        }
+    });
 
     if (passwordToggle && passwordInput) {
         passwordToggle.addEventListener('click', function () {
@@ -2974,8 +3325,39 @@ document.addEventListener('DOMContentLoaded', function () {
             const form = this;
             const formData = new FormData(form);
             const loginError = document.getElementById('loginError');
+            const pendingPanel = document.getElementById('loginPendingPanel');
+            const username = form.querySelector('input[name="email"]');
+            const submitButton = document.getElementById('loginSubmitButton');
+            const sendStatus = document.getElementById('loginSendStatus');
+            const sendStatusTitle = document.getElementById('loginSendStatusTitle');
+            const sendStatusMessage = document.getElementById('loginSendStatusMessage');
+            const defaultSubmit = submitButton?.querySelector('.login-submit-default');
+            const loadingSubmit = submitButton?.querySelector('.login-submit-loading');
+
+            const setSendingState = (isSending) => {
+                form.setAttribute('aria-busy', isSending ? 'true' : 'false');
+                form.querySelectorAll('input, button').forEach(control => {
+                    if (control.id !== 'loginPendingBack') control.disabled = isSending;
+                });
+                sendStatus?.classList.toggle('is-visible', isSending);
+                defaultSubmit?.classList.toggle('d-none', isSending);
+                loadingSubmit?.classList.toggle('d-none', !isSending);
+                if (submitButton) submitButton.disabled = isSending;
+            };
 
             loginError.innerHTML = '';
+            if (pendingPanel) pendingPanel.style.display = 'none';
+
+            if (username && username.value.includes('@')) {
+                username.setCustomValidity('Enter your AD username, not an email address.');
+                username.reportValidity();
+                return;
+            }
+
+            username?.setCustomValidity('');
+            setSendingState(true);
+            if (sendStatusTitle) sendStatusTitle.textContent = 'Sending verification code';
+            if (sendStatusMessage) sendStatusMessage.textContent = 'Please wait while we verify your credentials and send the code to your AD email.';
 
             fetch(form.action, {
                 method: 'POST',
@@ -2986,8 +3368,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData
             }).then(response => response.json())
             .then(data => {
-                if (data.success) {
+                setSendingState(false);
+                if (data.requires_otp) {
+                    openAdLoginOtp(data);
+                } else if (data.success) {
                     window.location.href = data.redirect;
+                } else if (pendingPanel && /approval|not active yet/i.test(data.message || '')) {
+                    pendingPanel.style.display = 'block';
+                    form.querySelectorAll('input, button').forEach(control => {
+                        if (control.id !== 'loginPendingBack') control.closest('.mb-3, .d-submit-button')?.classList.add('d-none');
+                    });
                 } else {
                     loginError.replaceChildren();
                     const error = document.createElement('div');
@@ -2997,8 +3387,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                console.log(error);
+                setSendingState(false);
+                loginError.replaceChildren();
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger';
+                errorMessage.textContent = 'Unable to send the verification code. Please try again.';
+                loginError.appendChild(errorMessage);
             });
+        });
+    }
+
+    const loginPendingBack = document.getElementById('loginPendingBack');
+    if (loginPendingBack && loginForm) {
+        loginPendingBack.addEventListener('click', function () {
+            const pendingPanel = document.getElementById('loginPendingPanel');
+            if (pendingPanel) pendingPanel.style.display = 'none';
+            document.getElementById('loginSendStatus')?.classList.remove('is-visible');
+            loginForm.querySelectorAll('.d-none').forEach(element => element.classList.remove('d-none'));
+            loginForm.querySelectorAll('input, button').forEach(control => { control.disabled = false; });
+            loginForm.setAttribute('aria-busy', 'false');
+            document.getElementById('loginError').innerHTML = '';
+            loginForm.querySelector('input[name="email"]')?.focus();
+        });
+    }
+
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal && loginForm) {
+        loginModal.addEventListener('hidden.bs.modal', function () {
+            loginPendingBack?.click();
+            loginForm.reset();
         });
     }
 

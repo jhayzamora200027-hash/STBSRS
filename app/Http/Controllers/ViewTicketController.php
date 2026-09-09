@@ -184,8 +184,11 @@ class ViewTicketController extends Controller
             try {
                 Mail::to($ticket->requestor_email)->send(new TicketAcknowledgedMail($ticket));
             } catch (\Exception $e) {
-                // Log but continue
-                //
+                Log::error('Failed to send ticket acknowledgment email', [
+                    'ticket_id' => $ticket->ticket_id,
+                    'recipient' => $ticket->requestor_email,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
 

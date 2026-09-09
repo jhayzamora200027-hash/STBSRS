@@ -471,6 +471,9 @@ class TicketController extends Controller
                 $minutes = 10;
                 Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
                     $m->to($email)->subject('OTP Verification');
+                    if (config('mail.return_path')) {
+                        $m->returnPath(config('mail.return_path'));
+                    }
                     if (config('mail.from.address')) {
                         $m->from(config('mail.from.address'), config('mail.from.name'));
                     }
@@ -606,6 +609,9 @@ class TicketController extends Controller
             $minutes = 10;
             Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
                 $m->to($email)->subject('OTP Verification');
+                if (config('mail.return_path')) {
+                    $m->returnPath(config('mail.return_path'));
+                }
                 if (config('mail.from.address')) {
                     $m->from(config('mail.from.address'), config('mail.from.name'));
                 }
@@ -679,10 +685,6 @@ class TicketController extends Controller
 
         $email = $request->email;
 
-        if (!Ticket::where('requestor_email', $email)->exists()) {
-            return response()->json(['message' => 'No requests found for this email address.'], 404);
-        }
-
         // if this email was already OTP-verified recently, skip sending a new code
         $alreadyVerified = Session::get('guest_email_otp_verified', false);
         $verifiedEmail = Session::get('guest_email_otp_email');
@@ -720,6 +722,9 @@ class TicketController extends Controller
             $minutes = 10;
             Mail::send('emails.otp', ['firstName' => $firstName, 'otp' => $otp, 'minutes' => $minutes], function ($m) use ($email) {
                 $m->to($email)->subject('OTP Verification');
+                if (config('mail.return_path')) {
+                    $m->returnPath(config('mail.return_path'));
+                }
                 if (config('mail.from.address')) {
                     $m->from(config('mail.from.address'), config('mail.from.name'));
                 }
@@ -775,7 +780,10 @@ class TicketController extends Controller
         Session::put('guest_email_otp_email', $request->email);
         Session::put('guest_email_otp_verified_at', Carbon::now()->toDateTimeString());
 
-        return response()->json(['message' => 'Email verified.']);
+        return response()->json([
+            'message' => 'Email verified.',
+            'no_existing_ticket' => !Ticket::where('requestor_email', $request->email)->exists(),
+        ]);
     }
 
     /**

@@ -77,12 +77,70 @@ GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 
-## INSTALLATION OF OLLAMA
-> On Linux: curl -fsSL https://ollama.com/install.sh | sh
-> ollama --version
+## Active Directory Test Login
 
-> ollama pull gemma3:4b
-> ollama serve
+The project uses `directorytree/ldaprecord-laravel` to test Active Directory
+credentials. The package is declared in `composer.json` and requires PHP's
+LDAP extension.
+
+### Windows PHP setup
+
+For XAMPP, open `C:\xampp\php\php.ini` and enable the LDAP extension:
+
+```ini
+extension=ldap
+```
+
+Restart Apache or the PHP process, then verify that the CLI PHP used by Laravel
+has LDAP enabled:
+
+```powershell
+php -m | Select-String ldap
+```
+
+Install or restore the Composer dependencies:
+
+```powershell
+composer install
+php artisan config:clear
+```
+
+If the LDAP package is not present in the lock file, update it with:
+
+```powershell
+composer update directorytree/ldaprecord-laravel --with-dependencies
+```
+
+### Environment configuration
+
+Copy `.env.example` to `.env` and set the AD connection values. Use port `636`
+with SSL for LDAPS, or use the port and transport settings provided by the AD
+administrator. Quote the Base DN when it contains spaces.
+
+```dotenv
+LDAP_CONNECTION=default
+LDAP_HOST=your-ad-server
+LDAP_PORT=636
+LDAP_TLS=true
+LDAP_STARTTLS=false
+LDAP_BASE_DN="OU=Users,DC=example,DC=local"
+LDAP_TIMEOUT=5
+LDAP_SASL=false
+```
+
+The test page binds directly with the submitted AD username and password, so
+`LDAP_USERNAME` and `LDAP_PASSWORD` may remain empty for this test. Do not put
+personal user passwords in `.env` or commit `.env` to source control.
+
+Clear cached configuration after changing environment values:
+
+```powershell
+php artisan config:clear
+```
+
+While `APP_DEBUG=true`, open `/test/ad` and submit an AD username and password.
+The test does not create a local account or store the submitted password.
+
 
 ## Local Data Privacy Assistant
 
@@ -98,6 +156,26 @@ ollama serve
 
 Keep `ollama serve` running while using the assistant. The model can be changed with
 `OLLAMA_MODEL` in `.env`; after changing environment values, run `php artisan config:clear`.
+
+## Scheduled Ticket Automation
+
+Resolved tickets are automatically completed after three days by the
+`tickets:complete-resolved` command. The schedule is registered for 00:05 each
+day, but Laravel only runs scheduled commands when a scheduler process is active.
+
+For local development, use `composer run dev`; it now starts
+`php artisan schedule:work` with the other development processes.
+
+On Windows production or staging, create a Task Scheduler task that runs every
+minute from the project directory:
+
+```powershell
+php artisan schedule:run
+```
+
+Set the task's program to the full path of `php.exe`, set the working directory
+to the project root, and configure it to run whether the user is logged on or
+not. Verify the registration with `php artisan schedule:list`.
 
 ## Staging Deployment
 

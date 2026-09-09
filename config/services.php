@@ -47,4 +47,8 @@ return [
         'timeout' => env('OLLAMA_TIMEOUT', 90),
     ],
 
+    'active_directory' => [
+        'user_suffix' => env('LDAP_USER_SUFFIX'),
+    ],
+
 ];

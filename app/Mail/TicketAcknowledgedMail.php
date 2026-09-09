@@ -32,7 +32,13 @@ class TicketAcknowledgedMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Ticket #' . ($this->ticket->ticket_id ?? '') . ' acknowledged')
-                    ->view('emails.ticket_acknowledged');
+        $message = $this->subject('Ticket #' . ($this->ticket->ticket_id ?? '') . ' acknowledged')
+            ->view('emails.ticket_acknowledged');
+
+        if (config('mail.return_path')) {
+            $message->returnPath(config('mail.return_path'));
+        }
+
+        return $message;
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\LoginOtpMail;
 use App\Mail\RegistrationAttemptMail;
 use App\Models\User;
+use App\Services\ActiveDirectoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -90,31 +92,180 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function login(Request $Request)
+    public function login(Request $request, ActiveDirectoryService $activeDirectory)
     {
-        $credentials = $Request->validate([
-            'email' => ['required', 'email'],
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'max:255', 'not_regex:/@/'],
             'password' => ['required'],
         ]);
 
-        $credentials['status'] = 'active';
-    
+        $adResult = $activeDirectory->authenticate(
+            trim($credentials['email']),
+            $credentials['password'],
+        );
 
-    if(Auth::attempt($credentials)){
-        $Request->session()->regenerate();
+        if (! $adResult['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $adResult['message'],
+            ], 401);
+        }
+
+        $attributes = $adResult['attributes'] ?? [];
+        $adEmail = strtolower(trim((string) ($attributes['mail'] ?? '')));
+        $adUpn = strtolower(trim((string) ($attributes['userprincipalname'] ?? '')));
+        $adAccount = strtolower(trim((string) ($attributes['samaccountname'] ?? '')));
+        $enteredUsername = strtolower(trim($credentials['email']));
+
+        if ($adEmail === '' || filter_var($adEmail, FILTER_VALIDATE_EMAIL) === false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your AD account does not have a valid mail attribute. Contact an administrator.',
+            ], 422);
+        }
+
+        $user = User::query()
+            ->when($adEmail !== '', fn ($query) => $query->where('email', $adEmail))
+            ->when($adEmail === '' && $adUpn !== '', fn ($query) => $query->where('email', $adUpn))
+            ->first();
+
+        if (! $user && $adAccount !== '') {
+            $user = User::where('email', $adAccount.'@dswd.gov.ph')->first();
+        }
+
+        if (! $user && str_contains($enteredUsername, '@')) {
+            $user = User::where('email', $enteredUsername)->first();
+        }
+
+        if (! $user) {
+            $name = trim((string) ($attributes['displayname'] ?? ''));
+            $firstName = trim((string) ($attributes['givenname'] ?? ''));
+            $lastName = trim((string) ($attributes['sn'] ?? ''));
+
+            if ($name === '') {
+                $name = trim(implode(' ', array_filter([$firstName, $lastName])));
+            }
+
+            if ($firstName === '') {
+                $nameParts = preg_split('/\s+/', $name, -1, PREG_SPLIT_NO_EMPTY);
+                $firstName = $nameParts[0] ?? 'AD User';
+                $lastName = $lastName !== '' ? $lastName : ($nameParts[count($nameParts) - 1] ?? $firstName);
+            }
+
+            if ($name === '') {
+                $name = $adEmail;
+            }
+
+            $user = User::create([
+                'name' => $name,
+                'first_name' => $firstName !== '' ? $firstName : $name,
+                'last_name' => $lastName !== '' ? $lastName : $firstName,
+                'email' => $adEmail,
+                'auth_provider' => 'active_directory',
+                'password' => Hash::make(Str::random(40)),
+                'usergroup' => 'user',
+                'approved_at' => null,
+                'status' => 'inactive',
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Your AD account was verified and your iSTaksyon account was submitted for approval.',
+            ], 403);
+        }
+
+        if ($user->status !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your iSTaksyon account is not active yet. Contact an administrator.',
+            ], 403);
+        }
+
+        $otp = (string) random_int(100000, 999999);
+        $minutes = 10;
+
+        try {
+            Mail::to($adEmail)->send(new LoginOtpMail(
+                $user->first_name ?: $user->name,
+                $otp,
+                $minutes,
+            ));
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'We could not send the verification code to your AD email address. Try again later.',
+            ], 503);
+        }
+
+        $request->session()->put('ad_login_otp', [
+            'user_id' => $user->getKey(),
+            'email' => $adEmail,
+            'code' => Hash::make($otp),
+            'expires_at' => now()->addMinutes($minutes)->timestamp,
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'requires_otp' => true,
+            'masked_email' => $this->maskEmail($adEmail),
+            'message' => 'A verification code was sent to the email address stored in your AD account.',
+        ]);
+    }
+
+    public function verifyAdLoginOtp(Request $request)
+    {
+        $validated = $request->validate([
+            'otp' => ['required', 'digits:6'],
+        ]);
+
+        $challenge = $request->session()->get('ad_login_otp');
+
+        if (!is_array($challenge) || ($challenge['expires_at'] ?? 0) < now()->timestamp) {
+            $request->session()->forget('ad_login_otp');
+
+            return response()->json([
+                'success' => false,
+                'message' => 'This verification code has expired. Please sign in again.',
+            ], 422);
+        }
+
+        if (!Hash::check($validated['otp'], $challenge['code'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The verification code is incorrect.',
+            ], 422);
+        }
+
+        $user = User::find($challenge['user_id']);
+        $request->session()->forget('ad_login_otp');
+
+        if (!$user || $user->status !== 'active' || strtolower((string) $user->email) !== $challenge['email']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account is no longer available for sign-in. Contact an administrator.',
+            ], 403);
+        }
+
+        Auth::login($user, true);
+        $request->session()->regenerate();
 
         return response()->json([
             'success' => true,
-            'redirect' => route('dashboard')
+            'redirect' => route('dashboard'),
         ]);
-
     }
 
-    return response()->json([
-        'success' => false,
-        'message' => 'Invalid email or password'
-    ],401);
-}
+    private function maskEmail(string $email): string
+    {
+        [$localPart, $domain] = array_pad(explode('@', $email, 2), 2, '');
+        $visibleCharacters = min(2, strlen($localPart));
+
+        return substr($localPart, 0, $visibleCharacters)
+            . str_repeat('*', max(0, strlen($localPart) - $visibleCharacters))
+            . ($domain !== '' ? '@'.$domain : '');
+    }
 
     public function register(Request $request)
     {

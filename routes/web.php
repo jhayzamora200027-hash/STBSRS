@@ -17,8 +17,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\OllamaController;
+use App\Http\Controllers\TestAdController;
 
 Route::get('/',[LandingpageController::class, 'index'])->name('home');
+Route::get('/test/ad', [TestAdController::class, 'index'])->name('test.ad');
+Route::post('/test/ad', [TestAdController::class, 'authenticate'])->name('test.ad.authenticate');
 Route::post('/assistant/chat', [OllamaController::class, 'chat'])
     ->middleware('throttle:20,1')
     ->name('assistant.chat');
@@ -75,6 +78,7 @@ Route::get('/tickets/{ticket_id}/resolution/{resolution_id}/return', [\App\Http\
 
 //Login
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login/verify-otp', [AuthController::class, 'verifyAdLoginOtp'])->name('login.verify-otp');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
