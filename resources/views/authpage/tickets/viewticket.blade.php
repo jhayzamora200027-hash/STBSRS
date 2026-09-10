@@ -600,7 +600,7 @@
 
 .resource-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
 }
 
@@ -655,7 +655,7 @@
 
 .resource-date-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
 }
 
@@ -685,6 +685,53 @@
     font-size: 1.05rem;
     font-weight: 500;
     line-height: 1.5;
+}
+
+@media (max-width: 1199.98px) {
+    .request-card .card-body > .row > [class*="col-md-4"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .resource-card {
+        min-height: 96px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .request-card .card-body {
+        padding: 1rem !important;
+    }
+
+    .knowledge-panel-header {
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .knowledge-panel-subtitle {
+        font-size: .86rem;
+    }
+
+    .knowledge-list {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .resource-card,
+    .resource-date-card {
+        min-height: 0;
+        padding: .9rem 1rem;
+    }
+
+    .resource-label,
+    .resource-date-label {
+        font-size: 1rem;
+    }
+
+    .resource-value,
+    .resource-date-value {
+        font-size: .95rem;
+    }
 }
 
 .info-box:hover{

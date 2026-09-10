@@ -5421,19 +5421,6 @@ async function startOtpFlow(email) {
                 bsOtpModal.hide();
                 window._preventAutoReload = false;
                 verifyBtn.removeEventListener('click', onVerify);
-
-                (async () => {
-                    let confirmed = false;
-                    for (let attempt = 0; attempt < 6; attempt++) {
-                        await new Promise(r => setTimeout(r, 200));
-                        try {
-                            const statusRes = await fetch('{{ route('tickets.otpStatus') }}', { method: 'GET', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                            if (!statusRes.ok) continue;
-                            const statusJson = await statusRes.json();
-                            if (statusJson.verified && statusJson.verifiedEmail === email) { confirmed = true; break; }
-                        } catch (e) { /* ignore */ }
-                    }
-                })();
                 } catch (err) {
                 console.error('onVerify error', err);
                 Swal.fire({ icon: 'error', title: 'OTP Error', text: err.message || 'Could not complete OTP flow', confirmButtonColor: '#062c52' });
