@@ -39,7 +39,9 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
+            // Symfony Mailer uses "smtp" for STARTTLS on port 587; "tls" is
+            // a legacy Laravel value and is not a supported DSN scheme.
+            'scheme' => env('MAIL_SCHEME') === 'tls' ? 'smtp' : env('MAIL_SCHEME'),
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),

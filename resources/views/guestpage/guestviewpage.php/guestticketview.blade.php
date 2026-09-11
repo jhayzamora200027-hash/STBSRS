@@ -2548,7 +2548,7 @@
                         class="btn submit-feedback-btn w-100"
                     >
                         <i class="bi bi-send me-1"></i>
-                        Submit Feedback & View Details
+                        Submit Feedback
                     </button>
 
                 </div>

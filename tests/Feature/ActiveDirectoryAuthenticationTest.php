@@ -5,14 +5,14 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Mail\LoginOtpMail;
 use App\Services\ActiveDirectoryService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class ActiveDirectoryAuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_valid_ad_credentials_send_otp_before_logging_in_an_active_local_account(): void
     {

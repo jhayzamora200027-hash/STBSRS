@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Mail\AccountApprovedMail;
 use App\Mail\RegistrationAttemptMail;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class GoogleAuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected function setUp(): void
     {
