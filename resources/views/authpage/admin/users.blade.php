@@ -270,6 +270,41 @@
 		color: #fff;
 	}
 
+		.user-management .user-directory-table td {
+			overflow-wrap: anywhere;
+		}
+
+		.user-management .user-directory-table td:last-child {
+			white-space: nowrap;
+		}
+
+		.user-management .table-responsive {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		@media (max-width: 991.98px) {
+			.user-management .page-intro {
+				padding: 24px;
+			}
+
+			.user-management .surface-heading {
+				align-items: flex-start;
+				flex-direction: column;
+				gap: .35rem;
+			}
+
+			.user-management .filter-bar {
+				padding: 14px 18px;
+			}
+
+			.user-management .filter-bar .form-control,
+			.user-management .filter-bar .form-select,
+			.user-management .filter-bar .btn {
+				min-height: 42px;
+			}
+		}
+
 	@media (max-width: 575.98px) {
 		.user-management .page-intro {
 			padding: 23px;
@@ -286,6 +321,86 @@
 			align-items: flex-start;
 			flex-direction: column;
 			gap: 10px;
+		}
+
+		.user-management .page-intro {
+			padding: 20px;
+			border-radius: 14px;
+		}
+
+		.user-management .page-intro p {
+			font-size: .8rem;
+			line-height: 1.45;
+		}
+
+		.user-management .stat-card {
+			padding: 15px;
+		}
+
+		.user-management .filter-bar .row {
+			row-gap: .75rem !important;
+		}
+
+		.user-management .user-directory-table {
+			width: 100%;
+			min-width: 0;
+			border-collapse: separate;
+			border-spacing: 0 .65rem;
+		}
+
+		.user-management .user-directory-table thead {
+			display: none;
+		}
+
+		.user-management .user-directory-table tbody,
+		.user-management .user-directory-table tr,
+		.user-management .user-directory-table td {
+			display: block;
+			width: 100%;
+		}
+
+		.user-management .user-directory-table tr {
+			overflow: hidden;
+			border: 1px solid var(--line);
+			border-radius: 10px;
+			background: #fff;
+		}
+
+		.user-management .user-directory-table td {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 1rem;
+			min-width: 0;
+			padding: .7rem .85rem;
+			border-bottom: 1px solid #f0f3f6;
+			text-align: right;
+			white-space: normal;
+		}
+
+		.user-management .user-directory-table td::before {
+			flex: 0 0 30%;
+			color: var(--muted);
+			content: attr(data-label);
+			font-size: .67rem;
+			font-weight: 700;
+			letter-spacing: .03em;
+			text-align: left;
+			text-transform: uppercase;
+		}
+
+		.user-management .user-directory-table td:last-child {
+			border-bottom: 0;
+			white-space: normal;
+		}
+
+		.user-management .user-directory-table td[colspan] {
+			display: block;
+			text-align: center;
+		}
+
+		.user-management .user-directory-table td[colspan]::before {
+			display: none;
 		}
 	}
 </style>
@@ -375,7 +490,7 @@
 			</div>
 		</form>
 		<div class="table-responsive">
-			<table class="table align-middle">
+			<table class="table align-middle user-directory-table">
 				<thead><tr><th>User</th><th>Role</th><th>Status</th><th>Joined</th><th class="text-end">Action</th></tr></thead>
 				<tbody>
 					@forelse($users as $user)
@@ -390,7 +505,7 @@
 							$statusLabel = $statusValue !== '' ? ucfirst($statusValue) : 'Unknown';
 						@endphp
 						<tr>
-							<td>
+							<td data-label="User">
 								<div class="identity">
 									<span class="avatar">{{ $initials }}</span>
 									<div>
@@ -399,10 +514,10 @@
 									</div>
 								</div>
 							</td>
-							<td><span class="role-pill">{{ ucfirst($user->usergroup ?: 'Member') }}</span></td>
-							<td><span class="status-pill {{ $statusValue === 'inactive' ? 'inactive' : '' }}">{{ $statusLabel }}</span></td>
-							<td>{{ optional($user->created_at)->format('M d, Y') }}</td>
-							<td class="text-end">
+							<td data-label="Role"><span class="role-pill">{{ ucfirst($user->usergroup ?: 'Member') }}</span></td>
+							<td data-label="Status"><span class="status-pill {{ $statusValue === 'inactive' ? 'inactive' : '' }}">{{ $statusLabel }}</span></td>
+							<td data-label="Joined">{{ optional($user->created_at)->format('M d, Y') }}</td>
+							<td class="text-end" data-label="Action">
 								@if(auth()->user()->usergroup === 'sysadmin' && !auth()->user()->is($user))
 									<form method="POST" action="{{ route('users.status', $user) }}">
 										@csrf

@@ -1512,21 +1512,57 @@ gap:15px;
 }
 
 .dashboard-filter-area{
-    padding:0 2.5rem 1.25rem;
+    width:100%;
+    box-sizing:border-box;
+    padding:0 12px 1.25rem;
 }
 
 .dashboard-filter-summary{
-    display:inline-flex;
+    display:flex;
     align-items:center;
+    justify-content:center;
     gap:8px;
     min-height:46px;
     padding:0 14px;
+    width:max-content;
+    box-sizing:border-box;
     border:1px solid #dfe6ef;
     border-radius:10px;
     background:#fff;
     color:#315b8b;
     font-size:12px;
     box-shadow:0 4px 12px rgba(15,23,42,.03);
+}
+
+.dashboard-filter-toggle{
+    display:none;
+    align-items:center;
+    gap:8px;
+    min-height:42px;
+    padding:10px;
+    border:1px solid #e1e7ef;
+    border-radius:10px;
+    background:#fff;
+    color:#334155;
+    font-size:13px;
+    font-weight:700;
+    list-style:none;
+    cursor:pointer;
+}
+
+.dashboard-filter-toggle::-webkit-details-marker{
+    display:none;
+}
+
+.dashboard-filter-toggle::after{
+    content:'\f282';
+    margin-left:auto;
+    font-family:'bootstrap-icons';
+    transition:transform .2s ease;
+}
+
+.dashboard-filter-details[open] .dashboard-filter-toggle::after{
+    transform:rotate(180deg);
 }
 
 .dashboard-filter-summary i{
@@ -1539,7 +1575,7 @@ gap:15px;
     align-items:center;
     gap:10px;
     min-height:64px;
-    margin-top:18px;
+    margin-top:8px;
     padding:10px 14px;
     border:1px solid #e1e7ef;
     border-radius:10px;
@@ -1580,6 +1616,13 @@ gap:15px;
     background:#fff;
 }
 
+.dashboard-filter-date-label{
+    color:#64748b;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+}
+
 .dashboard-filter-input:focus{
     border-color:#1769e0;
     box-shadow:0 0 0 3px rgba(23,105,224,.12);
@@ -1618,34 +1661,71 @@ gap:15px;
     text-decoration:underline;
 }
 
-@media(max-width:768px){
+@media(max-width:991.98px){
     .dashboard-filter-area{
+        display:block;
         padding:0 1rem 1rem;
     }
 
-    .dashboard-filter-panel,
+    .dashboard-filter-toggle{
+        display:flex;
+    }
+
+    .dashboard-filter-panel{
+        padding:10px;
+    }
+
+    .dashboard-filter-heading{
+        display:none;
+    }
+
+    .dashboard-filter-fields{
+        align-items:center;
+        gap:8px;
+    }
+
+    .dashboard-filter-input{
+        width:auto;
+        min-width:0;
+        flex:1 1 0;
+        height:42px;
+    }
+
+    .dashboard-filter-apply{
+        flex:0 0 auto;
+        height:42px;
+        padding:0 14px;
+    }
+
+    .dashboard-filter-clear{
+        text-align:center;
+    }
+}
+
+@media(max-width:767.98px){
+    .dashboard-filter-summary{
+        width:100%;
+        max-width:100%;
+    }
+}
+
+@media(max-width:575.98px){
     .dashboard-filter-fields{
         align-items:stretch;
         flex-direction:column;
     }
 
-    .dashboard-filter-panel{
-        padding:14px;
+    .dashboard-filter-input{
+        width:100%;
+        height:46px;
+        padding:0 12px;
+        font-size:14px;
     }
 
-    .dashboard-filter-heading,
-    .dashboard-filter-input,
     .dashboard-filter-apply{
         width:100%;
-    }
-
-    .dashboard-filter-input,
-    .dashboard-filter-apply{
-        height:42px;
-    }
-
-    .dashboard-filter-clear{
-        text-align:center;
+        height:46px;
+        font-size:14px;
     }
 }
 </style>
@@ -1663,15 +1743,17 @@ gap:15px;
         </span>
     </div>
 
+    <details class="dashboard-filter-details pt-3" open>
+    <summary class="dashboard-filter-toggle">
+        <i class="bi bi-sliders2" aria-hidden="true"></i>
+        <span>Report period</span>
+    </summary>
+
     <form method="GET" action="{{ route('dashboard') }}" class="dashboard-filter-panel">
-        <div class="dashboard-filter-heading">
-            <i class="bi bi-sliders2" aria-hidden="true"></i>
-            <span>Report period</span>
-        </div>
         <div class="dashboard-filter-fields">
-            <label class="visually-hidden" for="date_from">Start date</label>
+            <label class="dashboard-filter-date-label" for="date_from">From</label>
             <input type="date" id="date_from" name="date_from" class="dashboard-filter-input" value="{{ request('date_from') }}" aria-label="Start date">
-            <label class="visually-hidden" for="date_to">End date</label>
+            <label class="dashboard-filter-date-label" for="date_to">To</label>
             <input type="date" id="date_to" name="date_to" class="dashboard-filter-input" value="{{ request('date_to') }}" aria-label="End date">
             <button type="submit" class="dashboard-filter-apply">
                 <i class="bi bi-funnel-fill" aria-hidden="true"></i>
@@ -1682,6 +1764,7 @@ gap:15px;
             @endif
         </div>
     </form>
+    </details>
 </div>
 <div class="row g-4 px-4 pb-4">
 

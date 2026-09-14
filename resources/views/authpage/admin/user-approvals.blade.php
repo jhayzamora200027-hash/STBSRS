@@ -153,6 +153,33 @@
         padding: 15px 24px;
     }
 
+    .approval-page .approval-table td {
+        overflow-wrap: anywhere;
+    }
+
+    .approval-page .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 991.98px) {
+        .approval-page .page-intro {
+            padding: 24px;
+        }
+
+        .approval-page .surface-heading {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .approval-page .view-tabs {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+
     @media (max-width: 575.98px) {
         .approval-page .page-intro {
             padding: 23px;
@@ -168,6 +195,88 @@
             align-items: flex-start;
             flex-direction: column;
             gap: 10px;
+        }
+
+        .approval-page .page-intro {
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .approval-page .page-intro p {
+            font-size: .8rem;
+            line-height: 1.45;
+        }
+
+        .approval-page .approval-table {
+            width: 100%;
+            min-width: 0;
+            border-collapse: separate;
+            border-spacing: 0 .65rem;
+        }
+
+        .approval-page .approval-table thead {
+            display: none;
+        }
+
+        .approval-page .approval-table tbody,
+        .approval-page .approval-table tr,
+        .approval-page .approval-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .approval-page .approval-table tr {
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .approval-page .approval-table td {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            min-width: 0;
+            padding: .7rem .85rem;
+            border-bottom: 1px solid #f0f3f6;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .approval-page .approval-table td::before {
+            flex: 0 0 32%;
+            color: var(--muted);
+            content: attr(data-label);
+            font-size: .67rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .approval-page .approval-table td:last-child {
+            border-bottom: 0;
+        }
+
+        .approval-page .approval-table td:last-child form,
+        .approval-page .approval-table td:last-child button {
+            width: 100%;
+        }
+
+        .approval-page .approval-table td[colspan] {
+            display: block;
+            text-align: center;
+        }
+
+        .approval-page .approval-table td[colspan]::before {
+            display: none;
+        }
+
+        .approval-page .table-footer .pagination {
+            max-width: 100%;
+            overflow-x: auto;
+            padding-bottom: .25rem;
         }
     }
 </style>
@@ -208,7 +317,7 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle approval-table">
                 <thead>
                     <tr>
                         <th>User</th>
@@ -228,7 +337,7 @@
                                 ->join('');
                         @endphp
                         <tr>
-                            <td>
+                            <td data-label="User">
                                 <div class="identity">
                                     <span class="avatar">{{ $initials }}</span>
                                     <div>
@@ -237,9 +346,9 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ ucfirst($user->usergroup ?: 'Member') }}</td>
-                            <td>{{ optional($user->created_at)->format('M d, Y') }}</td>
-                            <td class="text-end">
+                            <td data-label="Role">{{ ucfirst($user->usergroup ?: 'Member') }}</td>
+                            <td data-label="Registered">{{ optional($user->created_at)->format('M d, Y') }}</td>
+                            <td class="text-end" data-label="Action">
                                 <form method="POST" action="{{ route('users.approve', $user) }}">
                                     @csrf
                                     @method('PATCH')

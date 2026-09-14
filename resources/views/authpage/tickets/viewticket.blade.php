@@ -282,6 +282,7 @@
     box-shadow: 0 .25rem .75rem rgba(0,0,0,.08);
     transition: all .3s ease;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .back-btn i{
@@ -321,6 +322,57 @@
 
 .back-btn:hover::after{
     width:100%;
+}
+
+.ticket-action-row{
+    gap:1rem;
+}
+
+.ticket-action-cell{
+    padding:.5rem;
+}
+
+.ticket-action-cell .back-btn,
+.ticket-action-cell form,
+.ticket-action-cell form button,
+.ticket-action-cell > button{
+    max-width:100%;
+}
+
+@media (max-width: 575.98px){
+    .ticket-action-row{
+        align-items:stretch !important;
+        gap:.5rem;
+    }
+
+    .ticket-action-cell{
+        flex:1 1 0;
+        min-width:0;
+        padding:.35rem;
+    }
+
+    .ticket-action-cell .back-btn,
+    .ticket-action-cell form,
+    .ticket-action-cell form button,
+    .ticket-action-cell > button{
+        width:100%;
+    }
+
+    .ticket-action-cell .back-btn,
+    .ticket-action-cell form button,
+    .ticket-action-cell > button{
+        justify-content:center;
+        min-height:3.25rem;
+        padding:.65rem .5rem !important;
+        font-size:.78rem;
+        line-height:1.2;
+    }
+
+    .ticket-action-cell .back-btn i,
+    .ticket-action-cell form button i,
+    .ticket-action-cell > button i{
+        margin-right:.35rem !important;
+    }
 }
 
 .copy-ticket{
@@ -444,6 +496,22 @@
     .ticket-tab i{ margin-right:8px; }
 
     .tab-indicator{ display:none; }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+    .ticket-tabs {
+        padding: 6px;
+    }
+
+    .ticket-tab {
+        padding: 12px 10px;
+        gap: 6px;
+        font-size: .85rem;
+    }
+
+    .ticket-tab i {
+        font-size: 16px;
+    }
 }
 
 .request-card{
@@ -695,6 +763,26 @@
 
     .resource-card {
         min-height: 96px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    #requestInformationBody > .col-md-8,
+    #requestInformationBody > .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    #requestInformationBody > .col-md-4 {
+        margin-top: 1rem;
+    }
+
+    #requestInformationBody .resolution-panel {
+        position: static !important;
+    }
+
+    #requestInformationBody .ticket-summary-card .card-body {
+        padding: 1.25rem !important;
     }
 }
 
@@ -2234,14 +2322,14 @@ hr{
         </div>
     </div>
 </div>
-    <div class="d-flex justify-content-between align-items-center w-100">
-        <div class="p-2">
+    <div class="d-flex justify-content-between align-items-center w-100 ticket-action-row">
+        <div class="p-2 ticket-action-cell">
             <a href="{{ route('tickets') }}" class="btn back-btn border shadow-sm rounded-pill px-4">
                 <i class="bi bi-arrow-left me-2"></i>
                 Back to tickets
             </a>
         </div>
-        <div class="p-2">
+        <div class="p-2 ticket-action-cell">
             @if(empty($ticket->acknowledged))
                 <form id="ackForm" method="POST" action="{{ route('tickets.acknowledge', $ticket->ticket_id) }}">
                     @csrf

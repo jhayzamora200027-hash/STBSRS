@@ -162,8 +162,176 @@
         return $changes->implode(' ') ?: 'The record was updated.';
     };
 @endphp
-<div class="container-fluid py-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+<style>
+    .audit-log-page {
+        min-width: 0;
+    }
+
+    .audit-log-filter .form-control,
+    .audit-log-filter .form-select,
+    .audit-log-filter .btn {
+        min-height: 42px;
+    }
+
+    .audit-log-table-wrap {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .audit-log-table {
+        width: 100%;
+        min-width: 900px;
+        table-layout: auto;
+    }
+
+    .audit-log-table th {
+        white-space: nowrap;
+    }
+
+    .audit-log-table td {
+        overflow-wrap: anywhere;
+    }
+
+    .audit-log-table td:first-child,
+    .audit-log-table td:nth-child(2),
+    .audit-log-table td:nth-child(3) {
+        white-space: nowrap;
+    }
+
+    .audit-log-table td:nth-child(4),
+    .audit-log-table td:nth-child(5) {
+        min-width: 150px;
+    }
+
+    .audit-log-table td:nth-child(6) {
+        min-width: 260px;
+    }
+
+    .audit-log-table details summary {
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .audit-log-pagination {
+        overflow-x: auto;
+        padding-bottom: .25rem;
+    }
+
+    @media (max-width: 1199.98px) {
+        .audit-log-page {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        .audit-log-page-header {
+            align-items: flex-start !important;
+            flex-direction: column;
+            gap: .65rem !important;
+        }
+
+        .audit-log-page-header .badge {
+            align-self: flex-start;
+        }
+
+        .audit-log-filter {
+            row-gap: .65rem !important;
+        }
+
+        .audit-log-filter > [class*="col-"] {
+            width: 100%;
+        }
+
+        .audit-log-filter .btn {
+            width: 100%;
+        }
+
+        .audit-log-table-wrap {
+            overflow: visible;
+        }
+
+        .audit-log-table {
+            width: 100%;
+            min-width: 0;
+            border-collapse: separate;
+            border-spacing: 0 .65rem;
+        }
+
+        .audit-log-table thead {
+            display: none;
+        }
+
+        .audit-log-table tbody,
+        .audit-log-table tr,
+        .audit-log-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .audit-log-table tr {
+            overflow: hidden;
+            border: 1px solid #e6edf3;
+            border-radius: .65rem;
+            background: #fff;
+            box-shadow: 0 4px 14px rgba(23, 50, 77, .04);
+        }
+
+        .audit-log-table td,
+        .audit-log-table td:first-child,
+        .audit-log-table td:nth-child(2),
+        .audit-log-table td:nth-child(3) {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            min-width: 0;
+            padding: .65rem .8rem;
+            border-bottom: 1px solid #edf2f6;
+            white-space: normal;
+            text-align: right;
+        }
+
+        .audit-log-table td::before {
+            flex: 0 0 38%;
+            color: #6b7c8f;
+            content: attr(data-label);
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .audit-log-table td:last-child {
+            border-bottom: 0;
+        }
+
+        .audit-log-table td details,
+        .audit-log-table td details p {
+            max-width: 62%;
+            text-align: left;
+        }
+
+        .audit-log-table td details summary {
+            white-space: normal;
+        }
+
+        .audit-log-table td[colspan] {
+            display: block;
+            text-align: center;
+        }
+
+        .audit-log-table td[colspan]::before {
+            display: none;
+        }
+    }
+</style>
+<div class="container-fluid py-4 audit-log-page">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4 audit-log-page-header">
         <div>
             <div class="text-uppercase small fw-semibold text-muted">Sysadmin controls</div>
             <h1 class="h3 mb-1">Audit log</h1>
@@ -172,7 +340,7 @@
         <span class="badge text-bg-light border">{{ $logs->total() }} events</span>
     </div>
 
-    <form class="row g-2 mb-3" method="GET" action="{{ route('audit-logs.index') }}">
+    <form class="row g-2 mb-3 audit-log-filter" method="GET" action="{{ route('audit-logs.index') }}">
         <div class="col-md-6">
             <label class="visually-hidden" for="audit-search">Search audit log</label>
             <input id="audit-search" name="search" value="{{ $filters['search'] }}" class="form-control" placeholder="Search activity or person">
@@ -190,17 +358,17 @@
         <div class="col-md-1"><a class="btn btn-light border w-100" href="{{ route('audit-logs.index') }}" title="Clear filters"><i class="bi bi-x-lg"></i></a></div>
     </form>
 
-    <div class="table-responsive bg-white border rounded-3">
-        <table class="table table-hover align-middle mb-0">
+    <div class="table-responsive bg-white border rounded-3 audit-log-table-wrap">
+        <table class="table table-hover align-middle mb-0 audit-log-table">
             <thead><tr><th>Date and time</th><th>Action</th><th>Ticket number</th><th>What was affected</th><th>Performed by</th><th>Details</th></tr></thead>
             <tbody>
             @forelse($logs as $log)
                 <tr>
-                    <td class="text-nowrap">{{ $log->created_at->format('M d, Y g:i A') }}</td>
-                    <td><span class="badge text-bg-secondary">{{ $log->event === 'created' && $log->auditable_type === 'App\\Models\\Ticket' ? $eventLabels['ticket_created'] : ($eventLabels[$log->event] ?? ucfirst(str_replace('_', ' ', $log->event))) }}</span></td>
-                    <td>{{ $log->ticket_number ?? '-' }}</td>
-                    <td>{{ $recordName($log) }}</td>
-                    <td>
+                    <td class="text-nowrap" data-label="Date and time">{{ $log->created_at->format('M d, Y g:i A') }}</td>
+                    <td data-label="Action"><span class="badge text-bg-secondary">{{ $log->event === 'created' && $log->auditable_type === 'App\\Models\\Ticket' ? $eventLabels['ticket_created'] : ($eventLabels[$log->event] ?? ucfirst(str_replace('_', ' ', $log->event))) }}</span></td>
+                    <td data-label="Ticket number">{{ $log->ticket_number ?? '-' }}</td>
+                    <td data-label="What was affected">{{ $recordName($log) }}</td>
+                    <td data-label="Performed by">
                         @if($log->user)
                             {{ $log->user->name }}
                         @elseif($log->event === 'created' && $log->auditable_type === 'App\\Models\\Ticket')
@@ -209,7 +377,7 @@
                             System activity
                         @endif
                     </td>
-                    <td>
+                    <td data-label="Details">
                         <details>
                             <summary class="text-primary">View activity</summary>
                             <p class="small mb-1 mt-2">{{ $changeSummary($log) }}</p>
@@ -225,6 +393,6 @@
             </tbody>
         </table>
     </div>
-    <div class="mt-3">{{ $logs->links() }}</div>
+    <div class="mt-3 audit-log-pagination">{{ $logs->links() }}</div>
 </div>
 @endsection

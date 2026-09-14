@@ -1494,6 +1494,7 @@
             const progressBar = document.getElementById('dashboardPasswordResetProgress');
             const progressText = document.getElementById('dashboardPasswordResetProgressText');
             let progress = 10;
+            let progressTimer;
 
             submitButton.disabled = true;
             const loadingModal = document.getElementById('dashboardPasswordResetLoadingModal');
@@ -1507,7 +1508,7 @@
 
             loadingModalInstance.show();
 
-            window.setInterval(function () {
+            progressTimer = window.setInterval(function () {
                 if (progress >= 90) return;
 
                 progress += 5;
@@ -1515,6 +1516,10 @@
                 progressBar.setAttribute('aria-valuenow', progress);
                 progressText.textContent = 'Processing your request (' + progress + '%)';
             }, 500);
+
+            loadingModal.addEventListener('hidden.bs.modal', function () {
+                window.clearInterval(progressTimer);
+            }, { once: true });
 
         });
     });
@@ -2463,7 +2468,7 @@ body{
    MOBILE
 ===================================================== */
 
-@media (max-width:767.98px){
+@media (max-width:991.98px){
 
     .sidebar{
 
@@ -3202,6 +3207,48 @@ label span {
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-funnel"></script>
 <script>
+
+function recoverStaleOverlays() {
+    if (document.hidden) return;
+
+    const visibleModal = Array.from(document.querySelectorAll('.modal.show')).some(modal => {
+        if (modal.getAttribute('aria-hidden') === 'true') return false;
+        const style = window.getComputedStyle(modal);
+        const dialog = modal.querySelector('.modal-dialog');
+        return style.display !== 'none' && style.visibility !== 'hidden' && dialog && dialog.getBoundingClientRect().height > 0;
+    });
+
+    if (!visibleModal) {
+        document.querySelectorAll('.modal.show').forEach(modal => {
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            modal.style.removeProperty('display');
+        });
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+    }
+
+    const ackLoader = document.getElementById('ackLoader');
+    if (ackLoader && !ackLoader.classList.contains('d-none')) {
+        ackLoader.classList.add('d-none');
+        ackLoader.setAttribute('aria-hidden', 'true');
+        document.getElementById('ackBtn')?.removeAttribute('disabled');
+        document.querySelector('#resolutionForm button[type="submit"]')?.removeAttribute('disabled');
+    }
+
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    if (sidebarOverlay && !sidebar?.classList.contains('show')) {
+        sidebarOverlay.classList.remove('show');
+    }
+}
+
+document.addEventListener('visibilitychange', recoverStaleOverlays);
+window.addEventListener('pageshow', recoverStaleOverlays);
+window.addEventListener('focus', recoverStaleOverlays);
+window.addEventListener('pointerdown', recoverStaleOverlays, true);
+document.addEventListener('DOMContentLoaded', recoverStaleOverlays);
 
 document.addEventListener('DOMContentLoaded', function () {
 

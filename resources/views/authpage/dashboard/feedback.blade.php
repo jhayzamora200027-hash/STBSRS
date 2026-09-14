@@ -50,14 +50,19 @@
             <div class="report-period"><i class="bi bi-calendar3"></i><span>{{ $dateFrom->format('M d, Y') }} -
                     {{ $dateTo->format('M d, Y') }}</span></div>
         </div>
-        <form class="feedback-toolbar" method="GET" action="{{ route('feedback') }}">
-            <div class="filter-label"><i class="bi bi-sliders2"></i><span>Report period</span></div>
-            <input class="form-control" type="date" name="date_from" value="{{ $dateFrom->format('Y-m-d') }}"
-                aria-label="Start date">
-            <input class="form-control" type="date" name="date_to" value="{{ $dateTo->format('Y-m-d') }}"
-                aria-label="End date">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-filter me-1"></i>Apply</button>
-        </form>
+        <details class="feedback-filter-details" open>
+            <summary class="feedback-filter-toggle"><i class="bi bi-sliders2"></i><span>Report period</span></summary>
+            <form class="feedback-toolbar" method="GET" action="{{ route('feedback') }}">
+                <div class="filter-label"><i class="bi bi-sliders2"></i><span>Report period</span></div>
+                <label class="feedback-filter-date-label" for="feedback_date_from">From</label>
+                <input class="form-control" id="feedback_date_from" type="date" name="date_from" value="{{ $dateFrom->format('Y-m-d') }}"
+                    aria-label="Start date">
+                <label class="feedback-filter-date-label" for="feedback_date_to">To</label>
+                <input class="form-control" id="feedback_date_to" type="date" name="date_to" value="{{ $dateTo->format('Y-m-d') }}"
+                    aria-label="End date">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-filter me-1"></i>Apply</button>
+            </form>
+        </details>
         <div class="feedback-grid">
             <div class="feedback-card">
                 <div class="eyebrow">Overall Satisfaction Score</div>
@@ -660,6 +665,31 @@
             box-shadow: 0 4px 16px rgba(30, 50, 80, .04)
         }
 
+        .feedback-filter-toggle {
+            display: none;
+            align-items: center;
+            gap: 7px;
+            color: #536276;
+            font-size: 11px;
+            font-weight: 600;
+            list-style: none
+        }
+
+        .feedback-filter-toggle::-webkit-details-marker {
+            display: none
+        }
+
+        .feedback-filter-toggle::after {
+            content: '\f282';
+            margin-left: auto;
+            font-family: 'bootstrap-icons';
+            transition: transform .2s ease
+        }
+
+        .feedback-filter-details[open] .feedback-filter-toggle::after {
+            transform: rotate(180deg)
+        }
+
         .filter-label {
             display: flex;
             align-items: center;
@@ -680,6 +710,14 @@
             background: #fbfcfe;
             color: #26364d;
             padding: 0 10px
+        }
+
+        .feedback-filter-date-label {
+            flex: 0 0 auto;
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap
         }
 
         .feedback-toolbar .form-control:focus {
@@ -1563,6 +1601,31 @@
             .feedback-pagination {
                 padding-left: 18px;
                 padding-right: 18px
+            }
+        }
+
+        @media(max-width:991.98px) {
+            .feedback-filter-toggle {
+                display: flex;
+                min-height: 42px;
+                padding: 0 12px;
+                border: 1px solid #e5eaf0;
+                border-radius: 8px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(30, 50, 80, .04);
+                cursor: pointer
+            }
+
+            .feedback-filter-details .feedback-toolbar {
+                margin-top: 8px
+            }
+
+            .feedback-filter-details:not([open]) .feedback-toolbar {
+                display: none
+            }
+
+            .feedback-filter-details[open] .feedback-toolbar .filter-label {
+                display: none
             }
         }
   

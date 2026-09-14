@@ -192,6 +192,50 @@
         background: #173e5f;
     }
 
+    .program-management .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .program-management .table td:last-child {
+        white-space: nowrap;
+    }
+
+    .program-management .program-directory-table td {
+        overflow-wrap: anywhere;
+    }
+
+    .program-management .table td,
+    .program-management .table th {
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 991.98px) {
+        .program-management .page-intro {
+            padding: 24px;
+        }
+
+        .program-management .surface-heading {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .program-management .add-bar,
+        .program-management .filter-bar {
+            padding: 14px 18px;
+        }
+
+        .program-management .add-bar .btn,
+        .program-management .filter-bar .btn {
+            min-height: 42px;
+        }
+
+        .program-management .table {
+            min-width: 700px;
+        }
+    }
+
     @media (max-width: 575.98px) {
         .program-management .page-intro {
             padding: 23px;
@@ -209,6 +253,103 @@
             align-items: flex-start;
             flex-direction: column;
             gap: 10px;
+        }
+
+        .program-management .page-intro {
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .program-management .page-intro p {
+            font-size: .8rem;
+            line-height: 1.45;
+        }
+
+        .program-management .stat-card {
+            padding: 15px;
+        }
+
+        .program-management .add-bar .row,
+        .program-management .filter-bar .row {
+            row-gap: .75rem !important;
+        }
+
+        .program-management .table {
+            min-width: 680px;
+        }
+
+        .program-management .table-footer .pagination {
+            max-width: 100%;
+            overflow-x: auto;
+            padding-bottom: .25rem;
+        }
+
+        .program-management .program-directory-table {
+            width: 100%;
+            min-width: 0;
+            border-collapse: separate;
+            border-spacing: 0 .65rem;
+        }
+
+        .program-management .program-directory-table thead {
+            display: none;
+        }
+
+        .program-management .program-directory-table tbody,
+        .program-management .program-directory-table tr,
+        .program-management .program-directory-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .program-management .program-directory-table tr {
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .program-management .program-directory-table td {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            min-width: 0;
+            padding: .7rem .85rem;
+            border-bottom: 1px solid #f0f3f6;
+            text-align: right;
+            white-space: normal;
+        }
+
+        .program-management .program-directory-table td::before {
+            flex: 0 0 34%;
+            color: var(--muted);
+            content: attr(data-label);
+            font-size: .67rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .program-management .program-directory-table td:last-child {
+            border-bottom: 0;
+            white-space: normal;
+        }
+
+        .program-management .program-directory-table td:last-child > div {
+            display: flex !important;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .program-management .program-directory-table td[colspan] {
+            display: block;
+            text-align: center;
+        }
+
+        .program-management .program-directory-table td[colspan]::before {
+            display: none;
         }
     }
 </style>
@@ -313,7 +454,7 @@
         </form>
 
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle program-directory-table">
                 <thead>
                     <tr>
                         <th>Program</th>
@@ -326,18 +467,18 @@
                 <tbody>
                     @forelse ($programs as $program)
                         <tr>
-                            <td>
+                            <td data-label="Program">
                                 <div class="program-name">{{ $program->program }}</div>
                                 <div class="program-code">{{ $program->program_id }}</div>
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 <span class="status-pill {{ $program->status === 'inactive' ? 'inactive' : '' }}">
                                     {{ ucfirst($program->status) }}
                                 </span>
                             </td>
-                            <td>{{ optional($program->creator)->name ?? 'Unknown' }}</td>
-                            <td>{{ optional($program->updated_at)->format('M d, Y') }}</td>
-                            <td class="text-end">
+                            <td data-label="Created by">{{ optional($program->creator)->name ?? 'Unknown' }}</td>
+                            <td data-label="Updated">{{ optional($program->updated_at)->format('M d, Y') }}</td>
+                            <td class="text-end" data-label="Actions">
                                 <div class="d-inline-flex gap-2">
                                     <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#editProgram{{ $program->id }}">
                                         <i class="bi bi-pencil me-1"></i>

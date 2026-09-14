@@ -111,6 +111,32 @@
         padding: 1rem 1.1rem .8rem;
     }
 
+    .tickets-filter-toggle {
+        display: none;
+        align-items: center;
+        gap: .5rem;
+        color: var(--tickets-ink);
+        font-size: .82rem;
+        font-weight: 700;
+        list-style: none;
+        padding: .7rem .85rem;
+    }
+
+    .tickets-filter-toggle::-webkit-details-marker {
+        display: none;
+    }
+
+    .tickets-filter-toggle::after {
+        content: '\f282';
+        font-family: 'bootstrap-icons';
+        margin-left: auto;
+        transition: transform .2s ease;
+    }
+
+    .tickets-filter-details[open] .tickets-filter-toggle::after {
+        transform: rotate(180deg);
+    }
+
     .filter-header-title {
         color: var(--tickets-ink);
         font-size: 1rem;
@@ -402,6 +428,20 @@
     @media (max-width: 1199.98px) {
         .ticket-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1199.98px) {
+        .tickets-filter-toggle {
+            display: flex;
+            border: 1px solid var(--tickets-line);
+            border-radius: .7rem;
+            background: rgba(255,255,255,0.75);
+            cursor: pointer;
+        }
+
+        .tickets-filter-details:not([open]) .filter-fields-grid {
+            display: none;
         }
     }
 
@@ -929,6 +969,12 @@
             </div>
         </div>
 
+        <details class="tickets-filter-details">
+            <summary class="tickets-filter-toggle">
+                <i class="bi bi-sliders2" aria-hidden="true"></i>
+                <span>Filters</span>
+            </summary>
+
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 filter-grid filter-fields-grid">
 
             {{-- STATUS --}}
@@ -1015,6 +1061,8 @@
             </div>
 
         </div>
+
+        </details>
 
     </div>
 </div>

@@ -37,8 +37,8 @@ class ActiveDirectoryService
 				'success' => $authenticated,
 				'attributes' => $attributes,
 				'message' => $authenticated
-					? 'Active Directory credentials are valid.'
-					: 'Active Directory rejected these credentials.',
+					? 'Please check your credentials.'
+					: 'Username or Password is invalid.',
 			];
 		} catch (Throwable $exception) {
 			report($exception);
