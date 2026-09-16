@@ -18,6 +18,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
+    <link rel="icon" type="image/png" href="{{ asset('images/logo/social technology bureau innovating solution logo.png') }}">
     <style>
         #loginModal .login-input-wrap {
             position: relative;
@@ -278,25 +279,10 @@
 
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
             
+        <div style="height: 50px; margin-top: -10px;">
+            <img src ="{{asset('images/logo/iSTaksyon with label white.png')}}" class="img-fluid mb-5" style ="max-width: 170px; height?:auto;">
+        </div>
 
-            <div class="bg-white rounded-circle p-1 guest-logo-wrap flex-shrink-0">
-
-                <img src="{{ asset('images/logo/social technology bureau innovating solution logo.png') }}"
-                     width="45" class="guest-logo">
-
-            </div>
-
-            <div class="ms-3 guest-brand-text">
-
-                <h5 class="mb-0 text-white">
-                    iSTaksyon
-                </h5>
-
-                <small class="text-white">
-                    Social Technology Bureau
-                </small>
-
-            </div>
 
         </a>
 
@@ -324,9 +310,9 @@
             <div class="row g-0">
                 {{-- Column Left --}}
                 <div class="col-12 col-lg-5 p-5" style="background-color:#ecf4fe;">
-                    <img src="{{ asset('images/logo/DSWD STB Bagong Pil logo.png') }}" class="img-fluid">
+                    <img src="{{ asset('images/logo/iSTaksyon with label.png') }}" class="img-fluid">
 
-                    <h4 class="mt-5">Welcome Back!</h4>
+                    <h4 class="mt-3">Welcome Back!</h4>
 
                     <p class="text-muted" style="font-size:0.8rem;">
                         Sign in to your account to continue to the iSTakyson.
@@ -382,7 +368,7 @@
                                             </button>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">AD Username</label>
+                                            <label class="form-label">Username</label>
 
                                             <div class="login-input-wrap">
                                                 <i class="bi bi-envelope login-input-icon" aria-hidden="true"></i>

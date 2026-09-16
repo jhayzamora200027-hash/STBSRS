@@ -1112,6 +1112,7 @@ body.review-modal-open .modal-backdrop.show {
         <div class="col-lg-7">
             
             <img src ="{{asset('images/logo/DSWD STB Bagong Pil logo.png')}}" class="img-fluid mb-5" style ="max-width: 400px; height?:auto;">
+
             <h2 class="fw-bold">
                 How can we help you today?
             </h2>
@@ -2258,7 +2259,7 @@ body.review-modal-open .modal-backdrop.show {
     </style>
 
     {{-- MODAL NEW REQUEST --}}
-    <div class="modal fade" id="createTicketModal" tabindex="-1" arialabelledby="createTicketLabel" aria-hideen="true">
+    <div class="modal fade" id="createTicketModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" arialabelledby="createTicketLabel" aria-hideen="true">
         <form method="POST" id="ticketForm" action="{{route('tickets.store')}}" enctype="multipart/form-data" novalidate>
         @csrf
         <input type="hidden" name="_method" id="ticketFormMethod" value="POST">
@@ -3488,7 +3489,7 @@ body.review-modal-open .modal-backdrop.show {
                                                 Cancel
                                             </button>
 
-                                            <button type="submit"
+                                                <button type="button"
                                                     id="submitBtn"
                                                     class="wizard-submit-btn">
                                                 <i class="bi bi-send-check-fill me-2"></i>
@@ -3881,6 +3882,39 @@ body.review-modal-open .modal-backdrop.show {
 </div>
 
 <script>
+
+    let ticketValidationAlertOpen = false;
+
+    window.showTicketValidationAlert = function (options) {
+        const protectedModal = options.modal || document.getElementById('createTicketModal');
+        const { modal, ...alertOptions } = options;
+        const originalDidClose = options.didClose;
+        const shouldKeepTicketModalOpen = Boolean(protectedModal?.classList.contains('show'));
+        ticketValidationAlertOpen = shouldKeepTicketModalOpen;
+        const preventProtectedModalClose = (event) => {
+            if (ticketValidationAlertOpen) event.preventDefault();
+        };
+
+        protectedModal?.addEventListener('hide.bs.modal', preventProtectedModalClose);
+
+        Swal.fire({
+            ...alertOptions,
+            target: protectedModal || document.body,
+            returnFocus: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didClose: () => {
+                originalDidClose?.();
+                setTimeout(() => {
+                    protectedModal?.removeEventListener('hide.bs.modal', preventProtectedModalClose);
+                    if (shouldKeepTicketModalOpen && protectedModal && !protectedModal.classList.contains('show')) {
+                        bootstrap.Modal.getOrCreateInstance(protectedModal).show();
+                    }
+                    ticketValidationAlertOpen = false;
+                }, 0);
+            }
+        });
+    };
 
     document.addEventListener('DOMContentLoaded', function(){
         document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(popoverTrigger){
@@ -4551,12 +4585,21 @@ if (organizationConfig[organization]) {
                 return { ok: missing.length === 0, missing };
             }
 
+            document.getElementById('createTicketModal')?.addEventListener('hide.bs.modal', function (event) {
+                if (ticketValidationAlertOpen) event.preventDefault();
+            });
+
+            document.getElementById('createTicketModal')?.addEventListener('hidden.bs.modal', function () {
+                if (!ticketValidationAlertOpen) return;
+                bootstrap.Modal.getOrCreateInstance(this).show();
+            });
+
             //Next Button
             document.getElementById('nextBtn').addEventListener('click', function () {
             const check = validateStep1();
             if(!check.ok){
                 const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m=>`<li>${DOMPurify.sanitize(m)}</li>`).join('') + '</ul>';
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Incomplete Information',
                     html,
@@ -4627,7 +4670,7 @@ if (organizationConfig[organization]) {
                     const check = validateStep1();
                     if(!check.ok){
                         const html = '<p>Please complete the following fields:</p><ul style="text-align:left">' + check.missing.map(m => `<li>${DOMPurify.sanitize(m)}</li>`).join('') + '</ul>';
-                        Swal.fire({
+                        showTicketValidationAlert({
                             icon: 'warning',
                             title: 'Incomplete Information',
                             html,
@@ -4698,7 +4741,7 @@ if (organizationConfig[organization]) {
                         ? 'Please select where this request should be sent before choosing a service.'
                         : 'Please select the receiving Field Office before choosing a service.';
 
-                    Swal.fire({
+                    showTicketValidationAlert({
                         icon: 'warning',
                         title: 'Receiving Office Required',
                         text: message,
@@ -5634,6 +5677,33 @@ const dataPrivacyModalEl = document.getElementById('dataPrivacyModal');
 const dataPrivacyAgreement = document.getElementById('dataPrivacyAgreement');
 const agreeDataPrivacyBtn = document.getElementById('agreeDataPrivacyBtn');
 const privacyAgreementBox = document.getElementById('privacyAgreementBox');
+const submitButton = document.getElementById('submitBtn');
+
+submitButton?.addEventListener('click', function (event) {
+    const activeServicePanel = ticketForm.querySelector('.service-panel:not(.d-none)');
+    const purpose = activeServicePanel?.querySelector('textarea[id^="reasonRequest"]')?.value.trim() || '';
+    const program = Array.from(activeServicePanel?.querySelector('select[id^="programSelect"]')?.selectedOptions || [])
+        .some(option => option.value);
+    const missing = [];
+
+    if (!purpose) missing.push('Purpose of request');
+    if (activeServicePanel && !program) missing.push('Program');
+    if (!activeServicePanel) missing.push('Service selection');
+
+    if (missing.length) {
+        event.preventDefault();
+        window.showTicketValidationAlert({
+            icon: 'warning',
+            title: 'Incomplete Information',
+            text: 'Please complete: ' + missing.join(' and ') + '.',
+            confirmButtonColor: '#062c52',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    ticketForm.requestSubmit();
+});
 
 if (dataPrivacyModalEl && dataPrivacyAgreement && agreeDataPrivacyBtn) {
     agreeDataPrivacyBtn.addEventListener('click', function () {
@@ -5648,7 +5718,8 @@ if (dataPrivacyModalEl && dataPrivacyAgreement && agreeDataPrivacyBtn) {
             dataPrivacyAgreement.focus({ preventScroll: true });
 
             if (window.Swal && Swal.fire) {
-                Swal.fire({
+                window.showTicketValidationAlert({
+                    modal: dataPrivacyModalEl,
                     icon: 'warning',
                     title: 'Agreement required',
                     text: 'Please check the agreement box to continue with your request.',
@@ -5713,11 +5784,31 @@ if (ticketForm) {
     ticketForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
+        const hasRequestInput = Array.from(ticketForm.querySelectorAll(
+            'input:not([type="hidden"]):not([type="submit"]):not([type="button"]), textarea, select'
+        )).some((field) => {
+            if (field.disabled || field.type === 'file') return field.files?.length > 0;
+            if (field.type === 'checkbox' || field.type === 'radio') return field.checked;
+            if (field.multiple) return Array.from(field.selectedOptions).some((option) => option.value);
+            return field.value.trim() !== '';
+        });
+
+        if (!hasRequestInput) {
+            showTicketValidationAlert({
+                icon: 'warning',
+                title: 'Incomplete Information',
+                text: 'Please complete the request form before submitting.',
+                confirmButtonColor: '#062c52',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
         const markupField = Array.from(ticketForm.querySelectorAll('input:not([type="password"]):not([type="hidden"]), textarea'))
             .find((field) => /<\/?[a-z][^>]*>/i.test(field.value));
         if (markupField) {
             markupField.focus();
-            Swal.fire({
+            showTicketValidationAlert({
                 icon: 'error',
                 title: 'Invalid input',
                 text: 'HTML and script markup are not allowed in this field.',
@@ -5743,9 +5834,12 @@ if (ticketForm) {
         if (!sex) missing.push('Sex');
         if (!ticketCat) missing.push('Service selection');
 
-        const activeProgram = ticketForm.querySelector(
-            '#programSelectTACP[name="program[]"], #programSelectTAPD[name="program[]"]'
-        );
+        const activeProgramId = {
+            completed: 'programSelectTACP',
+            enhancement: 'programSelectTAPD',
+            resource: 'programSelectRP'
+        }[ticketCat];
+        const activeProgram = activeProgramId ? document.getElementById(activeProgramId) : null;
         if (activeProgram && Array.from(activeProgram.selectedOptions).filter(option => option.value).length > 6) {
             missing.push('No more than 6 programs may be selected');
         } else if (activeProgram && Array.from(activeProgram.selectedOptions).filter(option => option.value).length === 0) {
@@ -5799,7 +5893,7 @@ if (ticketForm) {
                     if (visOffice) { try { visOffice.focus(); visOffice.scrollIntoView({behavior:'smooth', block:'center'}); } catch(e){} }
                 }
 
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Incomplete Information',
                     text: 'Please complete required fields: ' + missing.join(', '),
@@ -5815,11 +5909,15 @@ if (ticketForm) {
         }
 
         // Ensure the active service's purpose_of_request is filled
-        const purposeEl = ticketForm.querySelector(
-            '#reasonRequestTACP[name="purpose_of_request"], #reasonRequestTAPD[name="purpose_of_request"]'
-        );
+        const purposeId = {
+            completed: 'reasonRequestTACP',
+            enhancement: 'reasonRequestTAPD',
+            resource: 'reasonRequestRP',
+            knowledge: 'reasonRequestKP'
+        }[ticketCat];
+        const purposeEl = purposeId ? document.getElementById(purposeId) : null;
         if (purposeEl && purposeEl.value.trim() === '') {
-            Swal.fire({
+            showTicketValidationAlert({
                 icon: 'warning',
                 title: 'Missing Purpose',
                 text: 'Please enter Purpose of request for the selected service.',
@@ -5843,7 +5941,7 @@ if (ticketForm) {
             ];
             const missingResourceField = resourceFields.find(([id]) => !document.getElementById(id)?.value.trim());
             if (missingResourceField) {
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Incomplete Resource Person Details',
                     text: 'Please enter ' + missingResourceField[1] + '.',
@@ -5875,7 +5973,7 @@ if (ticketForm) {
                 return !field?.value.trim();
             });
             if (missingParticipantField) {
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Target Participants Required',
                     text: 'Please select or enter ' + missingParticipantField[1] + '.',
@@ -5888,7 +5986,7 @@ if (ticketForm) {
         if (selectedAssistance.has('kp')) {
             const selectedProducts = ticketForm.querySelectorAll('#kpBody .kp-input:checked');
             if (!selectedProducts.length) {
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Select Knowledge Product',
                     text: 'Please select at least one knowledge product.',
@@ -5901,7 +5999,7 @@ if (ticketForm) {
         if (ticketCat === 'knowledge') {
             const selectedProducts = ticketForm.querySelectorAll('input[name="type_of_knowledge_product[]"]:checked');
             if (!selectedProducts || selectedProducts.length === 0) {
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Select Knowledge Product',
                     text: 'Please select at least one Type of knowledge product.',
@@ -5921,7 +6019,7 @@ if (ticketForm) {
             const othersEl = ticketForm.querySelector('input[name="type_of_knowledge_product[]"][value="Others"]');
             const otherSpec = document.getElementById('otherKnowledgeProduct');
             if (othersEl && othersEl.checked && otherSpec && otherSpec.value.trim() === '') {
-                Swal.fire({
+                showTicketValidationAlert({
                     icon: 'warning',
                     title: 'Specify Other Knowledge Product',
                     text: 'You selected "Others" — please specify the knowledge product.',
@@ -5939,7 +6037,7 @@ if (ticketForm) {
     const endDate = document.getElementById('dateOfActivityEnd').value;
 
     if (!startDate) {
-        Swal.fire({
+        showTicketValidationAlert({
             icon: 'warning',
             title: 'Start Date Required',
             text: 'Please select the activity start date.',
@@ -5951,7 +6049,7 @@ if (ticketForm) {
     }
 
     if (!endDate) {
-        Swal.fire({
+        showTicketValidationAlert({
             icon: 'warning',
             title: 'End Date Required',
             text: 'Please select the activity end date.',
@@ -5963,7 +6061,7 @@ if (ticketForm) {
     }
 
     if (new Date(endDate) < new Date(startDate)) {
-        Swal.fire({
+        showTicketValidationAlert({
             icon: 'error',
             title: 'Invalid Date Range',
             text: 'The activity end date cannot be earlier than the start date.',
@@ -6248,8 +6346,9 @@ function clearRPFields(){
         select.selectedIndex = 0;
     });
 
-    document.getElementById('otherProgramFieldRP').classList.add('d-none');
-    document.getElementById('otherProgramInputRP').value = '';
+    document.getElementById('otherProgramFieldRP')?.classList.add('d-none');
+    const otherProgramInputRP = document.getElementById('otherProgramInputRP');
+    if (otherProgramInputRP) otherProgramInputRP.value = '';
         clearFileUpload('supportFileRP');
 
 }

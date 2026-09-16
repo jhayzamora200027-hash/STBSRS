@@ -90,6 +90,7 @@ Route::get('/login', function(){
 
 //Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get');
 
 //Locations
 Route::get('/regions',[LocationController::class, 'regions']);

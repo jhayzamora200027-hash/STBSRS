@@ -112,14 +112,22 @@
     }
 
     .tickets-filter-toggle {
-        display: none;
+        display: flex;
         align-items: center;
+        background: rgba(255,255,255,0.75);
+        border: 1px solid var(--tickets-line);
+        border-radius: .7rem;
+        cursor: pointer;
         gap: .5rem;
         color: var(--tickets-ink);
         font-size: .82rem;
         font-weight: 700;
         list-style: none;
         padding: .7rem .85rem;
+    }
+
+    .tickets-filter-details:not([open]) .filter-fields-grid {
+        display: none;
     }
 
     .tickets-filter-toggle::-webkit-details-marker {
@@ -428,20 +436,6 @@
     @media (max-width: 1199.98px) {
         .ticket-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 1199.98px) {
-        .tickets-filter-toggle {
-            display: flex;
-            border: 1px solid var(--tickets-line);
-            border-radius: .7rem;
-            background: rgba(255,255,255,0.75);
-            cursor: pointer;
-        }
-
-        .tickets-filter-details:not([open]) .filter-fields-grid {
-            display: none;
         }
     }
 
